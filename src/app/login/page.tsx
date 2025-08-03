@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Atom } from "lucide-react";
+import { Loader2, Atom, Zap, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 
 const formSchema = z.object({
@@ -64,22 +64,22 @@ export default function LoginPage() {
       const user = await login(values);
       if (user) {
         toast({
-          title: "Login Successful",
-          description: `Welcome back, ${user.email}!`,
+          title: "Quantum Access Granted 🚀",
+          description: `Welcome to the quantum realm, ${user.email}!`,
         });
         router.push("/dashboard");
       } else {
         toast({
           variant: "destructive",
-          title: "Login Failed",
-          description: "Invalid email or password. Please try again.",
+          title: "Access Denied",
+          description: "Invalid credentials. Please verify your quantum key.",
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "An error occurred",
-        description: "Something went wrong. Please try again later.",
+        title: "Connection Error",
+        description: "Quantum tunnel disrupted. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -88,48 +88,97 @@ export default function LoginPage() {
 
   if (!mounted) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <div className="relative">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/20 animate-ping" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            animate={{
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10"
       >
-        <Card className="w-full max-w-sm border-primary/20 shadow-lg shadow-primary/10">
-          <CardHeader className="text-center">
+        <Card className="w-full max-w-md quantum-card shadow-2xl">
+          <CardHeader className="text-center pb-8">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 260, damping: 20 }}
+              className="mx-auto mb-6"
             >
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Atom className="h-8 w-8 animate-pulse" />
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
+                <div className="relative bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
+                  <Atom className="h-12 w-12 text-white quantum-pulse" />
+                </div>
               </div>
             </motion.div>
-            <CardTitle className="text-3xl font-headline bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            
+            <CardTitle className="text-4xl font-headline font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent neon-text">
               QuantumChain
             </CardTitle>
-            <CardDescription>
-              Blockchain-based quantum cloud logging system with tamper-proof verification
+            <CardDescription className="text-base mt-3 text-muted-foreground">
+              Secure blockchain-based quantum computing platform
             </CardDescription>
+            
+            {/* Feature highlights */}
+            <div className="flex justify-center gap-4 mt-6">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>Sub-ms Latency</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Shield className="h-4 w-4 text-primary" />
+                <span>Tamper-Proof</span>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
+          
+          <CardContent className="space-y-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-sm font-medium">Email Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your email" {...field} />
+                        <Input 
+                          placeholder="Enter your quantum access email" 
+                          className="quantum-input h-12"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -140,25 +189,59 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-sm font-medium">Quantum Key</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••••••" 
+                          className="quantum-input h-12"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full font-semibold" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Sign In
+                
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 quantum-button font-semibold text-base" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Establishing Quantum Link...
+                    </>
+                  ) : (
+                    <>
+                      <Atom className="mr-2 h-5 w-5" />
+                      Access Quantum Network
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="font-semibold text-primary underline-offset-4 hover:underline">
-                Sign up
-              </Link>
+            
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                New to quantum computing?{" "}
+                <Link 
+                  href="/register" 
+                  className="font-semibold text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
+                >
+                  Create Quantum Account
+                </Link>
+              </p>
+            </div>
+
+            {/* Demo credentials */}
+            <div className="p-4 rounded-lg bg-muted/30 border border-primary/10">
+              <p className="text-xs text-muted-foreground mb-2 font-medium">Demo Credentials:</p>
+              <div className="space-y-1 text-xs font-mono">
+                <p><span className="text-primary">Admin:</span> admin@example.com / 456</p>
+                <p><span className="text-primary">User:</span> p1@example.com / 123</p>
+              </div>
             </div>
           </CardContent>
         </Card>

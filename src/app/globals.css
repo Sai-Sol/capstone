@@ -1,9 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    --background: 225 25% 8%;
+    --foreground: 210 40% 98%;
+    --card: 225 25% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 225 25% 12%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 260 80% 65%;
+    --primary-foreground: 260 85% 10%;
+    --secondary: 225 25% 18%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 225 25% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 225 25% 20%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 225 25% 24%;
+    --input: 225 25% 24%;
+    --ring: 260 80% 65%;
+    --radius: 0.75rem;
+    --chart-1: 260 80% 65%;
+    --chart-2: 300 70% 60%;
+    --chart-3: 200 80% 55%;
+    --chart-4: 340 75% 55%;
+    --chart-5: 180 70% 50%;
+  }
+
+  .light {
     --background: 220 20% 98%;
     --foreground: 224 71.4% 4.1%;
     --card: 220 20% 98%;
@@ -23,34 +53,6 @@
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 260 80% 60%;
-    --radius: 0.75rem;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-
-  .dark {
-    --background: 225 20% 12%;
-    --foreground: 210 20% 96%;
-    --card: 225 20% 16%;
-    --card-foreground: 210 20% 96%;
-    --popover: 225 20% 12%;
-    --popover-foreground: 210 20% 96%;
-    --primary: 260 80% 70%;
-    --primary-foreground: 260 85% 10%;
-    --secondary: 225 20% 20%;
-    --secondary-foreground: 210 20% 96%;
-    --muted: 225 20% 20%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 225 20% 20%;
-    --accent-foreground: 210 20% 96%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 225 20% 24%;
-    --input: 225 20% 24%;
-    --ring: 260 80% 70%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -63,7 +65,173 @@
   * {
     @apply border-border;
   }
+  
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+    background: linear-gradient(135deg, 
+      hsl(var(--background)) 0%, 
+      hsl(225 25% 10%) 50%, 
+      hsl(260 30% 8%) 100%);
+    min-height: 100vh;
+  }
+
+  /* Quantum particle animation background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Quantum glow effects */
+  .quantum-glow {
+    box-shadow: 0 0 20px rgba(120, 119, 198, 0.3),
+                0 0 40px rgba(120, 119, 198, 0.2),
+                0 0 60px rgba(120, 119, 198, 0.1);
+  }
+
+  .quantum-border {
+    border: 1px solid;
+    border-image: linear-gradient(45deg, 
+      rgba(120, 119, 198, 0.5), 
+      rgba(255, 119, 198, 0.5), 
+      rgba(120, 219, 255, 0.5)) 1;
+  }
+
+  /* Floating particles animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(120deg); }
+    66% { transform: translateY(5px) rotate(240deg); }
+  }
+
+  .floating-particle {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Quantum pulse animation */
+  @keyframes quantum-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .quantum-pulse {
+    animation: quantum-pulse 2s ease-in-out infinite;
+  }
+
+  /* Neon text glow */
+  .neon-text {
+    text-shadow: 0 0 5px currentColor,
+                 0 0 10px currentColor,
+                 0 0 15px currentColor;
+  }
+
+  /* Glassmorphism effect */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Quantum circuit lines */
+  .circuit-lines {
+    background-image: 
+      linear-gradient(90deg, rgba(120, 119, 198, 0.1) 1px, transparent 1px),
+      linear-gradient(rgba(120, 119, 198, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary)/0.7));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, hsl(var(--primary)/0.8), hsl(var(--primary)/0.5));
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  .quantum-card {
+    @apply bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-sm border border-primary/20 shadow-xl;
+    background-image: radial-gradient(circle at 50% 50%, rgba(120, 119, 198, 0.05) 0%, transparent 50%);
+  }
+
+  .quantum-button {
+    @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg border border-primary/20;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .quantum-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(120, 119, 198, 0.3);
+  }
+
+  .quantum-input {
+    @apply bg-background/50 border-primary/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20;
+    backdrop-filter: blur(8px);
+  }
+
+  .quantum-nav-item {
+    @apply relative overflow-hidden transition-all duration-300;
+  }
+
+  .quantum-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(120, 119, 198, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .quantum-nav-item:hover::before {
+    left: 100%;
+  }
+
+  .status-indicator {
+    @apply relative;
+  }
+
+  .status-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: quantum-pulse 2s ease-in-out infinite;
+  }
+
+  .status-online::after {
+    background: #10b981;
+  }
+
+  .status-processing::after {
+    background: #f59e0b;
+  }
+
+  .status-error::after {
+    background: #ef4444;
   }
 }
