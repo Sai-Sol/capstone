@@ -1,3 +1,5 @@
+'use client';
+
 export const HARDCODED_USERS = [
   { name: "SAI", email: "admin@example.com", password: "456", role: "admin" },
   { name: "Mani", email: "p1@example.com", password: "123", role: "user" },
