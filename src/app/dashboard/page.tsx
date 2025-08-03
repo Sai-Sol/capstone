@@ -23,7 +23,7 @@ export default function DashboardHomePage() {
     { label: "Network Latency", value: "< 1ms", icon: Zap, color: "text-green-400" },
     { label: "Active Nodes", value: "2,847", icon: Globe, color: "text-blue-400" },
     { label: "Security Level", value: "Military", icon: Lock, color: "text-purple-400" },
-    { label: "Online Users", value: "1,234", icon: Users, color: "text-pink-400" },
+    { label: "Gas Efficiency", value: "99.8%", icon: Activity, color: "text-pink-400" },
   ];
 
   return (

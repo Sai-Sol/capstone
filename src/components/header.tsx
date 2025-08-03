@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, UserCircle, Atom, Home, PlusSquare, History, FileText, Zap, Menu, X } from "lucide-react";
+import { LogOut, UserCircle, Atom, Home, PlusSquare, History, FileText, Zap, Menu, X, ArrowLeftRight, Search } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import WalletConnectButton from "./wallet-connect-button";
@@ -19,6 +19,7 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import MobileSearch from "./mobile-search";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -26,6 +27,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -37,7 +39,9 @@ export default function Header() {
     { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/create", label: "Quantum Lab", icon: PlusSquare },
     { href: "/dashboard/history", label: "Job History", icon: History },
-    { href: "/dashboard/contract", label: "Blockchain", icon: FileText },
+    { href: "/dashboard/blockchain", label: "Blockchain Hub", icon: FileText },
+    { href: "/dashboard/defi", label: "DeFi Portal", icon: Zap },
+    { href: "/dashboard/bridge", label: "Cross-Chain", icon: ArrowLeftRight },
   ];
 
   return (
@@ -78,6 +82,16 @@ export default function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-3">
+          {/* Search Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileSearchOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+          
           <ThemeToggle />
           <WalletConnectButton />
           
@@ -128,6 +142,11 @@ export default function Header() {
           )}
         </div>
       </div>
+      
+      <MobileSearch 
+        isOpen={mobileSearchOpen} 
+        onClose={() => setMobileSearchOpen(false)} 
+      />
 
       {/* Mobile Navigation */}
       <AnimatePresence>
