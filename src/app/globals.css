@@ -234,4 +234,31 @@
   .status-error::after {
     background: #ef4444;
   }
+
+  /* Mobile-first responsive improvements */
+  @media (max-width: 768px) {
+    .quantum-card {
+      @apply mx-2;
+    }
+    
+    .quantum-button {
+      @apply h-12 text-base;
+    }
+    
+    .quantum-input {
+      @apply h-12 text-base;
+    }
+  }
+  
+  /* Touch-friendly improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .quantum-nav-item:hover::before {
+      left: 0;
+      opacity: 0.1;
+    }
+    
+    .quantum-button:hover {
+      transform: none;
+    }
+  }
 }
