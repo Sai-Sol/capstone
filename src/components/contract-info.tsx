@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Check, Clipboard, FileText, ExternalLink, Shield, Zap, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+
+const MotionDiv = dynamic(
+  () => import('framer-motion').then(mod => mod.motion.div),
+  { ssr: false }
+);
 
 export default function ContractInfo() {
   const [copied, setCopied] = useState(false);
@@ -31,7 +36,7 @@ export default function ContractInfo() {
 
   return (
     <div className="space-y-8 p-6">
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -43,9 +48,9 @@ export default function ContractInfo() {
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Explore the smart contract powering our quantum-blockchain integration
         </p>
-      </motion.div>
+      </MotionDiv>
 
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -120,7 +125,7 @@ export default function ContractInfo() {
               <h3 className="text-xl font-semibold text-primary">Smart Contract Features</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {contractFeatures.map((feature, index) => (
-                  <motion.div
+                  <MotionDiv
                     key={feature.label}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -130,7 +135,7 @@ export default function ContractInfo() {
                     <feature.icon className="h-8 w-8 text-primary mb-3" />
                     <h4 className="font-semibold text-primary mb-2">{feature.label}</h4>
                     <p className="text-sm text-muted-foreground">{feature.desc}</p>
-                  </motion.div>
+                  </MotionDiv>
                 ))}
               </div>
             </div>
@@ -195,7 +200,7 @@ export default function ContractInfo() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }
