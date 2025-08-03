@@ -1,5 +1,9 @@
 
-import ContractInfo from "@/components/contract-info";
+import dynamic from 'next/dynamic';
+
+const ContractInfo = dynamic(() => import('@/components/contract-info'), { 
+    ssr: false 
+});
 
 export default function ContractPage() {
     return (
