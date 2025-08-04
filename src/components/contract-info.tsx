@@ -138,7 +138,7 @@ export default function ContractInfo() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`}
+                href={`https://megaexplorer.com/address/${CONTRACT_ADDRESS}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1"
@@ -152,7 +152,7 @@ export default function ContractInfo() {
               <Button 
                 variant="outline" 
                 className="flex-1 h-12 border-primary/20 hover:bg-primary/10"
-                onClick={() => window.open('https://docs.megaeth.io/', '_blank')}
+                onClick={() => window.open('https://megaeth.io/docs', '_blank')}
               >
                 <FileText className="mr-2 h-5 w-5" />
                 Network Documentation

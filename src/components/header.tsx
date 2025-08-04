@@ -40,8 +40,6 @@ export default function Header() {
     { href: "/dashboard/create", label: "Quantum Lab", icon: PlusSquare },
     { href: "/dashboard/history", label: "Job History", icon: History },
     { href: "/dashboard/blockchain", label: "Blockchain Hub", icon: FileText },
-    { href: "/dashboard/defi", label: "DeFi Portal", icon: Zap },
-    { href: "/dashboard/bridge", label: "Cross-Chain", icon: ArrowLeftRight },
   ];
 
   return (

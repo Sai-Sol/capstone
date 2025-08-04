@@ -13,17 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { Wallet, Copy, ExternalLink, AlertTriangle, CheckCircle, Zap } from "lucide-react";
+import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
 import { MEGAETH_TESTNET } from "@/lib/constants";
 
 export default function WalletConnectButton() {
-  const { isConnected, address, balance, chainId, connectWallet, disconnectWallet } = useWallet();
+  const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
   const { toast } = useToast();
-  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
-
-  useEffect(() => {
-    setIsCorrectNetwork(chainId === MEGAETH_TESTNET.chainId);
-  }, [chainId]);
 
   const copyAddress = () => {
     if (address) {
@@ -32,38 +27,6 @@ export default function WalletConnectButton() {
         title: "Address Copied",
         description: "Wallet address copied to clipboard",
       });
-    }
-  };
-
-  const switchToMegaETH = async () => {
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: MEGAETH_TESTNET.chainId }],
-        });
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [MEGAETH_TESTNET],
-            });
-          } catch (addError) {
-            toast({
-              variant: "destructive",
-              title: "Network Error",
-              description: "Failed to add MegaETH Testnet to MetaMask",
-            });
-          }
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Network Switch Failed",
-            description: "Failed to switch to MegaETH Testnet",
-          });
-        }
-      }
     }
   };
 
@@ -84,7 +47,7 @@ export default function WalletConnectButton() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="bg-background/50 backdrop-blur-sm border-primary/20 shadow-lg">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isCorrectNetwork ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <Wallet className="h-4 w-4" />
             <span className="font-mono text-sm">
               {address?.slice(0, 6)}...{address?.slice(-4)}
@@ -98,17 +61,10 @@ export default function WalletConnectButton() {
             <div className="flex items-center gap-2">
               <Wallet className="h-4 w-4" />
               <span className="font-semibold">Wallet Connected</span>
-              {isCorrectNetwork ? (
-                <Badge variant="outline" className="text-green-600 border-green-600">
-                  <CheckCircle className="mr-1 h-3 w-3" />
-                  MegaETH
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-red-600 border-red-600">
-                  <AlertTriangle className="mr-1 h-3 w-3" />
-                  Wrong Network
-                </Badge>
-              )}
+              <Badge variant="outline" className="text-green-600 border-green-600">
+                <CheckCircle className="mr-1 h-3 w-3" />
+                Connected
+              </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Address</p>
@@ -129,16 +85,9 @@ export default function WalletConnectButton() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        {!isCorrectNetwork && (
-          <DropdownMenuItem onClick={switchToMegaETH} className="cursor-pointer">
-            <Zap className="mr-2 h-4 w-4 text-primary" />
-            <span>Switch to MegaETH Testnet</span>
-          </DropdownMenuItem>
-        )}
-        
         <DropdownMenuItem asChild>
           <a
-            href={`https://www.megaexplorer.xyz/address/${address}`}
+            href={`https://megaexplorer.com/address/${address}`}
             target="_blank"
             rel="noopener noreferrer"
             className="cursor-pointer"
