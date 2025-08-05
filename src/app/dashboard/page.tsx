@@ -209,7 +209,7 @@ export default function DashboardHomePage() {
                   <h3 className="font-semibold text-green-100">2. Blockchain Logging</h3>
                 </div>
                 <p className="text-sm text-green-200/80">
-                  Results are cryptographically hashed and permanently stored on MegaETH's immutable ledger with enterprise-grade security.
+                  Results are cryptographically hashed and permanently stored on MegaETH's immutable ledger with bank-grade security protocols.
                 </p>
               </motion.div>
               
@@ -251,7 +251,7 @@ export default function DashboardHomePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>High-throughput L2 blockchain for enterprise scale</span>
+                  <span>High-performance L2 blockchain for global scale</span>
                 </div>
               </div>
             </div>

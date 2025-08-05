@@ -235,12 +235,16 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Demo credentials */}
+            {/* Security Notice */}
             <div className="p-4 rounded-lg bg-muted/30 border border-primary/10">
-              <p className="text-xs text-muted-foreground mb-2 font-medium">Demo Credentials:</p>
-              <div className="space-y-1 text-xs font-mono">
-                <p><span className="text-primary">Admin:</span> admin@example.com / 456</p>
-                <p><span className="text-primary">User:</span> p1@example.com / 123</p>
+              <div className="flex items-start gap-3">
+                <Shield className="h-5 w-5 text-primary mt-0.5" />
+                <div>
+                  <p className="text-xs font-medium text-primary mb-1">Secure Access</p>
+                  <p className="text-xs text-muted-foreground">
+                    Your connection is protected with enterprise-grade encryption and multi-factor authentication.
+                  </p>
+                </div>
               </div>
             </div>
           </CardContent>

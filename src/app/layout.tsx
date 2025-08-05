@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { WalletProvider } from "@/contexts/wallet-context";
 import { Toaster } from "@/components/ui/toaster";
+import RealTimeNotifications from "@/components/real-time-notifications";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
             <WalletProvider>
               {children}
               <Toaster />
+              <RealTimeNotifications />
             </WalletProvider>
           </AuthProvider>
         </ThemeProvider>
