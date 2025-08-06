@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Code, 
-  Decode, 
+  RefreshCw,
   FileText, 
   Copy,
   CheckCircle,
@@ -191,12 +191,12 @@ export default function AdminDecoder() {
             >
               {isDecoding ? (
                 <>
-                  <Decode className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                   Decoding...
                 </>
               ) : (
                 <>
-                  <Decode className="mr-2 h-4 w-4" />
+                  <RefreshCw className="mr-2 h-4 w-4" />
                   Decode Data
                 </>
               )}
