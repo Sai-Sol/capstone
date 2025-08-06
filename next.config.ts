@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
   },
   env: {
     SERVICE_ACCOUNT_PRIVATE_KEY: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   }
 };
 
