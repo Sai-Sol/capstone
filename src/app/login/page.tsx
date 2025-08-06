@@ -247,6 +247,8 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
+
+            {/* Demo Credentials Removed */}
           </CardContent>
         </Card>
       </motion.div>

@@ -1,8 +1,8 @@
 'use client';
 
 export const HARDCODED_USERS = [
-  { name: "SAI", email: "admin@example.com", password: "456", role: "admin" },
-  { name: "Mani", email: "p1@example.com", password: "123", role: "user" },
+  { name: "Admin User", email: "admin@quantumchain.io", password: "admin123", role: "admin", country: "United States" },
+  { name: "Test User", email: "user@quantumchain.io", password: "user123", role: "user", country: "Canada" },
 ];
 
 export const CONTRACT_ADDRESS = "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2";

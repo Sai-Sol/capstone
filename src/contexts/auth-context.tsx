@@ -7,8 +7,6 @@ type User = {
   name: string;
   email: string;
   role: "admin" | "user";
-  firstName?: string;
-  lastName?: string;
   country?: string;
 };
 
@@ -18,8 +16,7 @@ interface AuthContextType {
   login: (credentials: { email: string; password: string }) => Promise<User | null>;
   logout: () => void;
   register: (credentials: { 
-    firstName: string; 
-    lastName: string; 
+    name: string; 
     email: string; 
     password: string; 
     country: string; 
@@ -60,8 +57,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           name: foundUser.name, 
           email: foundUser.email, 
           role: foundUser.role,
-          firstName: foundUser.firstName,
-          lastName: foundUser.lastName,
           country: foundUser.country
         };
         localStorage.setItem("quantum-user", JSON.stringify(userToStore));
@@ -75,8 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const register = useCallback(async (credentials: { 
-    firstName: string; 
-    lastName: string; 
+    name: string; 
     email: string; 
     password: string; 
     country: string; 
@@ -90,14 +84,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error("User already exists.");
       }
 
-      const name = `${credentials.firstName} ${credentials.lastName}`;
       const newUser = { 
         ...credentials, 
-        name, 
         role: "user" as const,
-        firstName: credentials.firstName,
-        lastName: credentials.lastName,
-        country: credentials.country
       };
       users.push(newUser);
       localStorage.setItem("quantum-users-db", JSON.stringify(users));
