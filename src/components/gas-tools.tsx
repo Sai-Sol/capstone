@@ -90,14 +90,39 @@ export default function GasTools() {
 
   const refreshGasPrices = async () => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setGasPrices(prev => ({
-      slow: { ...prev.slow, price: 8 + Math.random() * 4 },
-      standard: { ...prev.standard, price: 12 + Math.random() * 6 },
-      fast: { ...prev.fast, price:18 + Math.random() * 8 },
-      instant: { ...prev.instant, price: 24 + Math.random() * 10 }
-    }));
+    
+    try {
+      // Simulate realistic gas price fluctuations
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const baseGas = 10 + Math.random() * 15; // Base gas between 10-25 Gwei
+      const networkCongestion = Math.random(); // 0-1 congestion factor
+      
+      setGasPrices({
+        slow: { 
+          price: baseGas * (0.7 + networkCongestion * 0.2), 
+          time: networkCongestion > 0.7 ? "~8 min" : "~5 min" 
+        },
+        standard: { 
+          price: baseGas * (1 + networkCongestion * 0.3), 
+          time: networkCongestion > 0.7 ? "~4 min" : "~2 min" 
+        },
+        fast: { 
+          price: baseGas * (1.4 + networkCongestion * 0.4), 
+          time: networkCongestion > 0.7 ? "~1 min" : "~30 sec" 
+        },
+        instant: { 
+          price: baseGas * (2 + networkCongestion * 0.5), 
+          time: "~15 sec" 
+        }
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: "Failed to fetch latest gas prices."
+      });
+    }
     setIsLoading(false);
     toast({
       title: "Gas Prices Updated",

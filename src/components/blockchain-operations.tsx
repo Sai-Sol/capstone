@@ -143,8 +143,23 @@ export default function BlockchainOperations() {
     
     setIsLoading(true);
     try {
-      // Simulate balance refresh
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Get fresh balance from provider
+      const freshBalance = await provider.getBalance(address!);
+      const formattedBalance = (Number(freshBalance) / 1e18).toFixed(4);
+      
+      // Update portfolio value simulation
+      const portfolioIncrease = (Math.random() * 2 - 1) * 100;
+      setPortfolioValue(prev => {
+        const currentValue = parseFloat(prev.replace(',', ''));
+        const newValue = Math.max(0, currentValue + portfolioIncrease);
+        return newValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      });
+      
+      setPortfolioChange(prev => {
+        const change = (Math.random() * 10 - 5).toFixed(2);
+        return `${parseFloat(change) >= 0 ? '+' : ''}${change}`;
+      });
+      
       toast({
         title: "Balance Updated",
         description: "Your wallet balance has been refreshed."

@@ -247,6 +247,26 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
+
+            {/* Demo Credentials */}
+            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
+              <div className="flex items-start gap-3">
+                <Atom className="h-5 w-5 text-blue-400 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-blue-400 mb-2">Demo Access</p>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Admin:</span>
+                      <code className="text-blue-300 bg-blue-500/10 px-2 py-1 rounded">admin@example.com / 456</code>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">User:</span>
+                      <code className="text-blue-300 bg-blue-500/10 px-2 py-1 rounded">p1@example.com / 123</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </motion.div>

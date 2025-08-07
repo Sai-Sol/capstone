@@ -34,6 +34,10 @@ import AdminDecoder from "@/components/admin-decoder";
 import BlockchainOperations from "@/components/blockchain-operations";
 import BlockchainAIAssistant from "@/components/blockchain-ai-assistant";
 import SmartContractInteractions from "@/components/smart-contract-interactions";
+import PortfolioTracker from "@/components/portfolio-tracker";
+import TransactionAnalyzer from "@/components/transaction-analyzer";
+import NetworkMonitor from "@/components/network-monitor";
+import DeFiDashboard from "@/components/defi-dashboard";
 
 export default function BlockchainHubPage() {
   const { isConnected, address, balance, chainId } = useWallet();
@@ -127,10 +131,22 @@ export default function BlockchainHubPage() {
       </div>
 
       <Tabs defaultValue="monitor" className="w-full">
-        <TabsList className={`grid w-full ${user?.role === 'admin' ? 'grid-cols-7' : 'grid-cols-6'} bg-muted/30 h-14`}>
+        <TabsList className={`grid w-full ${user?.role === 'admin' ? 'grid-cols-10' : 'grid-cols-9'} bg-muted/30 h-14`}>
           <TabsTrigger value="monitor" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Activity className="mr-2 h-4 w-4" />
             Monitor
+          </TabsTrigger>
+          <TabsTrigger value="portfolio" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <PieChart className="mr-2 h-4 w-4" />
+            Portfolio
+          </TabsTrigger>
+          <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Analyzer
+          </TabsTrigger>
+          <TabsTrigger value="defi" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Coins className="mr-2 h-4 w-4" />
+            DeFi
           </TabsTrigger>
           <TabsTrigger value="operations" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Settings className="mr-2 h-4 w-4" />
@@ -161,85 +177,19 @@ export default function BlockchainHubPage() {
         </TabsList>
 
         <TabsContent value="monitor" className="mt-8">
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Real-time Transactions */}
-            <Card className="quantum-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  Live Transactions
-                </CardTitle>
-                <CardDescription>Real-time blockchain transaction feed</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {liveTransactions.map((tx, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-primary/10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-green-400 quantum-pulse" />
-                      <div>
-                        <p className="font-mono text-sm">{tx.hash}</p>
-                        <p className="text-xs text-muted-foreground">{tx.type} • {tx.value} ETH</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="default">Confirmed</Badge>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {Math.floor((Date.now() - tx.timestamp) / 1000)}s ago
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => copyToClipboard(tx.hash)}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-                {liveTransactions.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Waiting for live transactions...</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <NetworkMonitor />
+        </TabsContent>
 
-            {/* Network Health */}
-            <Card className="quantum-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  Network Health
-                </CardTitle>
-                <CardDescription>Real-time network status</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span>Network Congestion</span>
-                    <span className="text-green-400">Low (23%)</span>
-                  </div>
-                  <Progress value={23} className="h-2" />
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span>Validator Uptime</span>
-                    <span className="text-green-400">99.8%</span>
-                  </div>
-                  <Progress value={99.8} className="h-2" />
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span>Block Finality</span>
-                    <span className="text-green-400">2.1s avg</span>
-                  </div>
-                  <Progress value={85} className="h-2" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="portfolio" className="mt-8">
+          <PortfolioTracker />
+        </TabsContent>
+
+        <TabsContent value="analyzer" className="mt-8">
+          <TransactionAnalyzer />
+        </TabsContent>
+
+        <TabsContent value="defi" className="mt-8">
+          <DeFiDashboard />
         </TabsContent>
 
         <TabsContent value="operations" className="mt-8">
