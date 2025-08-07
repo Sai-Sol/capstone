@@ -31,7 +31,9 @@ import {
 import GasTools from "@/components/gas-tools";
 import ContractTools from "@/components/contract-tools";
 import AdminDecoder from "@/components/admin-decoder";
-import QuantumChatbot from "@/components/quantum-chatbot";
+import BlockchainOperations from "@/components/blockchain-operations";
+import BlockchainAIAssistant from "@/components/blockchain-ai-assistant";
+import SmartContractInteractions from "@/components/smart-contract-interactions";
 
 export default function BlockchainHubPage() {
   const { isConnected, address, balance, chainId } = useWallet();
@@ -125,10 +127,14 @@ export default function BlockchainHubPage() {
       </div>
 
       <Tabs defaultValue="monitor" className="w-full">
-        <TabsList className={`grid w-full ${user?.role === 'admin' ? 'grid-cols-6' : 'grid-cols-5'} bg-muted/30 h-14`}>
+        <TabsList className={`grid w-full ${user?.role === 'admin' ? 'grid-cols-7' : 'grid-cols-6'} bg-muted/30 h-14`}>
           <TabsTrigger value="monitor" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Activity className="mr-2 h-4 w-4" />
             Monitor
+          </TabsTrigger>
+          <TabsTrigger value="operations" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Settings className="mr-2 h-4 w-4" />
+            Operations
           </TabsTrigger>
           <TabsTrigger value="gas" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Zap className="mr-2 h-4 w-4" />
@@ -142,9 +148,9 @@ export default function BlockchainHubPage() {
             <TrendingUp className="mr-2 h-4 w-4" />
             Analytics
           </TabsTrigger>
-          <TabsTrigger value="chatbot" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="ai-assistant" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Bot className="mr-2 h-4 w-4" />
-            Quantum AI
+            Blockchain AI
           </TabsTrigger>
           {user?.role === 'admin' && (
             <TabsTrigger value="decoder" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
@@ -236,12 +242,19 @@ export default function BlockchainHubPage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="operations" className="mt-8">
+          <BlockchainOperations />
+        </TabsContent>
+
         <TabsContent value="gas" className="mt-8">
           <GasTools />
         </TabsContent>
 
         <TabsContent value="contracts" className="mt-8">
-          <ContractTools />
+          <div className="space-y-8">
+            <SmartContractInteractions />
+            <ContractTools />
+          </div>
         </TabsContent>
 
         <TabsContent value="analytics" className="mt-8">
@@ -346,8 +359,8 @@ export default function BlockchainHubPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="chatbot" className="mt-8">
-          <QuantumChatbot />
+        <TabsContent value="ai-assistant" className="mt-8">
+          <BlockchainAIAssistant />
         </TabsContent>
 
         {user?.role === 'admin' && (

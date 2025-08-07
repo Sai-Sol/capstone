@@ -235,14 +235,14 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Security Notice */}
-            <div className="p-4 rounded-lg bg-muted/30 border border-primary/10">
+            {/* Professional Security Notice */}
+            <div className="p-4 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="text-xs font-medium text-primary mb-1">Secure Access</p>
+                  <p className="text-xs font-medium text-primary mb-1">Enterprise Security</p>
                   <p className="text-xs text-muted-foreground">
-                    Your connection is protected with enterprise-grade encryption and multi-factor authentication.
+                    Advanced encryption protocols ensure your quantum computing sessions remain secure and private.
                   </p>
                 </div>
               </div>
