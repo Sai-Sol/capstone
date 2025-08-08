@@ -1,7 +1,7 @@
 "use client";
 
-import AIAssistant from "@/components/ai-assistant";
+import AdvancedAIAssistant from "@/components/advanced-ai-assistant";
 
 export default function AIPage() {
-  return <AIAssistant />;
+  return <AdvancedAIAssistant />;
 }

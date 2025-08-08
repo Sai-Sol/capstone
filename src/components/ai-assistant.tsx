@@ -9,33 +9,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { 
+        response: "I'm a specialized AI assistant focused exclusively on technology topics. I can help you with programming, software development, AI/ML, blockchain, cybersecurity, cloud computing, and all tech-related subjects. Please ask me a technology-related question."
   Bot, 
   Send, 
   User, 
   Atom, 
   Zap, 
-  MessageSquare,
-  Lightbulb,
+    // Enhanced system prompt for technology focus
+    const systemPrompt = `You are an AI assistant specialized in technology topics. You provide expert guidance on programming, software development, AI/ML, blockchain, cybersecurity, cloud computing, and related technical subjects. Keep responses informative and technically accurate.`;
   Code,
-  BookOpen,
-  Cpu,
-  Shield,
-  RefreshCw,
-  AlertTriangle
-} from "lucide-react";
-
-interface Message {
-  id: string;
-  type: 'user' | 'bot';
-  content: string;
-  timestamp: number;
-  isError?: boolean;
-}
-
-interface QuickAction {
-  label: string;
-  query: string;
   icon: any;
   category: string;
 }
@@ -55,12 +37,12 @@ export default function AIAssistant() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const quickActions: QuickAction[] = [
-    { label: "Platform Overview", query: "What is QuantumChain and how does it work?", icon: Atom, category: "platform" },
-    { label: "Quantum Providers", query: "Tell me about the supported quantum computing providers", icon: Cpu, category: "providers" },
-    { label: "Blockchain Security", query: "How does blockchain ensure quantum computation security?", icon: Shield, category: "security" },
-    { label: "QASM Programming", query: "How do I write QASM code for quantum circuits?", icon: Code, category: "programming" },
-    { label: "Getting Started", query: "How do I submit my first quantum job?", icon: BookOpen, category: "tutorial" },
-    { label: "Smart Contracts", query: "Explain the QuantumJobLogger smart contract", icon: Zap, category: "blockchain" }
+    { label: "Programming Fundamentals", query: "Explain modern programming best practices and design patterns", icon: Code, category: "programming" },
+    { label: "AI & Machine Learning", query: "What are the latest trends in AI and machine learning?", icon: Brain, category: "ai" },
+    { label: "Cloud Architecture", query: "How do I design scalable cloud infrastructure?", icon: Cloud, category: "cloud" },
+    { label: "Cybersecurity", query: "What are the essential cybersecurity practices for applications?", icon: Shield, category: "security" },
+    { label: "Database Design", query: "Database optimization and design patterns", icon: Database, category: "database" },
+    { label: "DevOps Practices", query: "Modern DevOps and CI/CD best practices", icon: Settings, category: "devops" }
   ];
 
   const handleSendMessage = async () => {

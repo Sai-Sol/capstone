@@ -301,4 +301,46 @@
       transform: none;
     }
   }
+
+  /* Enhanced animations for world-class UI */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(45deg, transparent, rgba(120, 119, 198, 0.1), transparent);
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .tech-glow {
+    box-shadow: 
+      0 0 20px rgba(120, 119, 198, 0.3),
+      0 0 40px rgba(120, 119, 198, 0.2),
+      0 0 60px rgba(120, 119, 198, 0.1);
+  }
+
+  .message-animation {
+    animation: messageSlideIn 0.3s ease-out;
+  }
+
+  @keyframes messageSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 }

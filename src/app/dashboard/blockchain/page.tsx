@@ -28,6 +28,7 @@ import {
   Send,
   Bot
 } from "lucide-react";
+import { Coins } from "lucide-react";
 import GasTools from "@/components/gas-tools";
 import ContractTools from "@/components/contract-tools";
 import AdminDecoder from "@/components/admin-decoder";

@@ -22,6 +22,15 @@ import {
   TrendingUp
 } from "lucide-react";
 
+function getStatusColor(status: string) {
+  switch (status) {
+    case "confirmed": return "text-green-400 border-green-400/50";
+    case "pending": return "text-yellow-400 border-yellow-400/50";
+    case "failed": return "text-red-400 border-red-400/50";
+    default: return "text-gray-400 border-gray-400/50";
+  }
+}
+
 interface Transaction {
   hash: string;
   type: string;

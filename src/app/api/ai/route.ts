@@ -3,21 +3,55 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-// Project-related keywords for filtering
-const PROJECT_KEYWORDS = [
-  'quantum', 'blockchain', 'quantumchain', 'megaeth', 'smart contract',
-  'qasm', 'qubit', 'bell state', 'entanglement', 'superposition',
-  'grover', 'shor', 'algorithm', 'circuit', 'gate', 'measurement',
-  'decoherence', 'teleportation', 'cryptography', 'ethereum',
-  'metamask', 'wallet', 'transaction', 'gas', 'mining', 'dapp',
-  'web3', 'defi', 'nft', 'token', 'solidity', 'provider',
-  'google willow', 'ibm condor', 'amazon braket', 'computing',
-  'tamper-proof', 'immutable', 'verification', 'logging'
+// Technology-related keywords for filtering
+const TECH_KEYWORDS = [
+  // Programming & Development
+  'programming', 'software', 'development', 'code', 'coding', 'algorithm', 'data structure',
+  'javascript', 'typescript', 'python', 'java', 'c++', 'rust', 'go', 'swift', 'kotlin',
+  'react', 'vue', 'angular', 'node', 'express', 'django', 'flask', 'spring', 'laravel',
+  
+  // Web & Mobile
+  'web', 'frontend', 'backend', 'fullstack', 'html', 'css', 'responsive', 'mobile',
+  'app', 'application', 'ui', 'ux', 'design', 'framework', 'library', 'api', 'rest',
+  'graphql', 'websocket', 'pwa', 'spa', 'ssr', 'ssg', 'jamstack',
+  
+  // Database & Storage
+  'database', 'sql', 'nosql', 'mongodb', 'postgresql', 'mysql', 'redis', 'elasticsearch',
+  'orm', 'query', 'index', 'schema', 'migration', 'backup', 'replication',
+  
+  // Cloud & Infrastructure
+  'cloud', 'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'container', 'microservices',
+  'serverless', 'lambda', 'devops', 'ci/cd', 'deployment', 'infrastructure', 'scaling',
+  'load balancer', 'cdn', 'vpc', 'ec2', 's3', 'rds',
+  
+  // AI & Machine Learning
+  'ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'neural network',
+  'tensorflow', 'pytorch', 'scikit-learn', 'nlp', 'computer vision', 'reinforcement learning',
+  'transformer', 'gpt', 'bert', 'llm', 'model', 'training', 'inference',
+  
+  // Blockchain & Crypto
+  'blockchain', 'cryptocurrency', 'bitcoin', 'ethereum', 'smart contract', 'solidity',
+  'web3', 'defi', 'nft', 'token', 'wallet', 'metamask', 'gas', 'mining', 'consensus',
+  'proof of stake', 'proof of work', 'layer 2', 'rollup',
+  
+  // Security
+  'security', 'cybersecurity', 'encryption', 'authentication', 'authorization', 'oauth',
+  'jwt', 'ssl', 'tls', 'firewall', 'vulnerability', 'penetration testing', 'owasp',
+  'xss', 'sql injection', 'csrf', 'https',
+  
+  // Quantum Computing
+  'quantum', 'qubit', 'superposition', 'entanglement', 'quantum computing', 'qasm',
+  'quantum algorithm', 'shor', 'grover', 'quantum gate', 'quantum circuit',
+  
+  // General Tech
+  'technology', 'tech', 'computer', 'computing', 'system', 'architecture', 'performance',
+  'optimization', 'testing', 'debugging', 'version control', 'git', 'github', 'open source',
+  'agile', 'scrum', 'methodology', 'best practices', 'design patterns'
 ];
 
-function isProjectRelated(query: string): boolean {
+function isTechRelated(query: string): boolean {
   const lowerQuery = query.toLowerCase();
-  return PROJECT_KEYWORDS.some(keyword => 
+  return TECH_KEYWORDS.some(keyword => 
     lowerQuery.includes(keyword.toLowerCase())
   );
 }
@@ -33,36 +67,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if the query is project-related
-    if (!isProjectRelated(message)) {
+    // Check if the query is tech-related
+    if (!isTechRelated(message)) {
       return NextResponse.json({
-        response: "I can only answer questions related to the QuantumChain project, quantum computing, blockchain technology, and our platform features. Please ask me something about quantum algorithms, blockchain integration, smart contracts, or our supported quantum providers (Google Willow, IBM Condor, Amazon Braket)."
+        response: "I'm a specialized AI assistant focused exclusively on technology topics. I can help you with:\n\n• Programming and software development\n• AI and machine learning\n• Blockchain and cryptocurrency\n• Cloud computing and DevOps\n• Cybersecurity and system architecture\n• Web and mobile development\n• Database design and optimization\n• Quantum computing\n\nPlease ask me a technology-related question, and I'll provide detailed, expert-level guidance."
       });
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    // Enhanced system prompt with project context
-    const systemPrompt = `You are an AI assistant specialized in the QuantumChain project - a blockchain-based quantum computing platform. 
+    // Enhanced system prompt for technology focus
+    const systemPrompt = `You are an advanced AI assistant specialized exclusively in technology topics. You are an expert in:
 
-    Key project details:
-    - QuantumChain combines quantum computing with blockchain for tamper-proof quantum job logging
-    - Supports Google Willow (105 qubits), IBM Condor (1121 qubits), and Amazon Braket (256 qubits)
-    - Uses MegaETH L2 blockchain for immutable logging with contract address 0xd1471126F18d76be253625CcA75e16a0F1C5B3e2
-    - Features include quantum job submission, QASM programming, blockchain verification, gas optimization
-    - Built with Next.js, TypeScript, Tailwind CSS, Ethers.js, and MetaMask integration
-    - Provides real-time monitoring, priority processing, and cross-chain bridging
-    - Includes DeFi features like staking, yield farming, and token swapping
+    **Core Technology Areas:**
+    • Programming languages (JavaScript, Python, Java, C++, Rust, Go, Swift, Kotlin, etc.)
+    • Web development (React, Vue, Angular, Node.js, Django, Spring Boot, etc.)
+    • Mobile development (React Native, Flutter, iOS, Android)
+    • Database technologies (SQL, NoSQL, graph databases, time-series)
+    • Cloud computing (AWS, Azure, GCP, serverless, containers)
+    • DevOps and CI/CD (Docker, Kubernetes, Jenkins, GitHub Actions)
+    • Cybersecurity (encryption, authentication, penetration testing, OWASP)
+    • AI and Machine Learning (TensorFlow, PyTorch, neural networks, NLP, computer vision)
+    • Blockchain and cryptocurrency (Ethereum, smart contracts, DeFi, Web3)
+    • Quantum computing (qubits, quantum algorithms, quantum gates, QASM)
+    • System architecture and design patterns
+    • Performance optimization and scalability
+    • Software testing and quality assurance
 
-    Answer questions about:
-    - Quantum computing concepts (qubits, gates, algorithms, circuits)
-    - Blockchain technology and smart contracts
-    - QuantumChain platform features and usage
-    - Supported quantum providers and their capabilities
-    - QASM programming and quantum algorithms
-    - Platform security and verification methods
+    **Response Guidelines:**
+    • Provide detailed, technical explanations with practical examples
+    • Include code snippets when relevant
+    • Mention best practices and common pitfalls
+    • Suggest tools, frameworks, and resources
+    • Explain complex concepts in an accessible way
+    • Focus on current industry standards and emerging trends
+    • Include performance and security considerations
+    • Provide step-by-step guidance when appropriate
 
-    Keep responses informative, technical when appropriate, and focused on the project context.`;
+    **Restrictions:**
+    • ONLY answer technology-related questions
+    • Do NOT discuss non-technical topics (politics, entertainment, personal advice, etc.)
+    • If asked about non-tech topics, politely redirect to technology subjects
+    • Maintain focus on practical, actionable technical guidance
+
+    You are knowledgeable about the latest developments in technology and can provide expert-level guidance on any technical topic.`;
 
     const fullPrompt = `${systemPrompt}\n\nUser question: ${message}`;
 
