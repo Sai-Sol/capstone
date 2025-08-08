@@ -32,9 +32,9 @@ import { motion } from "framer-motion";
 const formSchema = z.object({
   name: z.string().min(2, { message: "Full name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
+  country: z.string().min(1, { message: "Please select your country." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string().min(6, { message: "Please confirm your password." }),
-  country: z.string().min(1, { message: "Please select your country." }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -204,11 +204,11 @@ export default function RegisterPage() {
                     <FormItem>
                       <FormLabel className="text-sm font-medium">Country</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
+                      <FormControl>
                           <SelectTrigger className="quantum-input h-12">
                             <SelectValue placeholder="Select your country" />
                           </SelectTrigger>
-                        </FormControl>
+                      </FormControl>
                         <SelectContent className="max-h-60">
                           {countries.map((country) => (
                             <SelectItem key={country} value={country}>
@@ -228,14 +228,14 @@ export default function RegisterPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">Password</FormLabel>
-                      <FormControl>
+                        <FormControl>
                         <Input 
                           type="password" 
                           placeholder="••••••••••••" 
                           className="quantum-input h-12"
                           {...field} 
                         />
-                      </FormControl>
+                        </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -259,7 +259,7 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                
+
                 <Button 
                   type="submit" 
                   className="w-full h-12 quantum-button font-semibold text-base" 

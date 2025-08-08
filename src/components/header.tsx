@@ -41,8 +41,6 @@ export default function Header() {
     { href: "/dashboard/simulator", label: "Simulator", icon: Cpu },
     { href: "/dashboard/history", label: "Job History", icon: History },
     { href: "/dashboard/blockchain", label: "Blockchain Hub", icon: FileText },
-    { href: "/dashboard/trading", label: "Trading", icon: TrendingUp },
-    { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
     { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/dashboard/ai", label: "AI Assistant", icon: MessageSquare },
   ];

@@ -19,7 +19,8 @@ import {
   AlertTriangle,
   DollarSign,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Activity
 } from "lucide-react";
 
 function getStatusColor(status: string) {
@@ -48,8 +49,6 @@ export default function BlockchainOperations() {
   const [isLoading, setIsLoading] = useState(false);
   const [sendAmount, setSendAmount] = useState("");
   const [recipientAddress, setRecipientAddress] = useState("");
-  const [portfolioValue, setPortfolioValue] = useState("12,450.67");
-  const [portfolioChange, setPortfolioChange] = useState("+5.23");
 
   // Simulate transaction history
   useEffect(() => {
@@ -155,20 +154,6 @@ export default function BlockchainOperations() {
       // Get fresh balance from provider
       const freshBalance = await provider.getBalance(address!);
       const formattedBalance = (Number(freshBalance) / 1e18).toFixed(4);
-      
-      // Update portfolio value simulation
-      const portfolioIncrease = (Math.random() * 2 - 1) * 100;
-      setPortfolioValue(prev => {
-        const currentValue = parseFloat(prev.replace(',', ''));
-        const newValue = Math.max(0, currentValue + portfolioIncrease);
-        return newValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      });
-      
-      setPortfolioChange(prev => {
-        const change = (Math.random() * 10 - 5).toFixed(2);
-        return `${parseFloat(change) >= 0 ? '+' : ''}${change}`;
-      });
-      
       toast({
         title: "Balance Updated",
         description: "Your wallet balance has been refreshed."
@@ -249,11 +234,11 @@ export default function BlockchainOperations() {
             
             <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Portfolio Value</span>
-                <TrendingUp className="h-4 w-4 text-blue-400" />
+                <span className="text-sm text-muted-foreground">Network Status</span>
+                <Activity className="h-4 w-4 text-blue-400" />
               </div>
-              <p className="text-2xl font-bold text-blue-400">${portfolioValue}</p>
-              <p className="text-sm text-green-400">{portfolioChange}% (24h)</p>
+              <p className="text-2xl font-bold text-blue-400">Online</p>
+              <p className="text-sm text-green-400">MegaETH L2</p>
             </div>
           </div>
         </CardContent>

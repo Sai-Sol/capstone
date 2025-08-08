@@ -131,7 +131,7 @@ export default function BlockchainHubPage() {
       </div>
 
       <Tabs defaultValue="monitor" className="w-full">
-        <TabsList className={`grid w-full ${user?.role === 'admin' ? 'grid-cols-10' : 'grid-cols-9'} bg-muted/30 h-14`}>
+        <TabsList className={`grid w-full ${user?.role === 'admin' ? 'grid-cols-8' : 'grid-cols-7'} bg-muted/30 h-14`}>
           <TabsTrigger value="monitor" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Activity className="mr-2 h-4 w-4" />
             Monitor
@@ -139,10 +139,6 @@ export default function BlockchainHubPage() {
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <BarChart3 className="mr-2 h-4 w-4" />
             Analyzer
-          </TabsTrigger>
-          <TabsTrigger value="defi" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Coins className="mr-2 h-4 w-4" />
-            DeFi
           </TabsTrigger>
           <TabsTrigger value="operations" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Settings className="mr-2 h-4 w-4" />
@@ -155,10 +151,6 @@ export default function BlockchainHubPage() {
           <TabsTrigger value="contracts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Settings className="mr-2 h-4 w-4" />
             Contracts
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <TrendingUp className="mr-2 h-4 w-4" />
-            Analytics
           </TabsTrigger>
           <TabsTrigger value="ai-assistant" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Bot className="mr-2 h-4 w-4" />
@@ -180,10 +172,6 @@ export default function BlockchainHubPage() {
           <TransactionAnalyzer />
         </TabsContent>
 
-        <TabsContent value="defi" className="mt-8">
-          <DeFiDashboard />
-        </TabsContent>
-
         <TabsContent value="operations" className="mt-8">
           <BlockchainOperations />
         </TabsContent>
@@ -199,107 +187,6 @@ export default function BlockchainHubPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="analytics" className="mt-8">
-          <Card className="quantum-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Network Analytics
-              </CardTitle>
-              <CardDescription>Detailed network performance metrics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Network Performance Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">Avg Block Time</span>
-                      <Clock className="h-4 w-4 text-blue-400" />
-                    </div>
-                    <p className="text-2xl font-bold text-blue-400">2.1s</p>
-                    <p className="text-xs text-green-400">↓ 0.3s from yesterday</p>
-                  </Card>
-                  
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">Network Hashrate</span>
-                      <Zap className="h-4 w-4 text-yellow-400" />
-                    </div>
-                    <p className="text-2xl font-bold text-yellow-400">847 TH/s</p>
-                    <p className="text-xs text-green-400">↑ 12% from last week</p>
-                  </Card>
-                  
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">Active Validators</span>
-                      <Shield className="h-4 w-4 text-green-400" />
-                    </div>
-                    <p className="text-2xl font-bold text-green-400">2,847</p>
-                    <p className="text-xs text-green-400">↑ 23 new validators</p>
-                  </Card>
-                </div>
-
-                {/* Transaction Volume Chart */}
-                <Card className="p-6">
-                  <h4 className="font-semibold text-primary mb-4">Transaction Volume (24h)</h4>
-                  <div className="h-64 flex items-end justify-between gap-1">
-                    {Array.from({ length: 24 }, (_, i) => {
-                      const height = Math.random() * 80 + 20;
-                      return (
-                        <div
-                          key={i}
-                          className="bg-primary/20 hover:bg-primary/40 transition-colors rounded-t flex-1"
-                          style={{ height: `${height}%` }}
-                          title={`Hour ${i}: ${Math.floor(height * 100)} transactions`}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                    <span>00:00</span>
-                    <span>12:00</span>
-                    <span>24:00</span>
-                  </div>
-                </Card>
-
-                {/* Gas Price Trends */}
-                <Card className="p-6">
-                  <h4 className="font-semibold text-primary mb-4">Gas Price Distribution</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Low (< 10 Gwei)</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="w-1/4 h-full bg-green-400 rounded-full"></div>
-                        </div>
-                        <span className="text-sm font-mono">25%</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Medium (10-20 Gwei)</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="w-1/2 h-full bg-yellow-400 rounded-full"></div>
-                        </div>
-                        <span className="text-sm font-mono">50%</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">High (> 20 Gwei)</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="w-1/4 h-full bg-red-400 rounded-full"></div>
-                        </div>
-                        <span className="text-sm font-mono">25%</span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="ai-assistant" className="mt-8">
           <BlockchainAIAssistant />
