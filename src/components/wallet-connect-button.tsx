@@ -34,7 +34,7 @@ export default function WalletConnectButton() {
     return (
       <Button 
         onClick={connectWallet} 
-        className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg border border-primary/20"
+        className="quantum-button"
       >
         <Wallet className="mr-2 h-4 w-4" />
         Connect Wallet
@@ -47,7 +47,7 @@ export default function WalletConnectButton() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="bg-background/50 backdrop-blur-sm border-primary/20 shadow-lg">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-green-400 quantum-pulse" />
             <Wallet className="h-4 w-4" />
             <span className="font-mono text-sm">
               {address?.slice(0, 6)}...{address?.slice(-4)}
@@ -55,15 +55,15 @@ export default function WalletConnectButton() {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 bg-background/95 backdrop-blur-sm border-primary/20">
+      <DropdownMenuContent align="end" className="w-72 bg-background/95 backdrop-blur-sm border-primary/20">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center gap-2">
               <Wallet className="h-4 w-4" />
               <span className="font-semibold">Wallet Connected</span>
-              <Badge variant="outline" className="text-green-600 border-green-600">
+              <Badge variant="outline" className="text-green-400 border-green-400/50">
                 <CheckCircle className="mr-1 h-3 w-3" />
-                Connected
+                Online
               </Badge>
             </div>
             <div className="space-y-1">
@@ -78,7 +78,7 @@ export default function WalletConnectButton() {
             {balance && (
               <div>
                 <p className="text-xs text-muted-foreground">Balance</p>
-                <p className="font-mono text-sm font-semibold">{parseFloat(balance).toFixed(4)} ETH</p>
+                <p className="font-mono text-sm font-semibold text-green-400">{parseFloat(balance).toFixed(4)} ETH</p>
               </div>
             )}
           </div>
@@ -87,7 +87,7 @@ export default function WalletConnectButton() {
         
         <DropdownMenuItem asChild>
           <a
-            href={`https://megaexplorer.com/address/${address}`}
+            href={`https://www.megaexplorer.xyz/address/${address}`}
             target="_blank"
             rel="noopener noreferrer"
             className="cursor-pointer"
@@ -98,7 +98,7 @@ export default function WalletConnectButton() {
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={disconnectWallet} className="cursor-pointer text-red-600">
+        <DropdownMenuItem onClick={disconnectWallet} className="cursor-pointer text-red-400 hover:text-red-300">
           <Wallet className="mr-2 h-4 w-4" />
           <span>Disconnect</span>
         </DropdownMenuItem>

@@ -88,60 +88,60 @@ export default function AdvancedAIAssistant() {
 
   const quickActions: QuickAction[] = [
     { 
-      label: "Quantum Computing", 
+      label: "Quantum Basics", 
       query: "Explain quantum computing principles and applications", 
       icon: Atom, 
       category: "quantum",
-      description: "Learn about qubits, superposition, and quantum algorithms"
+      description: "Qubits, superposition, quantum algorithms"
     },
     { 
-      label: "Blockchain Development", 
+      label: "Blockchain Dev", 
       query: "How do I develop smart contracts and DApps?", 
       icon: Code, 
       category: "blockchain",
-      description: "Smart contracts, Web3, and decentralized applications"
+      description: "Smart contracts, Web3, DApps"
     },
     { 
       label: "AI & Machine Learning", 
       query: "What are the latest trends in AI and machine learning?", 
       icon: Brain, 
       category: "ai",
-      description: "Neural networks, deep learning, and AI frameworks"
+      description: "Neural networks, deep learning, AI"
     },
     { 
       label: "Cloud Architecture", 
       query: "Design scalable cloud infrastructure", 
       icon: Cloud, 
       category: "cloud",
-      description: "AWS, Azure, GCP, and microservices architecture"
+      description: "AWS, Azure, GCP, microservices"
     },
     { 
       label: "Cybersecurity", 
       query: "Best practices for application security", 
       icon: Shield, 
       category: "security",
-      description: "Security protocols, encryption, and threat prevention"
+      description: "Security, encryption, threat prevention"
     },
     { 
       label: "Mobile Development", 
       query: "Modern mobile app development strategies", 
       icon: Smartphone, 
       category: "mobile",
-      description: "React Native, Flutter, and native development"
+      description: "React Native, Flutter, native apps"
     },
     { 
       label: "Database Design", 
       query: "Database optimization and design patterns", 
       icon: Database, 
       category: "database",
-      description: "SQL, NoSQL, and database performance optimization"
+      description: "SQL, NoSQL, performance optimization"
     },
     { 
       label: "DevOps & CI/CD", 
       query: "DevOps best practices and automation", 
       icon: Settings, 
       category: "devops",
-      description: "Docker, Kubernetes, and deployment pipelines"
+      description: "Docker, Kubernetes, CI/CD pipelines"
     }
   ];
 

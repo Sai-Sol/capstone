@@ -338,7 +338,10 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
             {/* Job Input Tabs */}
             <Tabs 
               defaultValue="prompt" 
-              onValueChange={(value) => form.setValue('submissionType', value as "prompt" | "qasm")}
+              onValueChange={(value) => {
+                form.setValue('submissionType', value as "prompt" | "qasm");
+                form.trigger('submissionType');
+              }}
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-2 bg-muted/30 h-12">
@@ -367,13 +370,13 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                       <FormLabel className="text-base font-medium">Quantum Algorithm Description</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Describe your quantum computing task (e.g., 'Create a quantum circuit to demonstrate Bell state entanglement using Hadamard and CNOT gates')" 
+                          placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement" 
                           className="quantum-input min-h-[140px] font-mono text-sm resize-none" 
                           {...field} 
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-2">
-                        Tip: Be specific about the quantum algorithm, gates, and expected outcomes for better results.
+                        💡 Be specific about quantum gates and algorithms for optimal results
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -404,7 +407,7 @@ measure q -> c;`}
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-2">
-                        Enter your OpenQASM 2.0 or 3.0 quantum circuit code directly.
+                        💡 Enter OpenQASM 2.0/3.0 quantum circuit code
                       </div>
                       <FormMessage />
                     </FormItem>

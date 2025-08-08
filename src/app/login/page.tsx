@@ -167,6 +167,19 @@ export default function LoginPage() {
           <CardContent className="space-y-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                {/* Demo Credentials Helper */}
+                <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-blue-400 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-medium text-blue-400 mb-1">Demo Access</p>
+                      <p className="text-xs text-blue-200/80">
+                        Admin: admin@example.com / 456 • User: p1@example.com / 123
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <FormField
                   control={form.control}
                   name="email"
@@ -236,13 +249,13 @@ export default function LoginPage() {
             </div>
 
             {/* Professional Security Notice */}
-            <div className="p-4 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
               <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-primary mt-0.5" />
+                <Shield className="h-5 w-5 text-green-400 mt-0.5" />
                 <div>
-                  <p className="text-xs font-medium text-primary mb-1">Enterprise Security</p>
-                  <p className="text-xs text-muted-foreground">
-                    Advanced encryption protocols ensure your quantum computing sessions remain secure and private.
+                  <p className="text-xs font-medium text-green-400 mb-1">Secure Platform</p>
+                  <p className="text-xs text-green-200/80">
+                    Bank-grade encryption protects your quantum computing sessions.
                   </p>
                 </div>
               </div>

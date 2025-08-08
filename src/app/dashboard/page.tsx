@@ -8,6 +8,7 @@ import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Users } from
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
+import QuickStartGuide from "@/components/quick-start-guide";
 
 export default function DashboardHomePage() {
   const { user } = useAuth();
@@ -28,6 +29,9 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-8 p-6">
+      {/* Quick Start Guide */}
+      <QuickStartGuide />
+
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -98,31 +102,31 @@ export default function DashboardHomePage() {
         <div className="grid gap-6 md:grid-cols-3">
           {quantumProviders.map((provider, index) => (
             <motion.div
-              key={provider.name}
+                    <Atom size={32} className="quantum-pulse"/>
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-            >
+                  <h1 className="text-3xl font-bold font-headline tracking-tight bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent neon-text">
               <Card className="quantum-card hover:scale-105 transition-all duration-300">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-headline">{provider.name}</CardTitle>
+                  <p className="text-base text-muted-foreground mt-2">
+                    Access quantum computers through secure blockchain technology
                     <div className={`w-3 h-3 rounded-full ${provider.status === 'online' ? 'bg-green-400' : 'bg-red-400'} quantum-pulse`} />
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                      <Badge variant="outline" className="text-green-400 border-green-400/50">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Qubits Available</span>
+                        Connected
                     <span className="font-bold text-primary">{provider.qubits}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Latency</span>
-                    <span className="font-bold text-green-400">{provider.latency}</span>
+                        Connect Wallet
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Status</span>
                     <Badge variant="outline" className="text-green-400 border-green-400/50 capitalize">
-                      {provider.status}
+                      MegaETH L2
                     </Badge>
                   </div>
                 </CardContent>

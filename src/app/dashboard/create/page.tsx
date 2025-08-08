@@ -23,10 +23,10 @@ export default function CreateJobPage() {
                 className="text-center"
             >
                 <h1 className="text-4xl font-bold font-headline bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-                    Quantum Computing Laboratory
+                    Quantum Lab
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Execute quantum algorithms on world-class hardware and secure results on the blockchain
+                    Execute quantum algorithms and secure results on blockchain
                 </p>
             </motion.div>
 

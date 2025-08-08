@@ -2,6 +2,9 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -16,12 +19,19 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   env: {
     SERVICE_ACCOUNT_PRIVATE_KEY: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-  }
+  },
+  poweredByHeader: false,
 };
 
 export default nextConfig;

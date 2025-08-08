@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,15 +26,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserPlus, Globe, Shield, Zap } from "lucide-react";
+import { Loader2, UserPlus, Globe, Shield, Zap, Atom } from "lucide-react";
 import { motion } from "framer-motion";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Full name must be at least 2 characters." }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
   country: z.string().min(1, { message: "Please select your country." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  confirmPassword: z.string().min(6, { message: "Please confirm your password." }),
+  password: z.string().min(3, { message: "Password must be at least 3 characters." }),
+  confirmPassword: z.string().min(3, { message: "Please confirm your password." }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -44,15 +44,15 @@ const countries = [
   "United States", "Canada", "United Kingdom", "Germany", "France", "Japan", "Australia",
   "Brazil", "India", "China", "South Korea", "Singapore", "Netherlands", "Switzerland",
   "Sweden", "Norway", "Denmark", "Finland", "Austria", "Belgium", "Italy", "Spain",
-  "Portugal", "Ireland", "New Zealand", "South Africa", "Mexico", "Argentina", "Chile",
-  "Colombia", "Peru", "Venezuela", "Ecuador", "Uruguay", "Paraguay", "Bolivia",
   "Other"
 ];
+
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,6 +64,16 @@ export default function RegisterPage() {
       country: "",
     },
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && user) {
+      router.replace("/dashboard");
+    }
+  }, [mounted, user, router]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -86,9 +96,20 @@ export default function RegisterPage() {
     }
   }
 
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <div className="relative">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/20 animate-ping" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background particles */}
+      {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(15)].map((_, i) => (
           <motion.div
@@ -118,59 +139,42 @@ export default function RegisterPage() {
         className="relative z-10 w-full max-w-md"
       >
         <Card className="quantum-card shadow-2xl">
-          <CardHeader className="text-center pb-8">
+          <CardHeader className="text-center pb-6">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 260, damping: 20 }}
-              className="mx-auto mb-6"
+              className="mx-auto mb-4"
             >
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
                 <div className="relative bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
-                  <UserPlus className="h-12 w-12 text-white quantum-pulse" />
+                  <UserPlus className="h-10 w-10 text-white quantum-pulse" />
                 </div>
               </div>
             </motion.div>
             
-            <CardTitle className="text-4xl font-headline font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent neon-text">
+            <CardTitle className="text-3xl font-headline font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Join QuantumChain
             </CardTitle>
-            <CardDescription className="text-base mt-3 text-muted-foreground">
-              Create your account to access secure quantum computing
+            <CardDescription className="text-base mt-2 text-muted-foreground">
+              Create your account for secure quantum computing
             </CardDescription>
-            
-            {/* Feature highlights */}
-            <div className="flex justify-center gap-4 mt-6">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Zap className="h-4 w-4 text-primary" />
-                <span>Instant Access</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-4 w-4 text-primary" />
-                <span>Bank-Grade Security</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Globe className="h-4 w-4 text-primary" />
-                <span>Global Access</span>
-              </div>
-            </div>
           </CardHeader>
           
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                {/* Full Name Field */}
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Full Name</FormLabel>
+                      <FormLabel>Full Name</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="John Doe" 
-                          className="quantum-input h-12"
+                          className="quantum-input"
                           {...field} 
                         />
                       </FormControl>
@@ -184,11 +188,11 @@ export default function RegisterPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Email Address</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="john.doe@example.com" 
-                          className="quantum-input h-12"
+                          placeholder="john@example.com" 
+                          className="quantum-input"
                           {...field} 
                         />
                       </FormControl>
@@ -202,13 +206,13 @@ export default function RegisterPage() {
                   name="country"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Country</FormLabel>
+                      <FormLabel>Country</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                          <SelectTrigger className="quantum-input h-12">
-                            <SelectValue placeholder="Select your country" />
+                        <FormControl>
+                          <SelectTrigger className="quantum-input">
+                            <SelectValue placeholder="Select country" />
                           </SelectTrigger>
-                      </FormControl>
+                        </FormControl>
                         <SelectContent className="max-h-60">
                           {countries.map((country) => (
                             <SelectItem key={country} value={country}>
@@ -227,15 +231,15 @@ export default function RegisterPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Password</FormLabel>
-                        <FormControl>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="••••••••••••" 
-                          className="quantum-input h-12"
+                          placeholder="••••••••" 
+                          className="quantum-input"
                           {...field} 
                         />
-                        </FormControl>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -246,12 +250,12 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Confirm Password</FormLabel>
+                      <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="••••••••••••" 
-                          className="quantum-input h-12"
+                          placeholder="••••••••" 
+                          className="quantum-input"
                           {...field} 
                         />
                       </FormControl>
@@ -262,18 +266,18 @@ export default function RegisterPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-12 quantum-button font-semibold text-base" 
+                  className="w-full quantum-button font-semibold" 
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Creating Account...
                     </>
                   ) : (
                     <>
-                      <UserPlus className="mr-2 h-5 w-5" />
-                      Create Quantum Account
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Create Account
                     </>
                   )}
                 </Button>
@@ -291,20 +295,7 @@ export default function RegisterPage() {
                 </Link>
               </p>
             </div>
-
-            {/* Security Notice */}
-            <div className="p-4 rounded-lg bg-muted/30 border border-primary/10">
-              <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-xs font-medium text-primary mb-1">Enterprise Security</p>
-                  <p className="text-xs text-muted-foreground">
-                    Your data is protected with advanced encryption and secure authentication protocols.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          </CardContent>
         </Card>
       </motion.div>
     </div>

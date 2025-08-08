@@ -333,9 +333,9 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 flex-1">
                             <div className="flex items-center gap-3">
-                              <div className={`w-4 h-4 rounded-full ${getProviderConfig(job.jobType).color} quantum-pulse`} />
+                              <div className={`w-3 h-3 rounded-full ${getProviderConfig(job.jobType).color} quantum-pulse`} />
                               <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover:bg-primary/20 transition-colors">
-                                <Atom size={24} className="quantum-pulse" />
+                                <Atom size={20} className="quantum-pulse" />
                               </div>
                             </div>
                             
@@ -344,27 +344,26 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                                 <span className="text-primary font-mono text-sm font-bold">
                                   {generateJobId(job.txHash)}
                                 </span>
-                                <span className="text-muted-foreground">•</span>
-                                <span className="font-semibold text-lg truncate">
+                                <span className="font-semibold truncate">
                                   {getJobTitle(job)}
                                 </span>
                               </div>
                               
                               <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                                 <span className="font-mono">
-                                  {job.txHash.slice(0, 10)}...{job.txHash.slice(-8)}
+                                  {job.txHash.slice(0, 8)}...{job.txHash.slice(-6)}
                                 </span>
                                 <Badge variant="outline" className="text-green-400 border-green-400/50">
-                                  <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
-                                  Blockchain Verified
+                                  <CheckCircle className="mr-1 h-3 w-3" />
+                                  Verified
                                 </Badge>
                                 {job.metadata?.priority && (
                                   <Badge variant="outline" className={getPriorityConfig(job.metadata.priority).color}>
-                                    {job.metadata.priority.toUpperCase()} PRIORITY
+                                    {job.metadata.priority.toUpperCase()}
                                   </Badge>
                                 )}
                                 <span className="flex items-center gap-1">
-                                  <Clock className="h-3.5 w-3.5" />
+                                  <Clock className="h-3 w-3" />
                                   {formatDistanceToNow(new Date(job.timeSubmitted), { addSuffix: true })}
                                 </span>
                               </div>

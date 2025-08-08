@@ -6,12 +6,13 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { WalletProvider } from "@/contexts/wallet-context";
 import { Toaster } from "@/components/ui/toaster";
 import RealTimeNotifications from "@/components/real-time-notifications";
+import ErrorBoundary from "@/components/error-boundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Quantum Job Logger",
-  description: "Decentralized quantum computing job management platform",
+  title: "QuantumChain - Blockchain Quantum Computing",
+  description: "Secure quantum computing platform with blockchain verification",
 };
 
 export default function RootLayout({
@@ -30,9 +31,11 @@ export default function RootLayout({
         >
           <AuthProvider>
             <WalletProvider>
-              {children}
-              <Toaster />
-              <RealTimeNotifications />
+              <ErrorBoundary>
+                {children}
+                <Toaster />
+                <RealTimeNotifications />
+              </ErrorBoundary>
             </WalletProvider>
           </AuthProvider>
         </ThemeProvider>
