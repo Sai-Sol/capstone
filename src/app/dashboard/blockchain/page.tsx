@@ -35,7 +35,6 @@ import AdminDecoder from "@/components/admin-decoder";
 import BlockchainOperations from "@/components/blockchain-operations";
 import BlockchainAIAssistant from "@/components/blockchain-ai-assistant";
 import SmartContractInteractions from "@/components/smart-contract-interactions";
-import PortfolioTracker from "@/components/portfolio-tracker";
 import TransactionAnalyzer from "@/components/transaction-analyzer";
 import NetworkMonitor from "@/components/network-monitor";
 import DeFiDashboard from "@/components/defi-dashboard";
@@ -137,10 +136,6 @@ export default function BlockchainHubPage() {
             <Activity className="mr-2 h-4 w-4" />
             Monitor
           </TabsTrigger>
-          <TabsTrigger value="portfolio" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <PieChart className="mr-2 h-4 w-4" />
-            Portfolio
-          </TabsTrigger>
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <BarChart3 className="mr-2 h-4 w-4" />
             Analyzer
@@ -179,10 +174,6 @@ export default function BlockchainHubPage() {
 
         <TabsContent value="monitor" className="mt-8">
           <NetworkMonitor />
-        </TabsContent>
-
-        <TabsContent value="portfolio" className="mt-8">
-          <PortfolioTracker />
         </TabsContent>
 
         <TabsContent value="analyzer" className="mt-8">
