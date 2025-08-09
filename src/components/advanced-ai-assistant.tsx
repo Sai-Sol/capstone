@@ -60,7 +60,7 @@ export default function AdvancedAIAssistant() {
     {
       id: '1',
       type: 'bot',
-      content: "Hello! I'm your advanced AI assistant specialized in technology. I can help you with quantum computing, blockchain development, AI/ML, cybersecurity, cloud computing, and all technical topics. I focus exclusively on technology to provide the highest quality assistance. What would you like to explore?",
+      content: "Hello! I'm your advanced AI assistant specialized in technology. I can help you with quantum computing, blockchain development, AI/ML, cybersecurity, cloud computing, and all technical topics. Click on any topic below or ask me anything!",
       timestamp: Date.now(),
       category: 'greeting',
       confidence: 100
@@ -70,6 +70,7 @@ export default function AdvancedAIAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [showQuickTopics, setShowQuickTopics] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const quickActions: QuickAction[] = [
@@ -114,6 +115,20 @@ export default function AdvancedAIAssistant() {
       icon: Monitor, 
       category: "web",
       description: "Frontend, backend, full-stack development"
+    },
+    { 
+      label: "DevOps & Infrastructure", 
+      query: "DevOps best practices, CI/CD, and infrastructure automation", 
+      icon: Settings, 
+      category: "devops",
+      description: "Docker, Kubernetes, automation"
+    },
+    { 
+      label: "Database Design", 
+      query: "Database architecture, optimization, and design patterns", 
+      icon: Database, 
+      category: "database",
+      description: "SQL, NoSQL, performance tuning"
     }
   ];
 
@@ -183,6 +198,7 @@ export default function AdvancedAIAssistant() {
 
   const handleQuickAction = (query: string) => {
     setInputValue(query);
+    setShowQuickTopics(false);
     setTimeout(() => handleSendMessage(), 100);
   };
 
@@ -190,11 +206,12 @@ export default function AdvancedAIAssistant() {
     setMessages([{
       id: '1',
       type: 'bot',
-      content: "Chat cleared! I'm ready to help you with any technology-related questions. What would you like to explore?",
+      content: "Chat cleared! I'm ready to help you with any technology-related questions. Click on any topic below or ask me anything!",
       timestamp: Date.now(),
       category: 'greeting',
       confidence: 100
     }]);
+    setShowQuickTopics(true);
   };
 
   const exportChat = () => {
@@ -433,14 +450,14 @@ export default function AdvancedAIAssistant() {
 
         {/* Enhanced Sidebar */}
         <div className="space-y-6">
-          {/* Quick Actions with Categories */}
+          {/* Quick Topics - Always Visible */}
           <Card className="quantum-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-primary" />
-                Quick Topics
+                Technology Topics
               </CardTitle>
-              <CardDescription>Explore technology domains</CardDescription>
+              <CardDescription>Click any topic to get expert guidance</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -455,10 +472,12 @@ export default function AdvancedAIAssistant() {
                   <SelectItem value="cloud">Cloud Computing</SelectItem>
                   <SelectItem value="security">Cybersecurity</SelectItem>
                   <SelectItem value="web">Web Development</SelectItem>
+                  <SelectItem value="devops">DevOps</SelectItem>
+                  <SelectItem value="database">Database</SelectItem>
                 </SelectContent>
               </Select>
               
-              <div className="space-y-3 max-h-80 overflow-y-auto">
+              <div className="space-y-3 max-h-96 overflow-y-auto">
                 {filteredActions.map((action, index) => (
                   <motion.div
                     key={index}
@@ -468,12 +487,12 @@ export default function AdvancedAIAssistant() {
                   >
                     <Button
                       variant="outline"
-                      className="w-full justify-start h-auto p-4 text-left hover:bg-primary/5 hover:border-primary/30 transition-all duration-300"
+                      className="w-full justify-start h-auto p-4 text-left hover:bg-primary/10 hover:border-primary/40 transition-all duration-300 group"
                       onClick={() => handleQuickAction(action.query)}
                       disabled={isLoading}
                     >
                       <div className="flex items-start gap-3 w-full">
-                        <action.icon className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                        <action.icon className="h-5 w-5 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-sm">{action.label}</div>
                           <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
@@ -484,6 +503,34 @@ export default function AdvancedAIAssistant() {
                     </Button>
                   </motion.div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Advanced Features */}
+          <Card className="quantum-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                AI Features
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <span>Real-time responses</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                <span>Context-aware conversations</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+                <span>Technical expertise</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
+                <span>Code examples & solutions</span>
               </div>
             </CardContent>
           </Card>
@@ -500,9 +547,9 @@ export default function AdvancedAIAssistant() {
               <Alert className="border-amber-500/20 bg-amber-500/5">
                 <Sparkles className="h-4 w-4" />
                 <AlertDescription className="text-sm">
-                  I'm exclusively focused on technology topics. I provide expert guidance on programming, 
-                  quantum computing, blockchain, AI/ML, cybersecurity, and related technical subjects. 
-                  I don't discuss non-technical topics to ensure the highest quality tech assistance.
+                  I specialize exclusively in technology topics including programming, quantum computing, 
+                  blockchain, AI/ML, cybersecurity, cloud computing, and software development. 
+                  This focus ensures the highest quality technical assistance.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -519,16 +566,26 @@ export default function AdvancedAIAssistant() {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Messages:</span>
-                <span className="font-mono">{messages.length}</span>
+                <Badge variant="outline" className="text-primary border-primary/50">
+                  {messages.length}
+                </Badge>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Avg Response:</span>
-                <span className="font-mono">1.2s</span>
+                <Badge variant="outline" className="text-green-400 border-green-400/50">
+                  &lt; 2s
+                </Badge>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Tech Focus:</span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
                   100%
+                </Badge>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Confidence:</span>
+                <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+                  95%+
                 </Badge>
               </div>
             </CardContent>

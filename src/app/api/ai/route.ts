@@ -152,6 +152,72 @@ function findRelevantKnowledge(query: string): string {
 • **Automation**: Selenium, Beautiful Soup`;
   }
 
+  if (lowerQuery.includes("javascript") || lowerQuery.includes("js")) {
+    return `JavaScript is the language of the web and modern development:
+
+**Core Features:**
+• **Dynamic Typing**: Flexible variable types
+• **Event-Driven**: Perfect for interactive applications
+• **Asynchronous**: Promises, async/await for non-blocking code
+• **Prototype-Based**: Object-oriented programming model
+
+**Modern JavaScript (ES6+):**
+• **Arrow Functions**: Concise function syntax
+• **Destructuring**: Extract values from arrays/objects
+• **Modules**: Import/export for code organization
+• **Template Literals**: String interpolation with backticks
+
+**Popular Frameworks & Libraries:**
+• **Frontend**: React, Vue.js, Angular, Svelte
+• **Backend**: Node.js, Express.js, Nest.js
+• **Mobile**: React Native, Ionic
+• **Desktop**: Electron, Tauri`;
+  }
+
+  if (lowerQuery.includes("typescript") || lowerQuery.includes("ts")) {
+    return `TypeScript is JavaScript with static type definitions:
+
+**Key Benefits:**
+• **Type Safety**: Catch errors at compile time
+• **Better IDE Support**: Enhanced autocomplete and refactoring
+• **Large Codebase Management**: Easier to maintain complex projects
+• **Modern JavaScript Features**: Latest ECMAScript support
+
+**Type System:**
+• **Basic Types**: string, number, boolean, array
+• **Interfaces**: Define object shapes and contracts
+• **Generics**: Reusable components with type parameters
+• **Union Types**: Variables that can be multiple types
+
+**Best Practices:**
+• Use strict mode for better type checking
+• Define interfaces for API responses
+• Leverage utility types (Partial, Pick, Omit)
+• Use type guards for runtime type checking`;
+  }
+
+  if (lowerQuery.includes("docker") || lowerQuery.includes("container")) {
+    return `Docker revolutionizes application deployment through containerization:
+
+**Core Concepts:**
+• **Images**: Read-only templates for creating containers
+• **Containers**: Lightweight, portable runtime environments
+• **Dockerfile**: Instructions for building custom images
+• **Volumes**: Persistent data storage for containers
+
+**Key Commands:**
+• **docker build**: Create images from Dockerfile
+• **docker run**: Start containers from images
+• **docker-compose**: Multi-container application orchestration
+• **docker push/pull**: Share images via registries
+
+**Best Practices:**
+• Use multi-stage builds for smaller images
+• Implement proper layer caching
+• Use .dockerignore to exclude unnecessary files
+• Run containers as non-root users for security`;
+  }
+
   // Default tech response
   return `I can provide detailed guidance on this technology topic. Could you be more specific about:
 
