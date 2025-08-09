@@ -25,7 +25,10 @@ import {
   DollarSign,
   BarChart3,
   Shield,
-  Globe
+  Globe,
+  Code,
+  Settings,
+  Brain
 } from "lucide-react";
 
 export default function BlockchainPage() {
@@ -180,7 +183,7 @@ export default function BlockchainPage() {
           Blockchain Hub
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Manage your wallet, send transactions, and monitor network activity
+          Monitor network activity, manage transactions, and interact with smart contracts
         </p>
       </motion.div>
 
@@ -235,109 +238,112 @@ export default function BlockchainPage() {
         </Card>
       </div>
 
-      <Tabs defaultValue="wallet" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-muted/30">
-          <TabsTrigger value="wallet">Wallet</TabsTrigger>
-          <TabsTrigger value="send">Send</TabsTrigger>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 bg-muted/30">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
+          <TabsTrigger value="contracts">Smart Contracts</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="wallet" className="mt-6">
-          <Card className="quantum-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="h-5 w-5 text-primary" />
-                Wallet Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-primary">Account Balance</h3>
-                  <Button variant="outline" size="sm" onClick={fetchNetworkStats}>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
-                  </Button>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Address</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <code className="font-mono text-sm bg-muted/50 px-2 py-1 rounded">{address}</code>
-                      <Button variant="ghost" size="sm" onClick={() => copyToClipboard(address!)}>
-                        <Copy className="h-4 w-4" />
-                      </Button>
+        <TabsContent value="overview" className="mt-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Wallet Overview */}
+            <Card className="quantum-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-primary" />
+                  Wallet Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-primary">Account Balance</h3>
+                    <Button variant="outline" size="sm" onClick={fetchNetworkStats}>
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Refresh
+                    </Button>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Address</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <code className="font-mono text-sm bg-muted/50 px-2 py-1 rounded">{address}</code>
+                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(address!)}>
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Balance</p>
+                      <p className="text-3xl font-bold text-green-400">{balance ? parseFloat(balance).toFixed(4) : '0.0000'} ETH</p>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Balance</p>
-                    <p className="text-3xl font-bold text-green-400">{balance ? parseFloat(balance).toFixed(4) : '0.0000'} ETH</p>
-                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              </CardContent>
+            </Card>
 
-        <TabsContent value="send" className="mt-6">
-          <Card className="quantum-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Send className="h-5 w-5 text-primary" />
-                Send Transaction
-              </CardTitle>
-              <CardDescription>Send ETH to another address</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="recipient">Recipient Address</Label>
-                  <Input
-                    id="recipient"
-                    placeholder="0x..."
-                    value={sendAddress}
-                    onChange={(e) => setSendAddress(e.target.value)}
-                    className="quantum-input"
-                  />
+            {/* Quick Send */}
+            <Card className="quantum-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Send className="h-5 w-5 text-primary" />
+                  Quick Send
+                </CardTitle>
+                <CardDescription>Send ETH to another address</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="recipient">Recipient Address</Label>
+                    <Input
+                      id="recipient"
+                      placeholder="0x..."
+                      value={sendAddress}
+                      onChange={(e) => setSendAddress(e.target.value)}
+                      className="quantum-input"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="amount">Amount (ETH)</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.0001"
+                      placeholder="0.0"
+                      value={sendAmount}
+                      onChange={(e) => setSendAmount(e.target.value)}
+                      className="quantum-input"
+                    />
+                  </div>
+                  <Alert className="border-yellow-500/20 bg-yellow-500/5">
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription>
+                      Estimated gas fee: ~{(parseFloat(gasPrice) * 21000).toFixed(6)} ETH
+                    </AlertDescription>
+                  </Alert>
+                  <Button 
+                    onClick={sendTransaction} 
+                    disabled={isLoading || !sendAddress || !sendAmount}
+                    className="w-full quantum-button h-12"
+                  >
+                    {isLoading ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        Send Transaction
+                      </>
+                    )}
+                  </Button>
                 </div>
-                <div>
-                  <Label htmlFor="amount">Amount (ETH)</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.0001"
-                    placeholder="0.0"
-                    value={sendAmount}
-                    onChange={(e) => setSendAmount(e.target.value)}
-                    className="quantum-input"
-                  />
-                </div>
-                <Alert className="border-yellow-500/20 bg-yellow-500/5">
-                  <Shield className="h-4 w-4" />
-                  <AlertDescription>
-                    Estimated gas fee: ~{(parseFloat(gasPrice) * 21000).toFixed(6)} ETH
-                  </AlertDescription>
-                </Alert>
-                <Button 
-                  onClick={sendTransaction} 
-                  disabled={isLoading || !sendAddress || !sendAmount}
-                  className="w-full quantum-button h-12"
-                >
-                  {isLoading ? (
-                    <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" />
-                      Send Transaction
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="transactions" className="mt-6">
@@ -373,6 +379,52 @@ export default function BlockchainPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="contracts" className="mt-6">
+          <Card className="quantum-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code className="h-5 w-5 text-primary" />
+                Smart Contract Interactions
+              </CardTitle>
+              <CardDescription>Interact with deployed smart contracts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Settings className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-muted-foreground mb-2">
+                  Smart Contract Tools
+                </h3>
+                <p className="text-muted-foreground">
+                  Advanced contract interaction tools coming soon
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="mt-6">
+          <Card className="quantum-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Blockchain Analytics
+              </CardTitle>
+              <CardDescription>Network performance and transaction analytics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <TrendingUp className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-muted-foreground mb-2">
+                  Advanced Analytics
+                </h3>
+                <p className="text-muted-foreground">
+                  Detailed blockchain analytics and insights coming soon
+                </p>
               </div>
             </CardContent>
           </Card>
