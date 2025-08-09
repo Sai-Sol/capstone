@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminDashboard from "@/components/admin-dashboard";
-import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Users } from "lucide-react";
+import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import QuickStartGuide from "@/components/quick-start-guide";
 
 export default function DashboardHomePage() {
   const { user } = useAuth();
-  const { isConnected, address } = useWallet();
+  const { isConnected } = useWallet();
 
   const quantumProviders = [
     { name: "Google Willow", status: "online", qubits: "105", latency: "12ms" },
@@ -29,7 +29,6 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-8 p-6">
-      {/* Quick Start Guide */}
       <QuickStartGuide />
 
       {/* Hero Section */}

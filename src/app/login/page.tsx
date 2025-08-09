@@ -235,18 +235,6 @@ export default function LoginPage() {
                 </Button>
               </form>
             </Form>
-            
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                New to quantum computing?{" "}
-                <Link 
-                  href="/register" 
-                  className="font-semibold text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
-                >
-                  Create Quantum Account
-                </Link>
-              </p>
-            </div>
 
             {/* Professional Security Notice */}
             <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
