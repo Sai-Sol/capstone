@@ -149,7 +149,7 @@ export default function AdvancedAIAssistant() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/ai', {
+      const response = await fetch('/api/ai-ml', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +169,7 @@ export default function AdvancedAIAssistant() {
         content: data.response,
         timestamp: Date.now(),
         confidence: data.confidence || 90,
-        sources: data.sources || ["AI Knowledge Base"]
+        sources: data.sources || ["ML-Enhanced Knowledge Base"]
       };
 
       setMessages(prev => [...prev, botResponse]);
@@ -256,7 +256,7 @@ export default function AdvancedAIAssistant() {
         <div className="flex items-center justify-center gap-4 mb-6">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-2xl blur-xl opacity-50" />
-            <div className="relative bg-gradient-to-r from-primary via-purple-500 to-pink-500 p-4 rounded-2xl">
+                ML-powered AI with real-time learning and quantum computing expertise
               <Brain className="h-12 w-12 text-white quantum-pulse" />
             </div>
           </div>
@@ -270,15 +270,15 @@ export default function AdvancedAIAssistant() {
         <div className="flex items-center justify-center gap-6 mt-6">
           <Badge variant="outline" className="text-blue-400 border-blue-400/50 px-4 py-2">
             <Sparkles className="mr-2 h-4 w-4" />
-            RAG-Enhanced
+            ML-Powered
           </Badge>
           <Badge variant="outline" className="text-green-400 border-green-400/50 px-4 py-2">
             <Shield className="mr-2 h-4 w-4" />
-            Tech Specialized
+            Real-time Learning
           </Badge>
           <Badge variant="outline" className="text-purple-400 border-purple-400/50 px-4 py-2">
             <Zap className="mr-2 h-4 w-4" />
-            Context-Aware
+            Adaptive Intelligence
           </Badge>
         </div>
       </motion.div>
@@ -518,19 +518,19 @@ export default function AdvancedAIAssistant() {
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                <span>Real-time responses</span>
+                <span>Real-time learning</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                <span>Context-aware conversations</span>
+                <span>Adaptive responses</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-                <span>Technical expertise</span>
+                <span>ML-enhanced expertise</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
-                <span>Code examples & solutions</span>
+                <span>Personalized assistance</span>
               </div>
             </CardContent>
           </Card>
@@ -549,7 +549,7 @@ export default function AdvancedAIAssistant() {
                 <AlertDescription className="text-sm">
                   I specialize exclusively in technology topics including programming, quantum computing, 
                   blockchain, AI/ML, cybersecurity, cloud computing, and software development. 
-                  This focus ensures the highest quality technical assistance.
+                  My ML algorithms continuously learn from our conversations to provide better assistance.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -585,7 +585,7 @@ export default function AdvancedAIAssistant() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Confidence:</span>
                 <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                  95%+
+                  ML-Enhanced
                 </Badge>
               </div>
             </CardContent>
