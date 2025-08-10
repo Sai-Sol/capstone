@@ -74,9 +74,9 @@ async function executeQuantumJob(jobId: string, jobData: JobSubmission) {
     // Generate mock quantum results
     const mockResults = {
       measurements: generateMockMeasurements(jobData.description),
-      fidelity: `${(95 + Math.random() * 4).toFixed(1)}%`,
-      executionTime: `${(Math.random() * 100 + 50).toFixed(1)}ms`,
-      circuitDepth: Math.floor(Math.random() * 10) + 2
+      fidelity: getFidelityForAlgorithm(jobData.description),
+      executionTime: getExecutionTimeForAlgorithm(jobData.description),
+      circuitDepth: getCircuitDepthForAlgorithm(jobData.description)
     };
     
     // Complete the job
@@ -101,21 +101,147 @@ function generateMockMeasurements(description: string): Record<string, number> {
   // Bell state pattern
   if (lowerDesc.includes('bell') || (lowerDesc.includes('h') && lowerDesc.includes('cx'))) {
     return {
-      "00": Math.floor(Math.random() * 100) + 400,
-      "01": Math.floor(Math.random() * 50) + 25,
-      "10": Math.floor(Math.random() * 50) + 25,
-      "11": Math.floor(Math.random() * 100) + 400
+      "00": 487,
+      "01": 13,
+      "10": 12,
+      "11": 488
+    };
+  }
+  
+  // Grover's algorithm pattern
+  if (lowerDesc.includes('grover') || lowerDesc.includes('search')) {
+    return {
+      "00": 125,
+      "01": 125,
+      "10": 125,
+      "11": 625  // Target state has higher probability
+    };
+  }
+  
+  // Shor's algorithm pattern
+  if (lowerDesc.includes('shor') || lowerDesc.includes('factor')) {
+    return {
+      "000": 62,
+      "001": 63,
+      "010": 187,
+      "011": 188,
+      "100": 187,
+      "101": 188,
+      "110": 62,
+      "111": 63
+    };
+  }
+  
+  // Superposition pattern (equal distribution)
+  if (lowerDesc.includes('superposition') || lowerDesc.includes('hadamard')) {
+    return {
+      "00": 250,
+      "01": 250,
+      "10": 250,
+      "11": 250
+    };
+  }
+  
+  // VQE/optimization pattern
+  if (lowerDesc.includes('vqe') || lowerDesc.includes('optimization') || lowerDesc.includes('qaoa')) {
+    return {
+      "00": 150,
+      "01": 200,
+      "10": 350,
+      "11": 300
+    };
+  }
+  
+  // Teleportation pattern
+  if (lowerDesc.includes('teleport')) {
+    return {
+      "000": 500,
+      "001": 0,
+      "010": 0,
+      "011": 0,
+      "100": 0,
+      "101": 0,
+      "110": 0,
+      "111": 500
     };
   }
   
   // Random distribution
   return {
-    "00": Math.floor(Math.random() * 300) + 200,
-    "01": Math.floor(Math.random() * 300) + 200,
-    "10": Math.floor(Math.random() * 300) + 200,
-    "11": Math.floor(Math.random() * 300) + 200
+    "00": 245,
+    "01": 255,
+    "10": 248,
+    "11": 252
   };
 }
 
 // Export the jobs map for the status endpoint
 export { jobs };
+function getFidelityForAlgorithm(description: string): string {
+  const lowerDesc = description.toLowerCase();
+  
+  if (lowerDesc.includes('bell') || lowerDesc.includes('entangl')) {
+    return "97.8%"; // High fidelity for Bell states
+  }
+  if (lowerDesc.includes('grover')) {
+    return "94.2%"; // Good fidelity for Grover's
+  }
+  if (lowerDesc.includes('shor')) {
+    return "91.5%"; // Lower fidelity for complex Shor's
+  }
+  if (lowerDesc.includes('superposition')) {
+    return "98.5%"; // Very high for simple superposition
+  }
+  if (lowerDesc.includes('vqe') || lowerDesc.includes('optimization')) {
+    return "89.3%"; // Lower for variational algorithms
+  }
+  if (lowerDesc.includes('teleport')) {
+    return "93.7%"; // Good for teleportation
+  }
+  
+  return "95.1%"; // Default good fidelity
+}
+
+function getExecutionTimeForAlgorithm(description: string): string {
+  const lowerDesc = description.toLowerCase();
+  
+  if (lowerDesc.includes('bell') || lowerDesc.includes('superposition')) {
+    return "23.4ms"; // Fast for simple circuits
+  }
+  if (lowerDesc.includes('grover')) {
+    return "156.7ms"; // Moderate for Grover's
+  }
+  if (lowerDesc.includes('shor')) {
+    return "2.3s"; // Slow for Shor's algorithm
+  }
+  if (lowerDesc.includes('vqe') || lowerDesc.includes('optimization')) {
+    return "847ms"; // Variable for optimization
+  }
+  if (lowerDesc.includes('teleport')) {
+    return "78.9ms"; // Moderate for teleportation
+  }
+  
+  return "67.2ms"; // Default moderate time
+}
+
+function getCircuitDepthForAlgorithm(description: string): number {
+  const lowerDesc = description.toLowerCase();
+  
+  if (lowerDesc.includes('bell') || lowerDesc.includes('superposition')) {
+    return 2; // Simple circuits
+  }
+  if (lowerDesc.includes('grover')) {
+    return 8; // Moderate depth
+  }
+  if (lowerDesc.includes('shor')) {
+    return 24; // Deep circuits
+  }
+  if (lowerDesc.includes('vqe') || lowerDesc.includes('optimization')) {
+    return 15; // Variable depth
+  }
+  if (lowerDesc.includes('teleport')) {
+    return 6; // Moderate depth
+  }
+  
+  return 4; // Default depth
+}

@@ -243,7 +243,6 @@ export default function BlockchainPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="contracts">Smart Contracts</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -407,28 +406,6 @@ export default function BlockchainPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="mt-6">
-          <Card className="quantum-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                Blockchain Analytics
-              </CardTitle>
-              <CardDescription>Network performance and transaction analytics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <TrendingUp className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-                  Advanced Analytics
-                </h3>
-                <p className="text-muted-foreground">
-                  Detailed blockchain analytics and insights coming soon
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );
