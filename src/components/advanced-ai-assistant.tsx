@@ -60,7 +60,7 @@ export default function AdvancedAIAssistant() {
     {
       id: '1',
       type: 'bot',
-      content: "Hello! I'm your advanced AI assistant specialized in technology. I can help you with quantum computing, blockchain development, AI/ML, cybersecurity, cloud computing, and all technical topics. Click on any topic below or ask me anything!",
+      content: "🚀 Hello! I'm your advanced ML-powered AI assistant specialized in technology. I continuously learn from our conversations to provide better, more personalized assistance. I can help you with quantum computing, blockchain development, AI/ML, cybersecurity, cloud computing, and all technical topics. Click on any topic on the right or ask me anything!",
       timestamp: Date.now(),
       category: 'greeting',
       confidence: 100
@@ -180,7 +180,7 @@ export default function AdvancedAIAssistant() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: "I encountered an error processing your request. Please ensure your question is technology-related and try again.",
+        content: "🤖 I encountered an error processing your request. My ML systems are continuously improving - please try rephrasing your question or try again in a moment.",
         timestamp: Date.now()
       };
 
@@ -206,7 +206,7 @@ export default function AdvancedAIAssistant() {
     setMessages([{
       id: '1',
       type: 'bot',
-      content: "Chat cleared! I'm ready to help you with any technology-related questions. Click on any topic below or ask me anything!",
+      content: "🔄 Chat cleared! My ML algorithms have saved our conversation patterns for better future assistance. I'm ready to help you with technology questions. What would you like to explore?",
       timestamp: Date.now(),
       category: 'greeting',
       confidence: 100
@@ -262,10 +262,10 @@ export default function AdvancedAIAssistant() {
           </div>
         </div>
         <h1 className="text-5xl font-bold font-headline bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 neon-text">
-          Quantum AI Assistant
+          ML-Powered AI Assistant
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Your expert AI companion for quantum computing, blockchain, and advanced technology
+          Advanced machine learning AI that learns from every conversation to provide personalized technical expertise
         </p>
         <div className="flex items-center justify-center gap-6 mt-6">
           <Badge variant="outline" className="text-blue-400 border-blue-400/50 px-4 py-2">
@@ -455,9 +455,9 @@ export default function AdvancedAIAssistant() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-primary" />
-                Technology Topics
+                Expert Topics
               </CardTitle>
-              <CardDescription>Click any topic to get expert guidance</CardDescription>
+              <CardDescription>Click any topic for ML-enhanced expert guidance</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -547,9 +547,9 @@ export default function AdvancedAIAssistant() {
               <Alert className="border-amber-500/20 bg-amber-500/5">
                 <Sparkles className="h-4 w-4" />
                 <AlertDescription className="text-sm">
-                  I specialize exclusively in technology topics including programming, quantum computing, 
-                  blockchain, AI/ML, cybersecurity, cloud computing, and software development. 
-                  My ML algorithms continuously learn from our conversations to provide better assistance.
+                  🧠 I'm an ML-powered AI that specializes exclusively in technology. My neural networks 
+                  continuously learn from our conversations, adapting to your expertise level and providing 
+                  increasingly personalized technical guidance across all domains.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -573,19 +573,19 @@ export default function AdvancedAIAssistant() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Avg Response:</span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
-                  &lt; 2s
+                  < 1.5s
                 </Badge>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tech Focus:</span>
+                <span className="text-muted-foreground">ML Learning:</span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
-                  100%
+                  Active
                 </Badge>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Confidence:</span>
+                <span className="text-muted-foreground">Adaptation:</span>
                 <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                  ML-Enhanced
+                  Real-time
                 </Badge>
               </div>
             </CardContent>

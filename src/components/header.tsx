@@ -40,7 +40,6 @@ export default function Header() {
     { href: "/dashboard/lab", label: "Lab", icon: PlusSquare },
     { href: "/dashboard/blockchain", label: "Blockchain", icon: Wallet },
     { href: "/dashboard/history", label: "History", icon: History },
-    { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/dashboard/ai", label: "AI", icon: MessageSquare },
   ];
 
