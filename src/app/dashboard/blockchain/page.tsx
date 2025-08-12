@@ -28,11 +28,15 @@ import {
   Globe,
   Code,
   Settings,
-  Brain
+  Brain,
+  CheckCircle,
+  AlertTriangle
 } from "lucide-react";
+import { CONTRACT_ADDRESS, MEGAETH_TESTNET } from "@/lib/constants";
+import { quantumJobLoggerABI } from "@/lib/contracts";
 
 export default function BlockchainPage() {
-  const { isConnected, address, balance, provider, signer } = useWallet();
+  const { isConnected, address, balance, provider, signer, chainId } = useWallet();
   const { toast } = useToast();
   const [gasPrice, setGasPrice] = useState<string>("0");
   const [networkStats, setNetworkStats] = useState({
@@ -45,13 +49,54 @@ export default function BlockchainPage() {
   const [sendAmount, setSendAmount] = useState("");
   const [sendAddress, setSendAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [contractJobs, setContractJobs] = useState<any[]>([]);
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
 
   useEffect(() => {
-    if (provider) {
+    setIsCorrectNetwork(chainId === MEGAETH_TESTNET.chainId);
+  }, [chainId]);
+
+  useEffect(() => {
+    if (provider && isConnected) {
       fetchNetworkStats();
       fetchRecentTransactions();
+      fetchContractJobs();
     }
-  }, [provider]);
+  }, [provider, isConnected]);
+
+  const switchToMegaETH = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: MEGAETH_TESTNET.chainId }],
+        });
+        toast({
+          title: "Network Switched",
+          description: "Successfully connected to MegaETH Testnet"
+        });
+      } catch (switchError: any) {
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [MEGAETH_TESTNET],
+            });
+            toast({
+              title: "Network Added",
+              description: "MegaETH Testnet added to your wallet"
+            });
+          } catch (addError) {
+            toast({
+              variant: "destructive",
+              title: "Network Error",
+              description: "Failed to add MegaETH network"
+            });
+          }
+        }
+      }
+    }
+  };
 
   const fetchNetworkStats = async () => {
     if (!provider) return;
@@ -65,7 +110,7 @@ export default function BlockchainPage() {
         blockNumber,
         gasPrice: formatEther(feeData.gasPrice || 0n),
         difficulty: block?.difficulty?.toString() || "0",
-        hashRate: "2.5 TH/s" // Mock data
+        hashRate: "2.5 TH/s" // Mock data for MegaETH
       });
       
       setGasPrice(formatEther(feeData.gasPrice || 0n));
@@ -78,25 +123,59 @@ export default function BlockchainPage() {
     // Mock transaction data for demo
     const mockTxs = [
       {
-        hash: "0x1234...5678",
-        from: "0xabcd...efgh",
-        to: "0x9876...5432",
+        hash: "0x1234567890abcdef1234567890abcdef12345678",
+        from: "0xabcdefghijklmnopqrstuvwxyz1234567890abcdef",
+        to: "0x9876543210fedcba9876543210fedcba98765432",
         value: "0.5",
         gasUsed: "21000",
         timestamp: Date.now() - 300000,
         status: "success"
       },
       {
-        hash: "0x2345...6789",
-        from: "0xbcde...fghi",
-        to: "0x8765...4321",
+        hash: "0x2345678901bcdef12345678901bcdef123456789",
+        from: "0xbcdefghijklmnopqrstuvwxyz1234567890bcdefg",
+        to: "0x8765432109edcba98765432109edcba987654321",
         value: "1.2",
         gasUsed: "45000",
         timestamp: Date.now() - 600000,
         status: "success"
+      },
+      {
+        hash: "0x3456789012cdef123456789012cdef1234567890",
+        from: "0xcdefghijklmnopqrstuvwxyz1234567890cdefgh",
+        to: "0x7654321098dcba87654321098dcba8765432109",
+        value: "0.1",
+        gasUsed: "65000",
+        timestamp: Date.now() - 900000,
+        status: "success"
       }
     ];
     setTransactions(mockTxs);
+  };
+
+  const fetchContractJobs = async () => {
+    if (!provider) return;
+    
+    try {
+      const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, provider);
+      const filter = contract.filters.JobLogged();
+      const currentBlock = await provider.getBlockNumber();
+      const fromBlock = Math.max(0, currentBlock - 1000);
+
+      const logs = await contract.queryFilter(filter, fromBlock, 'latest');
+      
+      const jobs = logs.map((log: any) => ({
+        user: log.args.user,
+        jobType: log.args.jobType,
+        ipfsHash: log.args.ipfsHash,
+        timeSubmitted: new Date(Number(log.args.timeSubmitted) * 1000),
+        txHash: log.transactionHash
+      })).reverse().slice(0, 5);
+
+      setContractJobs(jobs);
+    } catch (error) {
+      console.error("Failed to fetch contract jobs:", error);
+    }
   };
 
   const sendTransaction = async () => {
@@ -109,6 +188,15 @@ export default function BlockchainPage() {
       return;
     }
 
+    if (!isCorrectNetwork) {
+      toast({
+        variant: "destructive",
+        title: "Wrong Network",
+        description: "Please switch to MegaETH Testnet"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const tx = await signer.sendTransaction({
@@ -117,15 +205,8 @@ export default function BlockchainPage() {
       });
 
       toast({
-        title: "Transaction Sent",
-        description: `Transaction hash: ${tx.hash}`,
-        action: (
-          <Button variant="outline" size="sm" onClick={() => 
-            window.open(`https://www.megaexplorer.xyz/tx/${tx.hash}`, '_blank')
-          }>
-            View
-          </Button>
-        )
+        title: "Transaction Sent! 🚀",
+        description: `Transaction hash: ${tx.hash.slice(0, 10)}...`,
       });
 
       setSendAmount("");
@@ -133,9 +214,11 @@ export default function BlockchainPage() {
       await tx.wait();
       
       toast({
-        title: "Transaction Confirmed",
-        description: "Your transaction has been confirmed on the blockchain"
+        title: "Transaction Confirmed! ✅",
+        description: "Your transaction has been confirmed on MegaETH"
       });
+      
+      fetchRecentTransactions();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -150,23 +233,37 @@ export default function BlockchainPage() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: "Copied",
+      title: "Copied! 📋",
       description: "Address copied to clipboard"
     });
   };
 
   if (!isConnected) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Card className="quantum-card max-w-md">
-          <CardHeader className="text-center">
-            <Wallet className="h-16 w-16 text-primary mx-auto mb-4" />
-            <CardTitle>Connect Your Wallet</CardTitle>
-            <CardDescription>
-              Connect your MetaMask wallet to access blockchain features
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="flex items-center justify-center min-h-[60vh] p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Card className="quantum-card max-w-md text-center">
+            <CardHeader>
+              <div className="mx-auto mb-4 p-4 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-2xl w-fit">
+                <Wallet className="h-16 w-16 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-headline">Connect Your Wallet</CardTitle>
+              <CardDescription className="text-base">
+                Connect your MetaMask wallet to access blockchain features and quantum job logging
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => window.location.reload()} className="quantum-button w-full">
+                <Wallet className="mr-2 h-4 w-4" />
+                Refresh to Connect
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     );
   }
@@ -183,9 +280,27 @@ export default function BlockchainPage() {
           Blockchain Hub
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Monitor network activity, manage transactions, and interact with smart contracts
+          Monitor network activity, manage transactions, and interact with smart contracts on MegaETH
         </p>
       </motion.div>
+
+      {/* Network Warning */}
+      {!isCorrectNetwork && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Alert className="border-yellow-500/20 bg-yellow-500/5">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="flex items-center justify-between">
+              <span>You're not connected to MegaETH Testnet. Please switch networks to access all features.</span>
+              <Button variant="outline" size="sm" onClick={switchToMegaETH}>
+                Switch Network
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
 
       {/* Network Stats */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -196,7 +311,7 @@ export default function BlockchainPage() {
                 <p className="text-sm text-muted-foreground">Block Height</p>
                 <p className="text-2xl font-bold text-primary">{networkStats.blockNumber.toLocaleString()}</p>
               </div>
-              <Activity className="h-8 w-8 text-primary floating-particle" />
+              <Activity className="h-8 w-8 text-primary quantum-pulse" />
             </div>
           </CardContent>
         </Card>
@@ -208,7 +323,7 @@ export default function BlockchainPage() {
                 <p className="text-sm text-muted-foreground">Gas Price</p>
                 <p className="text-2xl font-bold text-green-400">{parseFloat(gasPrice).toFixed(6)} ETH</p>
               </div>
-              <Zap className="h-8 w-8 text-green-400 floating-particle" />
+              <Zap className="h-8 w-8 text-green-400 quantum-pulse" />
             </div>
           </CardContent>
         </Card>
@@ -220,7 +335,7 @@ export default function BlockchainPage() {
                 <p className="text-sm text-muted-foreground">Hash Rate</p>
                 <p className="text-2xl font-bold text-blue-400">{networkStats.hashRate}</p>
               </div>
-              <BarChart3 className="h-8 w-8 text-blue-400 floating-particle" />
+              <BarChart3 className="h-8 w-8 text-blue-400 quantum-pulse" />
             </div>
           </CardContent>
         </Card>
@@ -232,7 +347,7 @@ export default function BlockchainPage() {
                 <p className="text-sm text-muted-foreground">Network</p>
                 <p className="text-2xl font-bold text-purple-400">MegaETH</p>
               </div>
-              <Globe className="h-8 w-8 text-purple-400 floating-particle" />
+              <Globe className="h-8 w-8 text-purple-400 quantum-pulse" />
             </div>
           </CardContent>
         </Card>
@@ -243,6 +358,7 @@ export default function BlockchainPage() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="contracts">Smart Contracts</TabsTrigger>
+          <TabsTrigger value="tools">Tools</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -268,7 +384,7 @@ export default function BlockchainPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Address</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <code className="font-mono text-sm bg-muted/50 px-2 py-1 rounded">{address}</code>
+                        <code className="font-mono text-sm bg-muted/50 px-2 py-1 rounded flex-1 truncate">{address}</code>
                         <Button variant="ghost" size="sm" onClick={() => copyToClipboard(address!)}>
                           <Copy className="h-4 w-4" />
                         </Button>
@@ -277,6 +393,20 @@ export default function BlockchainPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Balance</p>
                       <p className="text-3xl font-bold text-green-400">{balance ? parseFloat(balance).toFixed(4) : '0.0000'} ETH</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Network</p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={isCorrectNetwork ? "text-green-400 border-green-400/50" : "text-yellow-400 border-yellow-400/50"}>
+                          <div className={`w-2 h-2 rounded-full mr-1 ${isCorrectNetwork ? 'bg-green-400' : 'bg-yellow-400'} animate-pulse`} />
+                          {isCorrectNetwork ? "MegaETH Testnet" : "Wrong Network"}
+                        </Badge>
+                        {!isCorrectNetwork && (
+                          <Button variant="outline" size="sm" onClick={switchToMegaETH}>
+                            Switch
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -290,7 +420,7 @@ export default function BlockchainPage() {
                   <Send className="h-5 w-5 text-primary" />
                   Quick Send
                 </CardTitle>
-                <CardDescription>Send ETH to another address</CardDescription>
+                <CardDescription>Send ETH to another address on MegaETH</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
@@ -324,7 +454,7 @@ export default function BlockchainPage() {
                   </Alert>
                   <Button 
                     onClick={sendTransaction} 
-                    disabled={isLoading || !sendAddress || !sendAmount}
+                    disabled={isLoading || !sendAddress || !sendAmount || !isCorrectNetwork}
                     className="w-full quantum-button h-12"
                   >
                     {isLoading ? (
@@ -352,31 +482,44 @@ export default function BlockchainPage() {
                 <Activity className="h-5 w-5 text-primary" />
                 Recent Transactions
               </CardTitle>
+              <CardDescription>Latest transactions on MegaETH network</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {transactions.map((tx, index) => (
-                  <div key={index} className="p-4 rounded-lg bg-muted/20 border border-primary/10">
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 rounded-lg bg-muted/20 border border-primary/10 hover:bg-muted/30 transition-colors"
+                  >
                     <div className="flex items-center justify-between">
-                      <div className="space-y-1">
+                      <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-2">
-                          <code className="text-sm font-mono">{tx.hash}</code>
+                          <code className="text-sm font-mono text-primary">{tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}</code>
                           <Badge variant="outline" className="text-green-400 border-green-400/50">
+                            <CheckCircle className="mr-1 h-3 w-3" />
                             {tx.status}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          From {tx.from} to {tx.to}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-semibold">{tx.value} ETH</span> • Gas: {tx.gasUsed}
-                        </p>
+                        <div className="text-sm text-muted-foreground">
+                          <div>From: {tx.from.slice(0, 8)}...{tx.from.slice(-6)}</div>
+                          <div>To: {tx.to.slice(0, 8)}...{tx.to.slice(-6)}</div>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="font-semibold text-green-400">{tx.value} ETH</span>
+                          <span className="text-muted-foreground">Gas: {tx.gasUsed}</span>
+                          <span className="text-muted-foreground">{new Date(tx.timestamp).toLocaleTimeString()}</span>
+                        </div>
                       </div>
-                      <Button variant="ghost" size="sm">
-                        <ExternalLink className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" asChild>
+                        <a href={`https://www.megaexplorer.xyz/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
                       </Button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </CardContent>
@@ -388,24 +531,140 @@ export default function BlockchainPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Code className="h-5 w-5 text-primary" />
-                Smart Contract Interactions
+                QuantumJobLogger Contract
               </CardTitle>
-              <CardDescription>Interact with deployed smart contracts</CardDescription>
+              <CardDescription>Interact with the quantum job logging smart contract</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Settings className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-                  Smart Contract Tools
-                </h3>
-                <p className="text-muted-foreground">
-                  Advanced contract interaction tools coming soon
-                </p>
+            <CardContent className="space-y-6">
+              {/* Contract Info */}
+              <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
+                <h4 className="font-semibold text-primary mb-4">Contract Details</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Address:</span>
+                    <div className="flex items-center gap-2">
+                      <code className="font-mono text-primary">{CONTRACT_ADDRESS.slice(0, 10)}...{CONTRACT_ADDRESS.slice(-8)}</code>
+                      <Button variant="ghost" size="sm" onClick={() => copyToClipboard(CONTRACT_ADDRESS)}>
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Network:</span>
+                    <span className="font-medium">MegaETH Testnet</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total Jobs:</span>
+                    <span className="font-medium text-green-400">{contractJobs.length}</span>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button variant="outline" asChild>
+                    <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View on Explorer
+                    </a>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Recent Contract Jobs */}
+              <div>
+                <h4 className="font-semibold text-primary mb-4">Recent Quantum Jobs</h4>
+                <div className="space-y-3">
+                  {contractJobs.length > 0 ? contractJobs.map((job, index) => (
+                    <div key={index} className="p-4 rounded-lg bg-muted/20 border border-primary/10">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+                              {job.jobType}
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">
+                              {job.timeSubmitted.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="text-muted-foreground">User: </span>
+                            <code className="font-mono text-primary">{job.user.slice(0, 8)}...{job.user.slice(-6)}</code>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm" asChild>
+                          <a href={`https://www.megaexplorer.xyz/tx/${job.txHash}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="text-center py-8">
+                      <Code className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                      <p className="text-muted-foreground">No quantum jobs found</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
+        <TabsContent value="tools" className="mt-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="quantum-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  Network Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button variant="outline" className="w-full justify-start" onClick={fetchNetworkStats}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh Network Stats
+                </Button>
+                <Button variant="outline" className="w-full justify-start" onClick={fetchContractJobs}>
+                  <Activity className="mr-2 h-4 w-4" />
+                  Refresh Contract Jobs
+                </Button>
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <a href="https://www.megaexplorer.xyz" target="_blank" rel="noopener noreferrer">
+                    <Globe className="mr-2 h-4 w-4" />
+                    Open MegaETH Explorer
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="quantum-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Security Features
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <span>Immutable quantum job logging</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <span>Cryptographic transaction verification</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <span>Decentralized network consensus</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <span>Tamper-proof audit trail</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );

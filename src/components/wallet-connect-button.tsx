@@ -17,8 +17,39 @@ import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
 import { MEGAETH_TESTNET } from "@/lib/constants";
 
 export default function WalletConnectButton() {
-  const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
+  const { isConnected, address, balance, connectWallet, disconnectWallet, chainId } = useWallet();
   const { toast } = useToast();
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
+
+  useEffect(() => {
+    setIsCorrectNetwork(chainId === MEGAETH_TESTNET.chainId);
+  }, [chainId]);
+
+  const switchToMegaETH = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: MEGAETH_TESTNET.chainId }],
+        });
+      } catch (switchError: any) {
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [MEGAETH_TESTNET],
+            });
+          } catch (addError) {
+            toast({
+              variant: "destructive",
+              title: "Network Error",
+              description: "Failed to add MegaETH network"
+            });
+          }
+        }
+      }
+    }
+  };
 
   const copyAddress = () => {
     if (address) {

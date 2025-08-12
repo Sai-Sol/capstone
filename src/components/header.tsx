@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, UserCircle, Atom, Home, PlusSquare, History, FileText, Zap, Menu, X, ArrowLeftRight, Search, MessageSquare, TrendingUp, BarChart3, Wallet, Cpu, Settings } from "lucide-react";
+import { LogOut, UserCircle, Atom, Home, PlusSquare, History, FileText, Zap, Menu, X, ArrowLeftRight, Search, MessageSquare, TrendingUp, BarChart3, Wallet, Cpu, Settings, Brain } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import WalletConnectButton from "./wallet-connect-button";
@@ -37,9 +37,12 @@ export default function Header() {
 
   const navItems = [
     { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/dashboard/lab", label: "Quantum Lab", icon: PlusSquare },
-    { href: "/dashboard/ai", label: "AI Tutor", icon: MessageSquare },
-    { href: "/dashboard/history", label: "Progress", icon: History },
+    { href: "/dashboard/lab", label: "Lab", icon: PlusSquare },
+    { href: "/dashboard/blockchain", label: "Blockchain", icon: Wallet },
+    { href: "/dashboard/ai", label: "AI Assistant", icon: Brain },
+    { href: "/dashboard/history", label: "History", icon: History },
+    { href: "/dashboard/portfolio", label: "Portfolio", icon: TrendingUp },
+    { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -80,6 +83,9 @@ export default function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-3">
+          {/* Wallet Connect Button */}
+          <WalletConnectButton />
+          
           {/* Search Button */}
           <Button
             variant="ghost"
