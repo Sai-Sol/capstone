@@ -64,22 +64,25 @@ export default function LoginPage() {
       const user = await login(values);
       if (user) {
         toast({
-          title: "Quantum Access Granted 🚀",
-          description: `Welcome to the quantum realm, ${user.email}!`,
+          title: "Welcome! 🚀",
+          description: `Successfully logged in as ${user.name || user.email}`,
         });
-        router.push("/dashboard");
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 100);
       } else {
         toast({
           variant: "destructive",
           title: "Access Denied",
-          description: "Invalid credentials. Please verify your quantum key.",
+          description: "Invalid email or password. Please try again.",
         });
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Connection Error",
-        description: "Quantum tunnel disrupted. Please try again.",
+        description: "Login failed. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -145,21 +148,21 @@ export default function LoginPage() {
             </motion.div>
             
             <CardTitle className="text-4xl font-headline font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent neon-text">
-              QuantumChain
+              Quantum Learning Platform
             </CardTitle>
             <CardDescription className="text-base mt-3 text-muted-foreground">
-              Secure blockchain-based quantum computing platform
+              Interactive quantum computing education platform
             </CardDescription>
             
             {/* Feature highlights */}
             <div className="flex justify-center gap-4 mt-6">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Zap className="h-4 w-4 text-primary" />
-                <span>Sub-ms Latency</span>
+                <Zap className="h-4 w-4 text-blue-500" />
+                <span>Interactive Learning</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="h-4 w-4 text-primary" />
-                <span>Tamper-Proof</span>
+                <Shield className="h-4 w-4 text-green-500" />
+                <span>Beginner Friendly</span>
               </div>
             </div>
           </CardHeader>
@@ -174,7 +177,7 @@ export default function LoginPage() {
                     <div>
                       <p className="text-xs font-medium text-blue-400 mb-1">Demo Access</p>
                       <p className="text-xs text-blue-200/80">
-                        Admin: admin@example.com / 456 • User: p1@example.com / 123
+                        Try: admin@example.com (password: 456) or p1@example.com (password: 123)
                       </p>
                     </div>
                   </div>
@@ -188,8 +191,8 @@ export default function LoginPage() {
                       <FormLabel className="text-sm font-medium">Email Address</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Enter your quantum access email" 
-                          className="quantum-input h-12"
+                          placeholder="Enter your email address" 
+                          className="h-12 border-blue-500/20 focus:border-blue-500/50"
                           {...field} 
                         />
                       </FormControl>
@@ -207,7 +210,7 @@ export default function LoginPage() {
                         <Input 
                           type="password" 
                           placeholder="••••••••••••" 
-                          className="quantum-input h-12"
+                          className="h-12 border-blue-500/20 focus:border-blue-500/50"
                           {...field} 
                         />
                       </FormControl>
@@ -218,18 +221,18 @@ export default function LoginPage() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full h-12 quantum-button font-semibold text-base" 
+                  className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 font-semibold text-base" 
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Establishing Quantum Link...
+                      Signing in...
                     </>
                   ) : (
                     <>
                       <Atom className="mr-2 h-5 w-5" />
-                      Access Quantum Network
+                      Sign In
                     </>
                   )}
                 </Button>
@@ -243,7 +246,7 @@ export default function LoginPage() {
                 <div>
                   <p className="text-xs font-medium text-green-400 mb-1">Secure Platform</p>
                   <p className="text-xs text-green-200/80">
-                    Bank-grade encryption protects your quantum computing sessions.
+                    Your learning progress is securely saved and protected.
                   </p>
                 </div>
               </div>

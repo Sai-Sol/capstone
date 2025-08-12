@@ -3,9 +3,10 @@
 import * as React from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { Loader2, Atom } from "lucide-react";
+import { Loader2, Atom, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "@/components/header";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function DashboardLayout({
   children,
@@ -23,10 +24,13 @@ export default function DashboardLayout({
   React.useEffect(() => {
     if (mounted && !loading && !user) {
       router.replace("/login");
+    } else if (mounted && !loading && user) {
+      // User is authenticated, ensure we stay on dashboard
+      console.log("User authenticated:", user);
     }
   }, [user, loading, router, mounted]);
 
-  if (!mounted || loading || !user) {
+  if (!mounted || loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <motion.div
@@ -36,24 +40,29 @@ export default function DashboardLayout({
           className="text-center"
         >
           <div className="relative mb-6">
-            <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-            <div className="relative bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
-              <Atom className="h-12 w-12 text-white quantum-pulse mx-auto" />
+            <div className="absolute inset-0 bg-blue-500/20 rounded-2xl blur-xl" />
+            <div className="relative bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
+              <Zap className="h-12 w-12 text-white animate-pulse mx-auto" />
             </div>
           </div>
           <div className="flex items-center justify-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-lg text-muted-foreground">Loading quantum dashboard...</p>
+            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <p className="text-lg text-muted-foreground">Loading quantum platform...</p>
           </div>
         </motion.div>
       </div>
     );
   }
 
+  if (!user) {
+    return null; // Let the redirect happen
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Header />
       <main className="flex-1">{children}</main>
+      <Toaster />
     </div>
   );
 }
