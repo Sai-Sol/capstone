@@ -30,8 +30,10 @@ const nextConfig: NextConfig = {
   env: {
     SERVICE_ACCOUNT_PRIVATE_KEY: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    GROK_AI_API_KEY: process.env.GROK_AI_API_KEY,
-    GROK_AI_BASE_URL: process.env.GROK_AI_BASE_URL,
+    // REMOVED: Grok AI environment variables
+    // RESTORED: MegaETH testnet configuration
+    MEGAETH_RPC_URL: process.env.MEGAETH_RPC_URL,
+    MEGAETH_EXPLORER_URL: process.env.MEGAETH_EXPLORER_URL,
   },
   poweredByHeader: false,
 };

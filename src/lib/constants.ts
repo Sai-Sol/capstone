@@ -15,6 +15,10 @@ export const MEGAETH_TESTNET = {
     symbol: "ETH",
     decimals: 18,
   },
-  rpcUrls: ["https://testnet.megaeth.io"],
+  // RESTORED: MegaETH testnet RPC configuration
+  rpcUrls: ["https://testnet.megaeth.io", "https://rpc.megaeth.io/testnet"],
   blockExplorerUrls: ["https://www.megaexplorer.xyz/"],
+  // RESTORED: Additional MegaETH testnet configuration
+  iconUrls: ["https://megaeth.io/logo.png"],
+  faucetUrls: ["https://faucet.megaeth.io"],
 };

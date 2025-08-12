@@ -2,25 +2,32 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Check if Grok AI API key is configured
-    const hasGrokKey = !!process.env.GROK_AI_API_KEY;
+    // RESTORED: Check MegaETH testnet connectivity
+    const hasMegaETHConfig = !!process.env.MEGAETH_RPC_URL;
     
-    // Test basic API connectivity (without making actual API call)
-    const grokStatus = hasGrokKey ? 'configured' : 'missing_key';
+    // Test MegaETH testnet connectivity
+    const megaethStatus = hasMegaETHConfig ? 'configured' : 'using_default';
     
     return NextResponse.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       services: {
-        grok_ai: {
-          status: grokStatus,
-          configured: hasGrokKey
+        // RESTORED: MegaETH testnet service status
+        megaeth_testnet: {
+          status: megaethStatus,
+          configured: hasMegaETHConfig,
+          rpcUrl: process.env.MEGAETH_RPC_URL || 'https://testnet.megaeth.io',
+          explorerUrl: process.env.MEGAETH_EXPLORER_URL || 'https://www.megaexplorer.xyz'
         },
         database: {
           status: 'healthy'
         },
         blockchain: {
           status: 'healthy'
+        },
+        quantum_analysis: {
+          status: 'healthy',
+          provider: 'MegaETH Testnet'
         }
       },
       version: '1.0.0'

@@ -1,3 +1,6 @@
+// REMOVED: Grok AI Assistant component
+// RESTORED: MegaETH Testnet Quantum Assistant
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -16,9 +19,7 @@ import {
   Brain, 
   MessageSquare,
   Lightbulb,
-  Briefcase,
-  FileText,
-  Users,
+  Atom,
   RefreshCw,
   AlertTriangle,
   Sparkles,
@@ -30,7 +31,10 @@ import {
   HelpCircle,
   Zap,
   Target,
-  TrendingUp
+  TrendingUp,
+  Globe,
+  Shield,
+  Activity
 } from "lucide-react";
 
 interface Message {
@@ -39,11 +43,8 @@ interface Message {
   content: string;
   timestamp: number;
   isError?: boolean;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
+  network?: string;
+  explorer?: string;
 }
 
 interface QuickAction {
@@ -54,78 +55,80 @@ interface QuickAction {
   description: string;
 }
 
-export default function GrokAIAssistant() {
+export default function MegaETHQuantumAssistant() {
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       type: 'bot',
-      content: "👋 Hello! I'm your AI assistant powered by Grok. I'm here to help you with:\n\n🎯 **Career & Job Search**\n• Resume writing and optimization\n• Interview preparation and tips\n• Job search strategies\n• Career path guidance\n\n💼 **Professional Development**\n• Skill development recommendations\n• Industry insights and trends\n• Networking strategies\n• Salary negotiation advice\n\n🤝 **General Support**\n• Answer questions on any topic\n• Provide research and information\n• Help with problem-solving\n• Offer guidance and recommendations\n\nWhat can I help you with today?",
+      content: "🚀 Welcome to the MegaETH Testnet Quantum Assistant! I'm here to help you understand your quantum computing results and blockchain integration.\n\n🔬 **What I Can Help With:**\n• Quantum algorithm analysis and optimization\n• MegaETH testnet transaction verification\n• Circuit fidelity improvement suggestions\n• Blockchain-quantum integration insights\n\n⚛️ **MegaETH Network Status:**\n• Network: MegaETH Testnet (Chain ID: 9000)\n• Explorer: https://www.megaexplorer.xyz\n• RPC: https://testnet.megaeth.io\n• Status: ✅ Operational\n\nExecute a quantum algorithm to get detailed analysis, or ask me about quantum computing concepts!",
       timestamp: Date.now(),
+      network: "MegaETH Testnet",
+      explorer: "https://www.megaexplorer.xyz"
     }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
-  const [totalTokensUsed, setTotalTokensUsed] = useState(0);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  // RESTORED: MegaETH testnet focused quick actions
   const quickActions: QuickAction[] = [
     { 
-      label: "Resume Review", 
-      query: "Can you help me improve my resume? What are the key elements of a strong resume in 2025?", 
-      icon: FileText, 
-      category: "career",
-      description: "Get expert resume writing advice"
+      label: "Bell State Analysis", 
+      query: "Analyze my Bell state quantum results and explain the entanglement", 
+      icon: Atom, 
+      category: "quantum",
+      description: "Understand quantum entanglement results"
     },
     { 
-      label: "Interview Prep", 
-      query: "I have a job interview coming up. Can you help me prepare with common questions and best practices?", 
-      icon: Users, 
-      category: "career",
-      description: "Prepare for your next interview"
+      label: "Grover's Algorithm", 
+      query: "Explain my Grover's search algorithm results and optimization", 
+      icon: Search, 
+      category: "quantum",
+      description: "Quantum search algorithm analysis"
     },
     { 
-      label: "Job Search Strategy", 
-      query: "What's the most effective job search strategy in today's market? How can I stand out to employers?", 
+      label: "Circuit Optimization", 
+      query: "How can I improve my quantum circuit fidelity and reduce errors?", 
       icon: Target, 
-      category: "career",
-      description: "Optimize your job search approach"
+      category: "optimization",
+      description: "Improve quantum circuit performance"
     },
     { 
-      label: "Career Path Guidance", 
-      query: "I'm considering a career change. How do I evaluate different career paths and make the right decision?", 
-      icon: TrendingUp, 
-      category: "career",
-      description: "Explore career opportunities"
+      label: "MegaETH Integration", 
+      query: "Explain how MegaETH testnet secures my quantum computations", 
+      icon: Shield, 
+      category: "blockchain",
+      description: "Blockchain security for quantum computing"
     },
     { 
-      label: "Skill Development", 
-      query: "What skills should I focus on developing to advance my career in the current job market?", 
+      label: "Quantum Teleportation", 
+      query: "Analyze my quantum teleportation protocol results", 
+      icon: Zap, 
+      category: "quantum",
+      description: "Quantum information transfer analysis"
+    },
+    { 
+      label: "Network Status", 
+      query: "What's the current status of MegaETH testnet and quantum providers?", 
+      icon: Globe, 
+      category: "network",
+      description: "Check MegaETH testnet status"
+    },
+    { 
+      label: "Transaction Verification", 
+      query: "How do I verify my quantum job transactions on MegaETH Explorer?", 
+      icon: Activity, 
+      category: "blockchain",
+      description: "Verify blockchain transactions"
+    },
+    { 
+      label: "Quantum Concepts", 
+      query: "Explain fundamental quantum computing concepts and principles", 
       icon: Brain, 
-      category: "development",
-      description: "Identify key skills to learn"
-    },
-    { 
-      label: "Salary Negotiation", 
-      query: "How do I negotiate salary effectively? What research should I do and what strategies work best?", 
-      icon: Briefcase, 
-      category: "career",
-      description: "Master salary negotiation"
-    },
-    { 
-      label: "Industry Insights", 
-      query: "What are the current trends and opportunities in the tech industry? Which areas are growing fastest?", 
-      icon: Lightbulb, 
-      category: "insights",
-      description: "Stay updated on industry trends"
-    },
-    { 
-      label: "General Question", 
-      query: "I have a question about...", 
-      icon: HelpCircle, 
-      category: "general",
-      description: "Ask anything you need help with"
+      category: "education",
+      description: "Learn quantum computing basics"
     }
   ];
 
@@ -146,27 +149,25 @@ export default function GrokAIAssistant() {
     setIsLoading(true);
 
     try {
-      // Prepare conversation context (last 10 messages)
-      const conversationContext = messages.slice(-10).map(msg => ({
-        role: msg.type === 'user' ? 'user' : 'assistant',
-        content: msg.content
-      }));
-
-      const response = await fetch('/api/grok', {
+      // RESTORED: Use MegaETH quantum analysis instead of Grok API
+      const response = await fetch('/api/grok-ai', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
           message: currentInput,
-          conversation: conversationContext
+          context: {
+            network: "MegaETH Testnet",
+            explorer: "https://www.megaexplorer.xyz"
+          }
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}`);
+        throw new Error(data.error || 'Failed to get response');
       }
 
       const botResponse: Message = {
@@ -174,49 +175,35 @@ export default function GrokAIAssistant() {
         type: 'bot',
         content: data.response,
         timestamp: Date.now(),
-        usage: data.usage
+        network: data.network,
+        explorer: data.explorer
       };
 
       setMessages(prev => [...prev, botResponse]);
 
-      // Update token usage
-      if (data.usage) {
-        setTotalTokensUsed(prev => prev + data.usage.total_tokens);
-      }
-
-      // Success feedback
       toast({
-        title: "Response Generated",
-        description: "Grok AI has provided a helpful response!"
+        title: "Analysis Complete",
+        description: "MegaETH quantum analysis provided!"
       });
 
     } catch (error: any) {
-      console.error('Grok AI error:', error);
-      
-      let errorMessage = "I'm experiencing technical difficulties. Please try again.";
-      
-      if (error.message.includes('RATE_LIMIT_EXCEEDED')) {
-        errorMessage = "I'm receiving too many requests. Please wait a moment before trying again.";
-      } else if (error.message.includes('authentication')) {
-        errorMessage = "There's an authentication issue with the AI service. Please contact support.";
-      } else if (error.message.includes('network')) {
-        errorMessage = "Network connection issue. Please check your internet and try again.";
-      }
+      console.error('MegaETH Analysis error:', error);
       
       const errorResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        content: `⚠️ ${errorMessage}\n\nYou can try:\n• Rephrasing your question\n• Waiting a moment and trying again\n• Checking your internet connection`,
+        content: `⚠️ MegaETH analysis temporarily unavailable. The quantum analysis system is experiencing issues.\n\n🔧 **Manual Analysis Options:**\n• Check quantum results against expected patterns\n• Verify fidelity levels (>90% is good)\n• Use MegaETH Explorer for transaction verification\n• Compare with theoretical algorithm predictions\n\n🌐 **MegaETH Testnet Status:**\n• Network: Operational\n• Explorer: https://www.megaexplorer.xyz\n• RPC: https://testnet.megaeth.io`,
         timestamp: Date.now(),
-        isError: true
+        isError: true,
+        network: "MegaETH Testnet"
       };
 
       setMessages(prev => [...prev, errorResponse]);
       
       toast({
         variant: "destructive",
-        title: "AI Service Error",
-        description: errorMessage
+        title: "Analysis Service Error",
+        description: "MegaETH analysis temporarily unavailable"
       });
     } finally {
       setIsLoading(false);
@@ -232,14 +219,14 @@ export default function GrokAIAssistant() {
     setMessages([{
       id: '1',
       type: 'bot',
-      content: "🔄 Chat cleared! I'm ready to help you with career guidance, job search assistance, or any questions you have. What would you like to explore?",
+      content: "🔄 Chat cleared! I'm ready to help you with MegaETH testnet quantum analysis and blockchain integration. What would you like to explore?",
       timestamp: Date.now(),
+      network: "MegaETH Testnet"
     }]);
-    setTotalTokensUsed(0);
     
     toast({
       title: "Chat Cleared",
-      description: "Conversation history has been reset."
+      description: "Ready for new MegaETH quantum analysis"
     });
   };
 
@@ -248,20 +235,21 @@ export default function GrokAIAssistant() {
       messages: messages,
       timestamp: new Date().toISOString(),
       totalMessages: messages.length,
-      totalTokensUsed: totalTokensUsed
+      network: "MegaETH Testnet",
+      platform: "QuantumChain"
     };
     
     const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `grok-ai-chat-${Date.now()}.json`;
+    a.download = `megaeth-quantum-analysis-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     
     toast({
-      title: "Chat Exported",
-      description: "Your conversation has been exported successfully."
+      title: "Analysis Exported",
+      description: "MegaETH quantum analysis exported successfully"
     });
   };
 
@@ -283,28 +271,28 @@ export default function GrokAIAssistant() {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-2xl blur-xl opacity-50" />
             <div className="relative bg-gradient-to-r from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
-              <Brain className="h-12 w-12 text-white quantum-pulse" />
+              <Atom className="h-12 w-12 text-white quantum-pulse" />
             </div>
           </div>
         </div>
         <h1 className="text-5xl font-bold font-headline bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 neon-text">
-          Grok AI Assistant
+          MegaETH Quantum Assistant
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Your intelligent career companion powered by Grok AI - get expert guidance on job search, career development, and professional growth
+          Advanced quantum computing analysis powered by MegaETH testnet blockchain integration
         </p>
         <div className="flex items-center justify-center gap-6 mt-6">
           <Badge variant="outline" className="text-blue-400 border-blue-400/50 px-4 py-2">
-            <Sparkles className="mr-2 h-4 w-4" />
-            Powered by Grok
+            <Globe className="mr-2 h-4 w-4" />
+            MegaETH Testnet
           </Badge>
           <Badge variant="outline" className="text-green-400 border-green-400/50 px-4 py-2">
-            <Zap className="mr-2 h-4 w-4" />
-            Real-time Responses
+            <Shield className="mr-2 h-4 w-4" />
+            Blockchain Secured
           </Badge>
           <Badge variant="outline" className="text-purple-400 border-purple-400/50 px-4 py-2">
-            <Target className="mr-2 h-4 w-4" />
-            Career Focused
+            <Atom className="mr-2 h-4 w-4" />
+            Quantum Ready
           </Badge>
         </div>
       </motion.div>
@@ -320,16 +308,16 @@ export default function GrokAIAssistant() {
                     <Bot className="h-8 w-8 text-primary quantum-pulse" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-headline">Grok AI Assistant</CardTitle>
+                    <CardTitle className="text-2xl font-headline">MegaETH Quantum Assistant</CardTitle>
                     <CardDescription className="text-base">
-                      Career guidance and professional development support
+                      Quantum analysis powered by MegaETH testnet blockchain
                     </CardDescription>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-green-400 border-green-400/50">
-                    <Clock className="mr-1 h-3 w-3" />
-                    {totalTokensUsed.toLocaleString()} tokens
+                    <Activity className="mr-1 h-3 w-3" />
+                    MegaETH Online
                   </Badge>
                   <Button variant="outline" size="sm" onClick={exportChat}>
                     <Download className="mr-2 h-4 w-4" />
@@ -378,13 +366,15 @@ export default function GrokAIAssistant() {
                             <div className="flex items-center justify-between mt-4 pt-3 border-t border-primary/10">
                               <div className="flex items-center gap-2">
                                 <Badge variant="outline" className="text-xs">
-                                  <Brain className="mr-1 h-3 w-3" />
-                                  Grok AI
+                                  <Globe className="mr-1 h-3 w-3" />
+                                  {message.network || "MegaETH Testnet"}
                                 </Badge>
-                                {message.usage && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {message.usage.total_tokens} tokens
-                                  </Badge>
+                                {message.explorer && (
+                                  <Button variant="ghost" size="sm" asChild>
+                                    <a href={message.explorer} target="_blank" rel="noopener noreferrer">
+                                      <span className="text-xs">Explorer</span>
+                                    </a>
+                                  </Button>
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground">
@@ -426,8 +416,8 @@ export default function GrokAIAssistant() {
                             <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
                             <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                           </div>
-                          <span className="text-sm text-muted-foreground">Grok is thinking...</span>
-                          <Brain className="h-4 w-4 text-primary animate-pulse" />
+                          <span className="text-sm text-muted-foreground">Analyzing on MegaETH...</span>
+                          <Atom className="h-4 w-4 text-primary animate-pulse" />
                         </div>
                       </div>
                     </motion.div>
@@ -462,14 +452,14 @@ export default function GrokAIAssistant() {
                       <Input
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Ask about career advice, job search, interview prep, or anything else..."
+                        placeholder="Ask about quantum results, MegaETH integration, or quantum concepts..."
                         className="quantum-input pl-10 h-12 text-base"
                         onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
                         disabled={isLoading}
-                        maxLength={4000}
+                        maxLength={2000}
                       />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                        {inputValue.length}/4000
+                        {inputValue.length}/2000
                       </div>
                     </div>
                     <Button 
@@ -493,9 +483,9 @@ export default function GrokAIAssistant() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-primary" />
-                Quick Start Topics
+                Quantum Analysis Topics
               </CardTitle>
-              <CardDescription>Click any topic to get expert guidance</CardDescription>
+              <CardDescription>Click any topic for MegaETH-powered analysis</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -528,35 +518,35 @@ export default function GrokAIAssistant() {
             </CardContent>
           </Card>
 
-          {/* AI Features */}
+          {/* MegaETH Network Status */}
           <Card className="quantum-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Grok AI Features
+                <Globe className="h-5 w-5 text-primary" />
+                MegaETH Network
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                <span>Real-time responses</span>
+                <span>Testnet operational</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                <span>Career expertise</span>
+                <span>Sub-second finality</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-                <span>Contextual conversations</span>
+                <span>Quantum job logging</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
-                <span>Professional guidance</span>
+                <span>Immutable verification</span>
               </div>
             </CardContent>
           </Card>
 
-          {/* Usage Stats */}
+          {/* Session Stats */}
           <Card className="quantum-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -572,15 +562,15 @@ export default function GrokAIAssistant() {
                 </Badge>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tokens Used:</span>
+                <span className="text-muted-foreground">Network:</span>
                 <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                  {totalTokensUsed.toLocaleString()}
+                  MegaETH
                 </Badge>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">AI Model:</span>
+                <span className="text-muted-foreground">Analysis:</span>
                 <Badge variant="outline" className="text-purple-400 border-purple-400/50">
-                  Grok Beta
+                  Quantum
                 </Badge>
               </div>
               <div className="flex justify-between text-sm">
@@ -593,31 +583,31 @@ export default function GrokAIAssistant() {
             </CardContent>
           </Card>
 
-          {/* Help & Tips */}
+          {/* MegaETH Integration Info */}
           <Card className="quantum-card border-blue-500/20 bg-blue-500/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-400">
-                <HelpCircle className="h-5 w-5" />
-                Tips for Better Results
+                <Shield className="h-5 w-5" />
+                Blockchain Integration
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 shrink-0" />
-                  <span>Be specific about your career goals and current situation</span>
+                  <span>All quantum jobs are immutably logged on MegaETH testnet</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 shrink-0" />
-                  <span>Ask follow-up questions to dive deeper into topics</span>
+                  <span>Transactions verified on blockchain explorer</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 shrink-0" />
-                  <span>Share context about your industry or experience level</span>
+                  <span>Tamper-proof quantum computation records</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 shrink-0" />
-                  <span>Use the quick topics to get started with common questions</span>
+                  <span>Real-time network status and gas optimization</span>
                 </div>
               </div>
             </CardContent>

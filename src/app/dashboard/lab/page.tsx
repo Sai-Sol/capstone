@@ -913,7 +913,7 @@ Question: ${aiPrompt}`;
         className="text-center py-6 border-t border-primary/20"
       >
         <p className="text-sm text-muted-foreground">
-          Powered by <span className="text-primary font-semibold">Grok AI</span> • 
+          Powered by <span className="text-primary font-semibold">MegaETH Testnet</span> • 
           Quantum simulations on <span className="text-primary font-semibold">MegaETH Network</span>
         </p>
       </motion.footer>

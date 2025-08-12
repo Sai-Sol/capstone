@@ -1,7 +1,8 @@
 "use client";
 
-import GrokAIAssistant from "@/components/grok-ai-assistant";
+// RESTORED: MegaETH Quantum Assistant (removed Grok AI dependency)
+import MegaETHQuantumAssistant from "@/components/grok-ai-assistant";
 
 export default function AIPage() {
-  return <GrokAIAssistant />;
+  return <MegaETHQuantumAssistant />;
 }

@@ -61,11 +61,16 @@ export default function WalletConnectButton() {
             <div className="flex items-center gap-2">
               <Wallet className="h-4 w-4" />
               <span className="font-semibold">Wallet Connected</span>
-              <Badge variant="outline" className="text-green-400 border-green-400/50">
+              <Badge variant="outline" className={isCorrectNetwork ? "text-green-400 border-green-400/50" : "text-yellow-400 border-yellow-400/50"}>
                 <CheckCircle className="mr-1 h-3 w-3" />
-                Online
+                {isCorrectNetwork ? "MegaETH" : "Wrong Network"}
               </Badge>
             </div>
+            {!isCorrectNetwork && (
+              <div className="text-xs text-yellow-400">
+                Please switch to MegaETH Testnet
+              </div>
+            )}
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Address</p>
               <div className="flex items-center gap-2">

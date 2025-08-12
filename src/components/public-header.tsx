@@ -23,7 +23,7 @@ export default function PublicHeader() {
               QuantumChain
             </span>
             <span className="text-xs text-muted-foreground font-medium">
-              AI Assistant
+              MegaETH Quantum Platform
             </span>
           </div>
         </Link>

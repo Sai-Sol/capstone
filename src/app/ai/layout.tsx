@@ -1,10 +1,10 @@
 "use client";
 
 import PublicHeader from "@/components/public-header";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 
-export default function AILayout({
+// RESTORED: MegaETH Quantum Layout (removed Grok AI specific layout)
+export default function QuantumLayout({
   children,
 }: {
   children: React.ReactNode;

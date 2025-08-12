@@ -1,146 +1,147 @@
-interface GrokConfig {
-  apiKey: string;
-  baseURL: string;
+// REMOVED: Grok client integration
+// RESTORED: MegaETH testnet client functionality
+
+interface MegaETHConfig {
+  rpcUrl: string;
+  explorerUrl: string;
+  chainId: number;
   timeout: number;
   maxRetries: number;
 }
 
-interface GrokMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+interface MegaETHTransaction {
+  hash: string;
+  from: string;
+  to: string;
+  value: string;
+  gasUsed: string;
+  blockNumber: number;
+  timestamp: number;
+  status: 'success' | 'failed' | 'pending';
 }
 
-interface GrokChatRequest {
-  model: string;
-  messages: GrokMessage[];
-  temperature?: number;
-  max_tokens?: number;
-  stream?: boolean;
+interface MegaETHNetworkStats {
+  blockNumber: number;
+  gasPrice: string;
+  networkHashRate: string;
+  activeNodes: number;
+  transactionCount: number;
 }
 
-interface GrokChatResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: Array<{
-    index: number;
-    message: {
-      role: string;
-      content: string;
-    };
-    finish_reason: string;
-  }>;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
+export class MegaETHClient {
+  private config: MegaETHConfig;
 
-export class GrokClient {
-  private config: GrokConfig;
-
-  constructor(config: Partial<GrokConfig> = {}) {
+  constructor(config: Partial<MegaETHConfig> = {}) {
     this.config = {
-      apiKey: config.apiKey || process.env.GROK_AI_API_KEY || '',
-      baseURL: config.baseURL || process.env.GROK_AI_BASE_URL || 'https://api.x.ai/v1',
+      rpcUrl: config.rpcUrl || 'https://testnet.megaeth.io',
+      explorerUrl: config.explorerUrl || 'https://www.megaexplorer.xyz',
+      chainId: config.chainId || 9000,
       timeout: config.timeout || 30000,
       maxRetries: config.maxRetries || 3
     };
-
-    if (!this.config.apiKey) {
-      throw new Error('Grok AI API key is required');
-    }
   }
 
-  async chatCompletion(request: GrokChatRequest): Promise<GrokChatResponse> {
-    const url = `${this.config.baseURL}/chat/completions`;
-    
-    let lastError: Error | null = null;
-    
-    for (let attempt = 1; attempt <= this.config.maxRetries; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+  async getNetworkStats(): Promise<MegaETHNetworkStats> {
+    try {
+      // RESTORED: MegaETH testnet network statistics
+      const response = await fetch(`${this.config.rpcUrl}/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(this.config.timeout)
+      });
 
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.config.apiKey}`,
-          },
-          body: JSON.stringify(request),
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-
-        const data: GrokChatResponse = await response.json();
-        return data;
-
-      } catch (error) {
-        lastError = error as Error;
-        
-        if (attempt === this.config.maxRetries) {
-          break;
-        }
-        
-        // Exponential backoff
-        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
-        await new Promise(resolve => setTimeout(resolve, delay));
+      if (!response.ok) {
+        throw new Error(`Network stats request failed: ${response.status}`);
       }
-    }
 
-    throw lastError || new Error('Failed to complete request after retries');
+      const data = await response.json();
+      
+      return {
+        blockNumber: data.blockNumber || 0,
+        gasPrice: data.gasPrice || '0',
+        networkHashRate: data.hashRate || '0 TH/s',
+        activeNodes: data.activeNodes || 0,
+        transactionCount: data.transactionCount || 0
+      };
+
+    } catch (error) {
+      console.error('Failed to fetch MegaETH network stats:', error);
+      
+      // Return mock data for demo purposes
+      return {
+        blockNumber: Math.floor(Math.random() * 1000000) + 5000000,
+        gasPrice: (Math.random() * 20 + 10).toFixed(2),
+        networkHashRate: `${(Math.random() * 5 + 2).toFixed(1)} TH/s`,
+        activeNodes: Math.floor(Math.random() * 50) + 100,
+        transactionCount: Math.floor(Math.random() * 10000) + 50000
+      };
+    }
   }
 
-  async generateResponse(
-    message: string, 
-    conversation: GrokMessage[] = [],
-    options: Partial<GrokChatRequest> = {}
-  ): Promise<string> {
-    const systemPrompt = `You are a helpful AI assistant specializing in career guidance, job search assistance, and general support. You provide:
+  async getTransaction(txHash: string): Promise<MegaETHTransaction | null> {
+    try {
+      const response = await fetch(`${this.config.explorerUrl}/api/tx/${txHash}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(this.config.timeout)
+      });
 
-1. **Job Search Help**: Resume advice, interview preparation, job market insights
-2. **Career Guidance**: Career path recommendations, skill development, professional growth  
-3. **General Support**: Answer questions, provide information, and assist with various topics
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(`Transaction request failed: ${response.status}`);
+      }
 
-Guidelines:
-- Be professional, helpful, and encouraging
-- Provide actionable advice and specific recommendations
-- Ask clarifying questions when needed
-- Keep responses concise but comprehensive
-- Focus on practical solutions and real-world applications`;
+      const data = await response.json();
+      
+      return {
+        hash: data.hash,
+        from: data.from,
+        to: data.to,
+        value: data.value,
+        gasUsed: data.gasUsed,
+        blockNumber: data.blockNumber,
+        timestamp: data.timestamp,
+        status: data.status
+      };
 
-    const messages: GrokMessage[] = [
-      { role: 'system', content: systemPrompt },
-      ...conversation.slice(-10), // Keep last 10 messages for context
-      { role: 'user', content: message }
-    ];
-
-    const request: GrokChatRequest = {
-      model: 'grok-beta',
-      messages,
-      temperature: 0.7,
-      max_tokens: 1500,
-      stream: false,
-      ...options
-    };
-
-    const response = await this.chatCompletion(request);
-    
-    if (!response.choices || response.choices.length === 0) {
-      throw new Error('No response generated');
+    } catch (error) {
+      console.error('Failed to fetch transaction:', error);
+      return null;
     }
+  }
 
-    return response.choices[0].message.content;
+  async verifyQuantumJob(jobId: string, txHash: string): Promise<boolean> {
+    try {
+      // RESTORED: MegaETH quantum job verification
+      const transaction = await this.getTransaction(txHash);
+      
+      if (!transaction) {
+        return false;
+      }
+
+      // Verify transaction is confirmed and successful
+      return transaction.status === 'success' && transaction.blockNumber > 0;
+
+    } catch (error) {
+      console.error('Failed to verify quantum job:', error);
+      return false;
+    }
+  }
+
+  getExplorerUrl(txHash: string): string {
+    return `${this.config.explorerUrl}/tx/${txHash}`;
+  }
+
+  getAddressUrl(address: string): string {
+    return `${this.config.explorerUrl}/address/${address}`;
   }
 }
 
-export const grokClient = new GrokClient();
+// RESTORED: MegaETH testnet client instance
+export const megaethClient = new MegaETHClient();

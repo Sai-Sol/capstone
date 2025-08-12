@@ -1,53 +1,57 @@
-export interface GrokMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
+// REMOVED: Grok API types
+// RESTORED: MegaETH testnet types
 
-export interface GrokChatRequest {
-  model: string;
-  messages: GrokMessage[];
-  temperature?: number;
-  max_tokens?: number;
-  stream?: boolean;
-}
-
-export interface GrokChatResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: Array<{
-    index: number;
-    message: {
-      role: string;
-      content: string;
-    };
-    finish_reason: string;
-  }>;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
-
-export interface GrokError {
-  error: {
-    message: string;
-    type: string;
-    code?: string;
-  };
-}
-
-export interface ConversationMessage {
+export interface MegaETHMessage {
   id: string;
   type: 'user' | 'bot';
   content: string;
   timestamp: number;
+  network?: string;
+  explorer?: string;
   isError?: boolean;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
+}
+
+export interface MegaETHAnalysisRequest {
+  message: string;
+  context?: {
+    algorithm?: string;
+    provider?: string;
+    results?: any;
+    code?: string;
+    network: string;
   };
+}
+
+export interface MegaETHAnalysisResponse {
+  response: string;
+  confidence: number;
+  concepts: string[];
+  sources: string[];
+  network: string;
+  explorer?: string;
+  timestamp: number;
+  error?: string;
+}
+
+export interface MegaETHNetworkInfo {
+  chainId: string;
+  chainName: string;
+  rpcUrls: string[];
+  blockExplorerUrls: string[];
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  iconUrls?: string[];
+  faucetUrls?: string[];
+}
+
+export interface QuantumJobVerification {
+  jobId: string;
+  txHash: string;
+  verified: boolean;
+  blockNumber?: number;
+  timestamp?: number;
+  network: string;
 }
