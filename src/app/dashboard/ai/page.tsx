@@ -1,7 +1,7 @@
 "use client";
 
-import AdvancedAIAssistant from "@/components/advanced-ai-assistant";
+import GrokAIAssistant from "@/components/grok-ai-assistant";
 
 export default function AIPage() {
-  return <AdvancedAIAssistant />;
+  return <GrokAIAssistant />;
 }

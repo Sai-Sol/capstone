@@ -236,7 +236,7 @@ export default function LoginPage() {
               </form>
             </Form>
 
-            {/* Professional Security Notice */}
+            {/* Security Notice */}
             <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-green-400 mt-0.5" />
