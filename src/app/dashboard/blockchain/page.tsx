@@ -51,6 +51,9 @@ export default function BlockchainPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
 
+  const isCorrectNetwork = true; // Simplified for demo
+  const switchToMegaETH = () => {}; // Simplified for demo
+
   useEffect(() => {
     if (provider && isConnected) {
       fetchNetworkStats();

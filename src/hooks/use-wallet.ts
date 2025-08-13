@@ -9,3 +9,4 @@ export const useWallet = () => {
     throw new Error("useWallet must be used within a WalletProvider");
   }
   return context;
+};
