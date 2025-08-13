@@ -17,39 +17,8 @@ import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
 import { MEGAETH_TESTNET } from "@/lib/constants";
 
 export default function WalletConnectButton() {
-  const { isConnected, address, balance, connectWallet, disconnectWallet, chainId } = useWallet();
+  const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
   const { toast } = useToast();
-  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
-
-  useEffect(() => {
-    setIsCorrectNetwork(chainId === MEGAETH_TESTNET.chainId);
-  }, [chainId]);
-
-  const switchToMegaETH = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: MEGAETH_TESTNET.chainId }],
-        });
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          try {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [MEGAETH_TESTNET],
-            });
-          } catch (addError) {
-            toast({
-              variant: "destructive",
-              title: "Network Error",
-              description: "Failed to add MegaETH network"
-            });
-          }
-        }
-      }
-    }
-  };
 
   const copyAddress = () => {
     if (address) {
@@ -92,16 +61,11 @@ export default function WalletConnectButton() {
             <div className="flex items-center gap-2">
               <Wallet className="h-4 w-4" />
               <span className="font-semibold">Wallet Connected</span>
-              <Badge variant="outline" className={isCorrectNetwork ? "text-green-400 border-green-400/50" : "text-yellow-400 border-yellow-400/50"}>
+              <Badge variant="outline" className="text-green-400 border-green-400/50">
                 <CheckCircle className="mr-1 h-3 w-3" />
-                {isCorrectNetwork ? "MegaETH" : "Wrong Network"}
+                MegaETH
               </Badge>
             </div>
-            {!isCorrectNetwork && (
-              <div className="text-xs text-yellow-400">
-                Please switch to MegaETH Testnet
-              </div>
-            )}
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Address</p>
               <div className="flex items-center gap-2">

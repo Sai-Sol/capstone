@@ -36,7 +36,7 @@ import { CONTRACT_ADDRESS, MEGAETH_TESTNET } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
 
 export default function BlockchainPage() {
-  const { isConnected, address, balance, provider, signer, chainId } = useWallet();
+  const { isConnected, address, balance, provider, signer } = useWallet();
   const { toast } = useToast();
   const [gasPrice, setGasPrice] = useState<string>("0");
   const [networkStats, setNetworkStats] = useState({
@@ -50,11 +50,6 @@ export default function BlockchainPage() {
   const [sendAddress, setSendAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
-  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
-
-  useEffect(() => {
-    setIsCorrectNetwork(chainId === MEGAETH_TESTNET.chainId);
-  }, [chainId]);
 
   useEffect(() => {
     if (provider && isConnected) {
@@ -63,40 +58,6 @@ export default function BlockchainPage() {
       fetchContractJobs();
     }
   }, [provider, isConnected]);
-
-  const switchToMegaETH = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: MEGAETH_TESTNET.chainId }],
-        });
-        toast({
-          title: "Network Switched",
-          description: "Successfully connected to MegaETH Testnet"
-        });
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          try {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [MEGAETH_TESTNET],
-            });
-            toast({
-              title: "Network Added",
-              description: "MegaETH Testnet added to your wallet"
-            });
-          } catch (addError) {
-            toast({
-              variant: "destructive",
-              title: "Network Error",
-              description: "Failed to add MegaETH network"
-            });
-          }
-        }
-      }
-    }
-  };
 
   const fetchNetworkStats = async () => {
     if (!provider) return;
@@ -116,6 +77,11 @@ export default function BlockchainPage() {
       setGasPrice(formatEther(feeData.gasPrice || 0n));
     } catch (error) {
       console.error("Failed to fetch network stats:", error);
+      toast({
+        variant: "destructive",
+        title: "Network Error",
+        description: "Failed to fetch network statistics"
+      });
     }
   };
 
@@ -179,20 +145,20 @@ export default function BlockchainPage() {
   };
 
   const sendTransaction = async () => {
-    if (!signer || !sendAddress || !sendAmount) {
+    if (!signer) {
       toast({
         variant: "destructive",
-        title: "Invalid Input",
-        description: "Please fill in all fields"
+        title: "Wallet Required",
+        description: "Please connect your wallet first"
       });
       return;
     }
 
-    if (!isCorrectNetwork) {
+    if (!sendAddress || !sendAmount) {
       toast({
         variant: "destructive",
-        title: "Wrong Network",
-        description: "Please switch to MegaETH Testnet"
+        title: "Invalid Input",
+        description: "Please fill in all fields"
       });
       return;
     }
@@ -219,6 +185,7 @@ export default function BlockchainPage() {
       });
       
       fetchRecentTransactions();
+      fetchNetworkStats(); // Refresh balance
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -283,24 +250,6 @@ export default function BlockchainPage() {
           Monitor network activity, manage transactions, and interact with smart contracts on MegaETH
         </p>
       </motion.div>
-
-      {/* Network Warning */}
-      {!isCorrectNetwork && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <Alert className="border-yellow-500/20 bg-yellow-500/5">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between">
-              <span>You're not connected to MegaETH Testnet. Please switch networks to access all features.</span>
-              <Button variant="outline" size="sm" onClick={switchToMegaETH}>
-                Switch Network
-              </Button>
-            </AlertDescription>
-          </Alert>
-        </motion.div>
-      )}
 
       {/* Network Stats */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -449,12 +398,12 @@ export default function BlockchainPage() {
                   <Alert className="border-yellow-500/20 bg-yellow-500/5">
                     <Shield className="h-4 w-4" />
                     <AlertDescription>
-                      Estimated gas fee: ~{(parseFloat(gasPrice) * 21000).toFixed(6)} ETH
+                      Estimated gas fee: ~{(parseFloat(gasPrice || "0") * 21000).toFixed(6)} ETH
                     </AlertDescription>
                   </Alert>
                   <Button 
                     onClick={sendTransaction} 
-                    disabled={isLoading || !sendAddress || !sendAmount || !isCorrectNetwork}
+                    disabled={isLoading || !sendAddress || !sendAmount}
                     className="w-full quantum-button h-12"
                   >
                     {isLoading ? (

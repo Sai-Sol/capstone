@@ -7,25 +7,19 @@ interface WalletContextType {
   provider: BrowserProvider | null;
   signer: JsonRpcSigner | null;
   address: string | null;
-  chainId: string | null;
   balance: string | null;
   isConnected: boolean;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
+  refreshBalance: () => Promise<void>;
 }
 
 export const WalletContext = createContext<WalletContextType | null>(null);
-
-// Helper to format chainId to a hex string
-const formatChainId = (chainId: bigint | number | string) => {
-  return `0x${BigInt(chainId).toString(16)}`;
-};
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [provider, setProvider] = useState<BrowserProvider | null>(null);
   const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
   const [address, setAddress] = useState<string | null>(null);
-  const [chainId, setChainId] = useState<string | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
 
   const isConnected = !!address;
@@ -41,9 +35,19 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setProvider(null);
     setSigner(null);
     setAddress(null);
-    setChainId(null);
     setBalance(null);
   }, []);
+
+  const refreshBalance = useCallback(async () => {
+    if (provider && address) {
+      try {
+        const currentBalance = await provider.getBalance(address);
+        setBalance(formatEther(currentBalance));
+      } catch (error) {
+        console.error("Error refreshing balance:", error);
+      }
+    }
+  }, [provider, address]);
 
   const updateWalletState = useCallback(async (ethereum: any) => {
     try {
@@ -52,13 +56,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       if (accounts.length > 0) {
         const currentSigner = await browserProvider.getSigner();
         const currentAddress = await currentSigner.getAddress();
-        const network: Network = await browserProvider.getNetwork();
         const currentBalance = await browserProvider.getBalance(currentAddress);
 
         setProvider(browserProvider);
         setSigner(currentSigner);
         setAddress(currentAddress);
-        setChainId(formatChainId(network.chainId));
         setBalance(formatEther(currentBalance));
       } else {
         disconnectWallet();
@@ -72,7 +74,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const connectWallet = async () => {
     const ethereum = getEthereumObject();
     if (!ethereum) {
-      alert("Please install MetaMask!");
+      throw new Error("MetaMask not detected. Please install MetaMask to continue.");
       return;
     }
 
@@ -82,6 +84,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       await updateWalletState(ethereum);
     } catch (error) {
       console.error("Error connecting wallet:", error);
+      throw error;
     }
   };
 
@@ -89,14 +92,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     const ethereum = getEthereumObject();
     if (ethereum && ethereum.isMetaMask) {
       const handleAccountsChanged = () => updateWalletState(ethereum);
-      const handleChainChanged = (newChainId: string) => {
-        setChainId(formatChainId(newChainId));
+      const handleChainChanged = () => {
         updateWalletState(ethereum);
-      }
+      };
 
       ethereum.on("accountsChanged", handleAccountsChanged);
       ethereum.on("chainChanged", handleChainChanged);
 
+      // Check if already connected on mount
+      updateWalletState(ethereum);
       return () => {
         ethereum.removeListener("accountsChanged", handleAccountsChanged);
         ethereum.removeListener("chainChanged", handleChainChanged);
@@ -106,7 +110,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <WalletContext.Provider
-      value={{ provider, signer, address, chainId, balance, isConnected, connectWallet, disconnectWallet }}
+      value={{ provider, signer, address, balance, isConnected, connectWallet, disconnectWallet, refreshBalance }}
     >
       {children}
     </WalletContext.Provider>

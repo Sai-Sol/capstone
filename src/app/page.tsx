@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
@@ -9,16 +9,18 @@ import { Atom, Loader2 } from "lucide-react";
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !redirecting) {
+      setRedirecting(true);
       if (user) {
-        router.replace("/dashboard");
+        setTimeout(() => router.replace("/dashboard"), 100);
       } else {
-        router.replace("/login");
+        setTimeout(() => router.replace("/login"), 100);
       }
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, redirecting]);
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -39,7 +41,9 @@ export default function Home() {
         </h1>
         <div className="flex items-center justify-center gap-3">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <p className="text-lg text-muted-foreground">Initializing quantum network...</p>
+          <p className="text-lg text-muted-foreground">
+            {redirecting ? "Redirecting..." : "Initializing quantum network..."}
+          </p>
         </div>
       </motion.div>
     </div>

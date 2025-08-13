@@ -89,4 +89,43 @@
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #2563eb, #2563ebaa);
   }
+
+  /* Quantum-specific animations */
+  .quantum-pulse {
+    animation: quantum-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .quantum-card {
+    @apply border-primary/20 bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm;
+    transition: all 0.3s ease;
+  }
+
+  .quantum-card:hover {
+    @apply border-primary/30 shadow-lg shadow-primary/10;
+  }
+
+  .quantum-button {
+    @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium;
+    transition: all 0.3s ease;
+  }
+
+  .quantum-input {
+    @apply border-primary/20 focus:border-primary/50 bg-background/50 backdrop-blur-sm;
+    transition: all 0.3s ease;
+  }
+
+  .neon-text {
+    text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+  }
+
+  @keyframes quantum-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
 }

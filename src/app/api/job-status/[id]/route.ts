@@ -7,6 +7,14 @@ export async function GET(
 ) {
   try {
     const jobId = params.id;
+    
+    if (!jobId) {
+      return NextResponse.json(
+        { error: 'Job ID is required' },
+        { status: 400 }
+      );
+    }
+    
     const job = jobs.get(jobId);
     
     if (!job) {
@@ -16,13 +24,19 @@ export async function GET(
       );
     }
     
-    return NextResponse.json(job);
+    // Add additional metadata for response
+    const response = {
+      ...job,
+      duration: job.completedAt ? job.completedAt - job.submittedAt : Date.now() - job.submittedAt,
+      isComplete: job.status === 'completed' || job.status === 'failed'
+    };
+    
+    return NextResponse.json(response);
     
   } catch (error) {
     console.error('Job status error:', error);
     return NextResponse.json(
-      { error: 'Failed to get job status' },
+      { error: 'Failed to get job status', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
-}

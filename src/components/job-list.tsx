@@ -21,7 +21,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import PQCSecurityStatus from "./pqc-security";
-import { decryptQuantumJob } from "@/lib/pqc-encryption";
 
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
@@ -136,14 +135,15 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
       const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, provider);
       const filter = contract.filters.JobLogged();
       const currentBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, currentBlock - 10000);
+      const fromBlock = Math.max(0, currentBlock - 5000); // Reduced block range for better performance
 
       const logs = await contract.queryFilter(filter, fromBlock, 'latest');
 
       const parsedJobs: Job[] = logs.map((log: any) => {
         let metadata;
         try {
-          metadata = JSON.parse(log.args.ipfsHash);
+          const ipfsData = log.args.ipfsHash;
+          metadata = typeof ipfsData === 'string' ? JSON.parse(ipfsData) : ipfsData;
         } catch {
           metadata = null;
         }
@@ -162,7 +162,7 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
       onTotalJobsChange(parsedJobs.length);
     } catch (e: any) {
       console.error("Failed to fetch jobs:", e);
-      setError(`Quantum network error: ${e.message}`);
+      setError(`Network connection error. Please check your wallet connection and try again.`);
       setJobs([]);
       onTotalJobsChange(0);
     } finally {

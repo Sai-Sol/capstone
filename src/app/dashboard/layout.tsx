@@ -24,9 +24,6 @@ export default function DashboardLayout({
   React.useEffect(() => {
     if (mounted && !loading && !user) {
       router.replace("/login");
-    } else if (mounted && !loading && user) {
-      // User is authenticated, ensure we stay on dashboard
-      console.log("User authenticated:", user);
     }
   }, [user, loading, router, mounted]);
 
@@ -55,7 +52,19 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    return null; // Let the redirect happen
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <p className="text-lg text-muted-foreground mt-4">Redirecting to login...</p>
+        </motion.div>
+      </div>
+    );
   }
 
   return (

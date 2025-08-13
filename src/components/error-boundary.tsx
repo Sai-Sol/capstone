@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { AlertTriangle, RefreshCw, Home, Bug, Copy } from "lucide-react";
 
 interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 interface ErrorBoundaryProps {
@@ -29,12 +30,39 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    this.setState({ errorInfo });
+    
+    // Log error to analytics in production
+    if (process.env.NODE_ENV === 'production') {
+      fetch('/api/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'error',
+          metadata: {
+            message: error.message,
+            stack: error.stack,
+            componentStack: errorInfo.componentStack
+          }
+        })
+      }).catch(console.error);
+    }
   }
 
+  copyErrorDetails = () => {
+    const errorDetails = {
+      message: this.state.error?.message,
+      stack: this.state.error?.stack,
+      componentStack: this.state.errorInfo?.componentStack,
+      timestamp: new Date().toISOString()
+    };
+    
+    navigator.clipboard.writeText(JSON.stringify(errorDetails, null, 2));
+  };
   render() {
     if (this.state.hasError) {
       const reset = () => {
-        this.setState({ hasError: false, error: undefined });
+        this.setState({ hasError: false, error: undefined, errorInfo: undefined });
       };
 
       if (this.props.fallback) {
@@ -53,13 +81,13 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             <Card className="quantum-card">
               <CardHeader className="text-center">
                 <div className="mx-auto mb-4 p-3 bg-red-500/20 rounded-full w-fit">
-                  <AlertTriangle className="h-8 w-8 text-red-400" />
+                  <Bug className="h-8 w-8 text-red-400" />
                 </div>
                 <CardTitle className="text-2xl font-headline text-red-400">
-                  Quantum Error Detected
+                  Application Error
                 </CardTitle>
                 <CardDescription>
-                  Something went wrong in the quantum realm
+                  An unexpected error occurred
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -69,6 +97,21 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                     {this.state.error?.message || "An unexpected error occurred"}
                   </AlertDescription>
                 </Alert>
+                
+                {process.env.NODE_ENV === 'development' && this.state.error?.stack && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Error Details</span>
+                      <Button variant="ghost" size="sm" onClick={this.copyErrorDetails}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </Button>
+                    </div>
+                    <pre className="text-xs bg-muted/50 p-3 rounded-lg overflow-auto max-h-32">
+                      {this.state.error.stack}
+                    </pre>
+                  </div>
+                )}
                 
                 <div className="flex gap-3">
                   <Button onClick={reset} className="flex-1 quantum-button">

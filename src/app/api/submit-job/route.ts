@@ -7,17 +7,25 @@ interface JobSubmission {
   priority: string;
   submissionType: string;
   txHash: string;
+  userId?: string;
+  metadata?: any;
 }
 
 interface JobResult {
   jobId: string;
   status: "running" | "completed" | "failed";
   progress: number;
+  submittedAt: number;
+  completedAt?: number;
+  userId?: string;
   results?: {
     measurements: Record<string, number>;
     fidelity: string;
     executionTime: string;
     circuitDepth: number;
+    shots: number;
+    algorithm: string;
+    provider: string;
   };
   error?: string;
 }
@@ -25,10 +33,29 @@ interface JobResult {
 // In-memory job storage (in production, use a database)
 const jobs = new Map<string, JobResult>();
 
+// Add job cleanup for memory management
+setInterval(() => {
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+  
+  for (const [jobId, job] of jobs.entries()) {
+    if (now - job.submittedAt > oneHour && job.status === 'completed') {
+      jobs.delete(jobId);
+    }
+  }
+}, 10 * 60 * 1000); // Clean up every 10 minutes
 export async function POST(request: NextRequest) {
   try {
     const jobData: JobSubmission = await request.json();
     
+    // Validate input data
+    if (!jobData.jobType || !jobData.description) {
+      return NextResponse.json(
+        { error: 'Missing required fields: jobType and description' },
+        { status: 400 }
+      );
+    }
+
     // Generate unique job ID
     const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
@@ -36,20 +63,34 @@ export async function POST(request: NextRequest) {
     const job: JobResult = {
       jobId,
       status: "running",
-      progress: 0
+      progress: 0,
+      submittedAt: Date.now(),
+      userId: jobData.userId
     };
     
     jobs.set(jobId, job);
     
     // Start quantum execution simulation
-    executeQuantumJob(jobId, jobData);
+    executeQuantumJob(jobId, jobData).catch(error => {
+      console.error(`Job ${jobId} execution failed:`, error);
+      const failedJob = jobs.get(jobId);
+      if (failedJob) {
+        failedJob.status = "failed";
+        failedJob.error = error.message;
+        jobs.set(jobId, failedJob);
+      }
+    });
     
-    return NextResponse.json({ jobId, status: "submitted" });
+    return NextResponse.json({ 
+      jobId, 
+      status: "submitted",
+      estimatedCompletion: Date.now() + 30000 // 30 seconds
+    });
     
   } catch (error) {
     console.error('Job submission error:', error);
     return NextResponse.json(
-      { error: 'Failed to submit job' },
+      { error: 'Failed to submit job', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -61,10 +102,11 @@ async function executeQuantumJob(jobId: string, jobData: JobSubmission) {
   
   try {
     // Simulate quantum execution with progress updates
-    const totalSteps = 10;
+    const totalSteps = 8;
+    const stepDelay = jobData.priority === 'high' ? 300 : jobData.priority === 'medium' ? 500 : 800;
     
     for (let step = 1; step <= totalSteps; step++) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, stepDelay));
       
       const progress = (step / totalSteps) * 100;
       job.progress = progress;
@@ -76,23 +118,41 @@ async function executeQuantumJob(jobId: string, jobData: JobSubmission) {
       measurements: generateMockMeasurements(jobData.description),
       fidelity: getFidelityForAlgorithm(jobData.description),
       executionTime: getExecutionTimeForAlgorithm(jobData.description),
-      circuitDepth: getCircuitDepthForAlgorithm(jobData.description)
+      circuitDepth: getCircuitDepthForAlgorithm(jobData.description),
+      shots: 1024,
+      algorithm: extractAlgorithmName(jobData.description),
+      provider: jobData.provider
     };
     
     // Complete the job
     job.status = "completed";
+    job.completedAt = Date.now();
     job.results = mockResults;
     jobs.set(jobId, { ...job });
     
-    // Store in analytics (in production, save to database)
-    console.log(`Job ${jobId} completed:`, mockResults);
+    console.log(`Job ${jobId} completed successfully in ${job.completedAt - job.submittedAt}ms`);
     
   } catch (error) {
     console.error(`Job ${jobId} failed:`, error);
     job.status = "failed";
-    job.error = "Quantum execution failed";
+    job.error = error instanceof Error ? error.message : "Quantum execution failed";
+    job.completedAt = Date.now();
     jobs.set(jobId, { ...job });
   }
+}
+
+function extractAlgorithmName(description: string): string {
+  const lowerDesc = description.toLowerCase();
+  
+  if (lowerDesc.includes('bell')) return 'Bell State';
+  if (lowerDesc.includes('grover')) return "Grover's Search";
+  if (lowerDesc.includes('shor')) return "Shor's Algorithm";
+  if (lowerDesc.includes('teleport')) return 'Quantum Teleportation';
+  if (lowerDesc.includes('superposition')) return 'Superposition';
+  if (lowerDesc.includes('vqe')) return 'VQE';
+  if (lowerDesc.includes('qaoa')) return 'QAOA';
+  
+  return 'Custom Algorithm';
 }
 
 function generateMockMeasurements(description: string): Record<string, number> {

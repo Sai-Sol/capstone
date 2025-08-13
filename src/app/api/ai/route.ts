@@ -242,12 +242,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (message.length > 5000) {
+      return NextResponse.json(
+        { error: 'Message too long. Maximum 5000 characters allowed.' },
+        { status: 400 }
+      );
+    }
+
     // Check if query is tech-related
     if (!isTechRelated(message)) {
       return NextResponse.json({
         response: "I'm a specialized AI assistant focused exclusively on technology topics. I can help you with:\n\n• Programming and software development\n• Quantum computing and algorithms\n• Blockchain and cryptocurrency\n• AI and machine learning\n• Cloud computing and DevOps\n• Cybersecurity and system architecture\n• Web and mobile development\n• Database design and optimization\n\nPlease ask me a technology-related question, and I'll provide detailed, expert-level guidance.",
         confidence: 100,
-        sources: ["AI Assistant Guidelines"]
+        sources: ["AI Assistant Guidelines"],
+        timestamp: Date.now()
       });
     }
 
@@ -257,13 +265,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       response: relevantContent,
       confidence: 95,
-      sources: ["QuantumChain Knowledge Base", "Technical Documentation"]
+      sources: ["QuantumChain Knowledge Base", "Technical Documentation"],
+      timestamp: Date.now(),
+      messageLength: message.length
     });
 
   } catch (error) {
     console.error('AI API error:', error);
     return NextResponse.json(
-      { error: 'Failed to process your request. Please try again.' },
+      { 
+        error: 'Failed to process your request. Please try again.',
+        timestamp: Date.now(),
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
