@@ -18,6 +18,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Contract } from "ethers";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
+import CostEstimator from "@/components/cost-estimator";
+import PQCSecurityStatus from "@/components/pqc-security";
+import { encryptQuantumJob } from "@/lib/pqc-encryption";
 import { 
   Terminal, 
   Play, 
@@ -39,8 +42,7 @@ import {
   Target,
   Brain,
   Sparkles,
-  TrendingUp,
-  Calendar
+  TrendingUp
 } from "lucide-react";
 
 interface QuantumResult {
@@ -199,11 +201,13 @@ export default function LabPage() {
         timestamp: Date.now()
       };
 
-      const tx = await contract.logJob(provider, JSON.stringify(jobMetadata));
+      // Encrypt job metadata with PQC before blockchain storage
+      const encryptedMetadata = await encryptQuantumJob(jobMetadata);
+      const tx = await contract.logJob(provider, JSON.stringify(encryptedMetadata));
       
       toast({
         title: "🚀 Quantum Execution Started",
-        description: "Algorithm submitted to quantum processor..."
+        description: "Algorithm encrypted and submitted to quantum processor..."
       });
 
       // Initialize result tracking
@@ -905,6 +909,24 @@ Question: ${aiPrompt}`;
         </Card>
       </div>
 
+      {/* Cost Estimator Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <CostEstimator />
+      </motion.div>
+
+      {/* PQC Security Status */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        <PQCSecurityStatus />
+      </motion.div>
+
       {/* Footer */}
       <motion.footer
         initial={{ opacity: 0 }}
@@ -913,8 +935,8 @@ Question: ${aiPrompt}`;
         className="text-center py-6 border-t border-primary/20"
       >
         <p className="text-sm text-muted-foreground">
-          Powered by <span className="text-primary font-semibold">MegaETH Testnet</span> • 
-          Quantum simulations on <span className="text-primary font-semibold">MegaETH Network</span>
+          Secured with <span className="text-green-400 font-semibold">Post-Quantum Cryptography</span> • 
+          Powered by <span className="text-primary font-semibold">MegaETH Testnet</span>
         </p>
       </motion.footer>
     </div>

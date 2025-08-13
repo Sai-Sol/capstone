@@ -39,10 +39,7 @@ export default function Header() {
     { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/lab", label: "Lab", icon: PlusSquare },
     { href: "/dashboard/blockchain", label: "Blockchain", icon: Wallet },
-    { href: "/dashboard/ai", label: "AI Assistant", icon: Brain },
     { href: "/dashboard/history", label: "History", icon: History },
-    { href: "/dashboard/portfolio", label: "Portfolio", icon: TrendingUp },
-    { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   return (
