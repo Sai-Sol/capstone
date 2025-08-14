@@ -9,15 +9,44 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-        response: "I'm a specialized AI assistant focused exclusively on technology topics. I can help you with programming, software development, AI/ML, blockchain, cybersecurity, cloud computing, and all tech-related subjects. Please ask me a technology-related question."
+import { 
   Bot, 
   Send, 
   User, 
-  Atom, 
-  Zap, 
-    // Enhanced system prompt for technology focus
-    const systemPrompt = `You are an AI assistant specialized in technology topics. You provide expert guidance on programming, software development, AI/ML, blockchain, cybersecurity, cloud computing, and related technical subjects. Keep responses informative and technically accurate.`;
+  Brain, 
+  MessageSquare,
+  Lightbulb,
   Code,
+  Atom,
+  Shield,
+  RefreshCw,
+  AlertTriangle,
+  Sparkles,
+  Database,
+  Globe,
+  Smartphone,
+  Monitor,
+  Cloud,
+  Lock,
+  BarChart3,
+  Settings,
+  Search,
+  Download,
+  Zap,
+  Cpu
+} from "lucide-react";
+
+interface Message {
+  id: string;
+  type: 'user' | 'bot';
+  content: string;
+  timestamp: number;
+  isError?: boolean;
+}
+
+interface QuickAction {
+  label: string;
+  query: string;
   icon: any;
   category: string;
 }
@@ -37,12 +66,12 @@ export default function AIAssistant() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const quickActions: QuickAction[] = [
-    { label: "Programming Fundamentals", query: "Explain modern programming best practices and design patterns", icon: Code, category: "programming" },
-    { label: "AI & Machine Learning", query: "What are the latest trends in AI and machine learning?", icon: Brain, category: "ai" },
-    { label: "Cloud Architecture", query: "How do I design scalable cloud infrastructure?", icon: Cloud, category: "cloud" },
-    { label: "Cybersecurity", query: "What are the essential cybersecurity practices for applications?", icon: Shield, category: "security" },
-    { label: "Database Design", query: "Database optimization and design patterns", icon: Database, category: "database" },
-    { label: "DevOps Practices", query: "Modern DevOps and CI/CD best practices", icon: Settings, category: "devops" }
+    { label: "Quantum Computing Basics", query: "Explain quantum computing principles and how qubits work", icon: Atom, category: "quantum" },
+    { label: "Blockchain Security", query: "How does QuantumChain use blockchain for security?", icon: Shield, category: "blockchain" },
+    { label: "Smart Contracts", query: "Explain the QuantumJobLogger smart contract", icon: Code, category: "blockchain" },
+    { label: "Quantum Providers", query: "What quantum computing providers are available?", icon: Cpu, category: "quantum" },
+    { label: "Getting Started", query: "How do I submit my first quantum job?", icon: Lightbulb, category: "platform" },
+    { label: "Platform Features", query: "What features does QuantumChain offer?", icon: Zap, category: "platform" }
   ];
 
   const handleSendMessage = async () => {
@@ -155,7 +184,7 @@ export default function AIAssistant() {
                   </div>
                   <div>
                     <CardTitle className="text-xl">QuantumChain AI</CardTitle>
-                    <CardDescription>Powered by Google Gemini</CardDescription>
+                    <CardDescription>Powered by advanced AI technology</CardDescription>
                   </div>
                 </div>
                 <Button variant="outline" size="sm" onClick={clearChat}>
@@ -326,8 +355,8 @@ export default function AIAssistant() {
               <Alert className="border-primary/20 bg-primary/5">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription className="text-sm">
-                  This AI assistant is specialized for QuantumChain and only answers questions related to 
-                  quantum computing, blockchain technology, and our platform features.
+                  This AI assistant is specialized for QuantumChain and focuses on quantum computing, 
+                  blockchain technology, and platform features.
                 </AlertDescription>
               </Alert>
             </CardContent>

@@ -3,8 +3,7 @@
 import PublicHeader from "@/components/public-header";
 import { Toaster } from "@/components/ui/toaster";
 
-// RESTORED: MegaETH Quantum Layout (removed Grok AI specific layout)
-export default function QuantumLayout({
+export default function AILayout({
   children,
 }: {
   children: React.ReactNode;

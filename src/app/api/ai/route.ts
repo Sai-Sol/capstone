@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Comprehensive technology knowledge base with embeddings simulation
+// Comprehensive technology knowledge base
 const TECH_KNOWLEDGE_BASE = {
   "quantum computing": {
     content: `Quantum computing leverages quantum mechanical phenomena like superposition and entanglement to process information exponentially faster than classical computers for specific problems.
@@ -38,19 +38,16 @@ const TECH_KNOWLEDGE_BASE = {
 • **Solidity**: Primary language for Ethereum and EVM-compatible chains
 • **Vyper**: Python-like alternative with enhanced security
 • **Rust**: Used for Solana, Polkadot, and high-performance chains
-• **Move**: Facebook's language for Aptos and Sui blockchains
 
 **Development Frameworks:**
 • **Hardhat**: Comprehensive Ethereum development environment
 • **Foundry**: Fast, portable toolkit written in Rust
 • **Truffle**: Mature framework with extensive ecosystem
-• **Anchor**: Solana program development framework
 
 **Web3 Integration:**
 • **ethers.js**: Modern, lightweight Ethereum library
 • **web3.js**: Original Ethereum JavaScript API
 • **wagmi**: React hooks for Ethereum with TypeScript
-• **RainbowKit**: Beautiful wallet connection components
 
 **Security Best Practices:**
 • Use OpenZeppelin contracts for standard implementations
@@ -61,44 +58,41 @@ const TECH_KNOWLEDGE_BASE = {
     sources: ["Ethereum Foundation", "OpenZeppelin", "ConsenSys"]
   },
 
-  "artificial intelligence": {
-    content: `Artificial Intelligence encompasses machine learning, deep learning, and cognitive computing systems.
+  "quantumchain platform": {
+    content: `QuantumChain is a revolutionary blockchain-based quantum computing platform that ensures tamper-proof quantum computations.
 
-**Machine Learning Types:**
-• **Supervised Learning**: Classification and regression with labeled data
-• **Unsupervised Learning**: Clustering and pattern discovery
-• **Reinforcement Learning**: Agent-based learning through rewards
-• **Self-Supervised Learning**: Learning from unlabeled data
+**Core Features:**
+• **Immutable Logging**: All quantum jobs are permanently recorded on blockchain
+• **Multi-Provider Access**: Connect to Google Willow, IBM Condor, Amazon Braket
+• **Smart Contract Integration**: QuantumJobLogger contract on MegaETH testnet
+• **Real-time Monitoring**: Live job status and blockchain confirmations
 
-**Deep Learning Architectures:**
-• **Transformers**: Attention mechanism for NLP (GPT, BERT, Claude)
-• **CNNs**: Convolutional networks for computer vision
-• **RNNs/LSTMs**: Sequential data and time series analysis
-• **GANs**: Generative Adversarial Networks for content creation
+**How It Works:**
+1. **Submit Job**: Choose quantum provider and submit computation
+2. **Blockchain Logging**: Job metadata is logged on MegaETH blockchain
+3. **Quantum Execution**: Algorithm runs on selected quantum processor
+4. **Verification**: Results are cryptographically verified and immutable
 
-**Modern AI Frameworks:**
-• **PyTorch**: Dynamic computation graphs, research-friendly
-• **TensorFlow**: Production-ready with extensive ecosystem
-• **JAX**: High-performance ML research with XLA
-• **Hugging Face**: Pre-trained models and transformers
+**Security Benefits:**
+• Tamper-proof quantum computation records
+• Independent verification through blockchain
+• Decentralized trust without central authority
+• Complete audit trail of all operations
 
-**Large Language Models:**
-• **GPT-4**: Multimodal capabilities and reasoning
-• **Claude**: Constitutional AI with safety measures
-• **LLaMA**: Meta's efficient language model family
-• **Gemini**: Google's multimodal AI system`,
-    confidence: 94,
-    sources: ["OpenAI", "Anthropic", "Google DeepMind"]
+**Getting Started:**
+1. Connect your MetaMask wallet to MegaETH testnet
+2. Submit your first quantum algorithm
+3. Monitor execution and verify results on blockchain`,
+    confidence: 99,
+    sources: ["QuantumChain Documentation", "MegaETH Network"]
   }
 };
 
 // Technology keywords for filtering
 const TECH_KEYWORDS = [
-  'programming', 'software', 'development', 'code', 'algorithm', 'quantum',
-  'blockchain', 'cryptocurrency', 'ai', 'machine learning', 'neural network',
-  'javascript', 'python', 'react', 'node', 'typescript', 'solidity',
-  'cloud', 'aws', 'azure', 'docker', 'kubernetes', 'database', 'api',
-  'security', 'encryption', 'web3', 'smart contract', 'defi', 'nft'
+  'quantum', 'qubit', 'superposition', 'entanglement', 'blockchain', 'smart contract',
+  'quantumchain', 'megaeth', 'ethereum', 'solidity', 'algorithm', 'computing',
+  'cryptography', 'security', 'verification', 'immutable', 'decentralized'
 ];
 
 function isTechRelated(query: string): boolean {
@@ -109,126 +103,83 @@ function isTechRelated(query: string): boolean {
 function findRelevantKnowledge(query: string): string {
   const lowerQuery = query.toLowerCase();
   
-  // Check for specific topics in knowledge base
-  for (const [topic, data] of Object.entries(TECH_KNOWLEDGE_BASE)) {
-    if (lowerQuery.includes(topic.replace(/ /g, '')) || 
-        topic.split(' ').some(word => lowerQuery.includes(word))) {
-      return data.content;
-    }
+  // Check for QuantumChain specific queries
+  if (lowerQuery.includes("quantumchain") || lowerQuery.includes("platform") || lowerQuery.includes("how to")) {
+    return TECH_KNOWLEDGE_BASE["quantumchain platform"].content;
   }
   
-  // Specific technology responses
-  if (lowerQuery.includes("react") || lowerQuery.includes("jsx")) {
-    return `React is a JavaScript library for building user interfaces with component-based architecture:
-
-**Core Concepts:**
-• **Components**: Reusable UI building blocks
-• **JSX**: JavaScript syntax extension for HTML-like code
-• **Hooks**: useState, useEffect, useContext for state management
-• **Virtual DOM**: Efficient rendering through reconciliation
-• **Props**: Data passing between components
-
-**Best Practices:**
-• Use functional components with hooks
-• Implement proper error boundaries
-• Optimize with React.memo and useMemo
-• Follow single responsibility principle
-• Use TypeScript for type safety`;
+  // Check for quantum computing queries
+  if (lowerQuery.includes("quantum") || lowerQuery.includes("qubit") || lowerQuery.includes("algorithm")) {
+    return TECH_KNOWLEDGE_BASE["quantum computing"].content;
   }
   
-  if (lowerQuery.includes("python")) {
-    return `Python is a versatile, high-level programming language:
+  // Check for blockchain queries
+  if (lowerQuery.includes("blockchain") || lowerQuery.includes("smart contract") || lowerQuery.includes("ethereum")) {
+    return TECH_KNOWLEDGE_BASE["blockchain development"].content;
+  }
+
+  // Specific feature explanations
+  if (lowerQuery.includes("submit") || lowerQuery.includes("job")) {
+    return `**Submitting Quantum Jobs on QuantumChain**
+
+To submit a quantum job:
+
+1. **Connect Wallet**: Use MetaMask to connect to MegaETH testnet
+2. **Choose Provider**: Select from Google Willow, IBM Condor, or Amazon Braket
+3. **Enter Algorithm**: Describe your quantum algorithm or provide QASM code
+4. **Set Priority**: Choose execution priority (low, medium, high)
+5. **Submit**: Confirm blockchain transaction to log job
+
+**Example Algorithms:**
+• Bell State: "Create entangled Bell state using Hadamard and CNOT gates"
+• Grover's Search: "Search database using Grover's quantum algorithm"
+• Superposition: "Create equal superposition across all qubits"
+
+Your job will be executed on the selected quantum processor and results logged immutably on the blockchain.`;
+  }
+
+  if (lowerQuery.includes("contract") || lowerQuery.includes("address")) {
+    return `**QuantumJobLogger Smart Contract**
+
+**Contract Address**: 0xd1471126F18d76be253625CcA75e16a0F1C5B3e2
+**Network**: MegaETH Testnet
+**Explorer**: https://www.megaexplorer.xyz
+
+**Functions:**
+• **logJob()**: Records quantum job metadata on blockchain
+• **getAllJobs()**: Retrieves all logged quantum jobs
+
+**Security Features:**
+• Immutable job logging
+• Cryptographic verification
+• Tamper-proof audit trail
+• Decentralized verification
+
+The contract ensures all quantum computations are permanently recorded and verifiable.`;
+  }
+
+  // Default comprehensive response
+  return `**QuantumChain Platform Overview**
+
+QuantumChain solves the critical security problem of traditional quantum computing platforms by using blockchain technology for immutable logging.
 
 **Key Features:**
-• **Readable Syntax**: Clean, intuitive code structure
-• **Extensive Libraries**: NumPy, Pandas, TensorFlow, Django
-• **Cross-Platform**: Runs on Windows, macOS, Linux
-• **Interpreted**: No compilation step required
+• Execute quantum algorithms on real processors (Google Willow, IBM Condor, Amazon Braket)
+• Immutable blockchain logging on MegaETH testnet
+• Tamper-proof verification system
+• Real-time job monitoring and status updates
 
-**Popular Frameworks:**
-• **Web**: Django, FastAPI, Flask
-• **Data Science**: Jupyter, Pandas, Matplotlib
-• **AI/ML**: TensorFlow, PyTorch, Scikit-learn
-• **Automation**: Selenium, Beautiful Soup`;
-  }
+**How to Get Started:**
+1. Connect your MetaMask wallet
+2. Submit a quantum algorithm (try "Bell state creation")
+3. Monitor execution and verify results on blockchain
 
-  if (lowerQuery.includes("javascript") || lowerQuery.includes("js")) {
-    return `JavaScript is the language of the web and modern development:
+**Available Quantum Providers:**
+• Google Willow: 105 qubits with error correction
+• IBM Condor: 1,121 qubits for large-scale computations
+• Amazon Braket: Multi-provider quantum cloud access
 
-**Core Features:**
-• **Dynamic Typing**: Flexible variable types
-• **Event-Driven**: Perfect for interactive applications
-• **Asynchronous**: Promises, async/await for non-blocking code
-• **Prototype-Based**: Object-oriented programming model
-
-**Modern JavaScript (ES6+):**
-• **Arrow Functions**: Concise function syntax
-• **Destructuring**: Extract values from arrays/objects
-• **Modules**: Import/export for code organization
-• **Template Literals**: String interpolation with backticks
-
-**Popular Frameworks & Libraries:**
-• **Frontend**: React, Vue.js, Angular, Svelte
-• **Backend**: Node.js, Express.js, Nest.js
-• **Mobile**: React Native, Ionic
-• **Desktop**: Electron, Tauri`;
-  }
-
-  if (lowerQuery.includes("typescript") || lowerQuery.includes("ts")) {
-    return `TypeScript is JavaScript with static type definitions:
-
-**Key Benefits:**
-• **Type Safety**: Catch errors at compile time
-• **Better IDE Support**: Enhanced autocomplete and refactoring
-• **Large Codebase Management**: Easier to maintain complex projects
-• **Modern JavaScript Features**: Latest ECMAScript support
-
-**Type System:**
-• **Basic Types**: string, number, boolean, array
-• **Interfaces**: Define object shapes and contracts
-• **Generics**: Reusable components with type parameters
-• **Union Types**: Variables that can be multiple types
-
-**Best Practices:**
-• Use strict mode for better type checking
-• Define interfaces for API responses
-• Leverage utility types (Partial, Pick, Omit)
-• Use type guards for runtime type checking`;
-  }
-
-  if (lowerQuery.includes("docker") || lowerQuery.includes("container")) {
-    return `Docker revolutionizes application deployment through containerization:
-
-**Core Concepts:**
-• **Images**: Read-only templates for creating containers
-• **Containers**: Lightweight, portable runtime environments
-• **Dockerfile**: Instructions for building custom images
-• **Volumes**: Persistent data storage for containers
-
-**Key Commands:**
-• **docker build**: Create images from Dockerfile
-• **docker run**: Start containers from images
-• **docker-compose**: Multi-container application orchestration
-• **docker push/pull**: Share images via registries
-
-**Best Practices:**
-• Use multi-stage builds for smaller images
-• Implement proper layer caching
-• Use .dockerignore to exclude unnecessary files
-• Run containers as non-root users for security`;
-  }
-
-  // Default tech response
-  return `I can provide detailed guidance on this technology topic. Could you be more specific about:
-
-• Implementation details and best practices
-• Architecture and design patterns  
-• Performance optimization techniques
-• Security considerations
-• Tool recommendations and comparisons
-• Learning resources and roadmaps
-
-The more specific your question, the more targeted my response will be.`;
+What specific aspect would you like to explore further?`;
 }
 
 export async function POST(request: NextRequest) {
@@ -252,14 +203,14 @@ export async function POST(request: NextRequest) {
     // Check if query is tech-related
     if (!isTechRelated(message)) {
       return NextResponse.json({
-        response: "I'm a specialized AI assistant focused exclusively on technology topics. I can help you with:\n\n• Programming and software development\n• Quantum computing and algorithms\n• Blockchain and cryptocurrency\n• AI and machine learning\n• Cloud computing and DevOps\n• Cybersecurity and system architecture\n• Web and mobile development\n• Database design and optimization\n\nPlease ask me a technology-related question, and I'll provide detailed, expert-level guidance.",
+        response: "I'm a specialized AI assistant focused on QuantumChain, quantum computing, and blockchain technology. I can help you with:\n\n• Quantum computing concepts and algorithms\n• QuantumChain platform features and usage\n• Blockchain technology and smart contracts\n• Quantum job submission and verification\n• MegaETH testnet integration\n\nPlease ask me a question related to these topics, and I'll provide detailed guidance.",
         confidence: 100,
-        sources: ["AI Assistant Guidelines"],
+        sources: ["QuantumChain AI Assistant"],
         timestamp: Date.now()
       });
     }
 
-    // Use RAG-like approach with knowledge base
+    // Find relevant knowledge
     const relevantContent = findRelevantKnowledge(message);
     
     return NextResponse.json({ 

@@ -1,14 +1,8 @@
-// REMOVED: Grok AI integration - replaced with MegaETH testnet quantum analysis
-// RESTORED: MegaETH testnet quantum result analysis functionality
-
 import { NextRequest, NextResponse } from 'next/server';
 
-// MegaETH Testnet Quantum Analysis System
-class MegaETHQuantumAnalyzer {
-  private megaethEndpoint = 'https://testnet.megaeth.io';
-  private explorerUrl = 'https://www.megaexplorer.xyz';
-  
-  private quantumPatterns = {
+// Quantum analysis system for QuantumChain
+class QuantumAnalyzer {
+  private analysisPatterns = {
     bell_state: {
       expectedDistribution: { "00": 0.5, "11": 0.5 },
       analysis: "Perfect Bell state entanglement achieved! The 50/50 distribution between |00⟩ and |11⟩ demonstrates quantum entanglement."
@@ -25,16 +19,16 @@ class MegaETHQuantumAnalyzer {
 
   public analyzeQuantumResults(context: any): string {
     if (!context?.results) {
-      return `🔬 **MegaETH Quantum Analysis System**
+      return `🔬 **QuantumChain Analysis System**
 
-Welcome to the MegaETH testnet quantum analysis platform! I can analyze your quantum computation results and provide insights about:
+Welcome to the QuantumChain quantum analysis platform! I can analyze your quantum computation results and provide insights about:
 
 • **Bell States**: Entanglement analysis and fidelity measurements
 • **Grover's Algorithm**: Search optimization and amplitude analysis  
 • **Quantum Circuits**: Gate optimization and error analysis
 • **Superposition States**: Coherence and decoherence analysis
 
-Execute a quantum algorithm first to get detailed analysis of your results on the MegaETH testnet.`;
+Execute a quantum algorithm first to get detailed analysis of your results.`;
     }
 
     const { measurements, fidelity, algorithm } = context.results;
@@ -60,7 +54,7 @@ Execute a quantum algorithm first to get detailed analysis of your results on th
     const hasCorrectPattern = measurements['00'] && measurements['11'] && 
                              !measurements['01'] && !measurements['10'];
     
-    return `🔗 **Bell State Analysis on MegaETH Testnet**
+    return `🔗 **Bell State Analysis**
 
 **Entanglement Quality:** ${fidelity > 95 ? 'Excellent! 🌟' : fidelity > 90 ? 'Good 👍' : 'Needs optimization 🔧'}
 
@@ -73,7 +67,7 @@ ${hasCorrectPattern ?
   '✅ Perfect Bell state achieved! Your qubits are maximally entangled.' :
   '⚠️ Bell state shows some decoherence. Consider circuit optimization.'}
 
-**MegaETH Network Status:** Transaction verified on testnet
+**Blockchain Verification:** Transaction logged on MegaETH testnet
 **Quantum Fidelity:** ${fidelity.toFixed(1)}% - ${fidelity > 95 ? 'Excellent performance' : 'Room for improvement'}
 
 **Next Steps:**
@@ -87,7 +81,7 @@ ${hasCorrectPattern ?
       .sort(([,a], [,b]) => (b as number) - (a as number));
     const topState = sortedStates[0];
     
-    return `🔍 **Grover's Search Analysis on MegaETH Testnet**
+    return `🔍 **Grover's Search Analysis**
 
 **Search Results:**
 • Target State: |${topState[0]}⟩ with ${((topState[1] as number) / 1000 * 100).toFixed(1)}% probability
@@ -99,9 +93,8 @@ ${hasCorrectPattern ?
 • Actual amplification: ${((topState[1] as number) / 1000 * 100).toFixed(1)}%
 • Efficiency: ${fidelity > 90 ? 'High' : 'Moderate'}
 
-**MegaETH Integration:**
+**Blockchain Integration:**
 • Network: MegaETH Testnet verified
-• Gas optimization: Enabled
 • Transaction finality: < 1 second
 
 **Optimization Tips:**
@@ -114,7 +107,7 @@ ${hasCorrectPattern ?
     const states = Object.keys(measurements);
     const uniformity = this.calculateUniformity(measurements);
     
-    return `🌊 **Superposition Analysis on MegaETH Testnet**
+    return `🌊 **Superposition Analysis**
 
 **Quantum Parallelism:**
 • States in superposition: ${states.length}
@@ -127,10 +120,9 @@ ${states.map(state => {
   return `• |${state}⟩: ${prob}%`;
 }).join('\n')}
 
-**MegaETH Network Analysis:**
+**Blockchain Analysis:**
 • Testnet verification: ✅ Confirmed
 • Quantum state logging: Immutable on blockchain
-• Network latency: < 1ms
 
 **Quantum Properties:**
 • Superposition quality: ${uniformity > 0.9 ? 'Excellent' : uniformity > 0.8 ? 'Good' : 'Fair'}
@@ -149,7 +141,7 @@ ${states.map(state => {
     const { results, algorithm, provider } = context;
     const { measurements, fidelity, executionTime } = results;
 
-    return `⚛️ **MegaETH Quantum Analysis for ${algorithm}**
+    return `⚛️ **Quantum Analysis for ${algorithm}**
 
 **Execution Summary:**
 • Algorithm: ${algorithm}
@@ -157,11 +149,10 @@ ${states.map(state => {
 • Fidelity: ${fidelity.toFixed(1)}%
 • Execution Time: ${executionTime.toFixed(1)}ms
 
-**MegaETH Testnet Integration:**
+**MegaETH Integration:**
 • Network: MegaETH Testnet (Chain ID: 9000)
 • Explorer: https://www.megaexplorer.xyz
 • Transaction Status: Verified and immutable
-• Gas Optimization: Active
 
 **Quantum Results:**
 ${Object.entries(measurements).map(([state, count]) => {
@@ -172,15 +163,15 @@ ${Object.entries(measurements).map(([state, count]) => {
 **Performance Assessment:**
 • Quantum fidelity: ${fidelity > 95 ? 'Excellent' : fidelity > 90 ? 'Good' : 'Needs optimization'}
 • Execution speed: ${executionTime < 100 ? 'Fast' : 'Standard'}
-• Network integration: Fully operational on MegaETH testnet
+• Network integration: Fully operational
 
 **Blockchain Verification:**
 All quantum computations are permanently logged on the MegaETH testnet for tamper-proof verification.`;
   }
 }
 
-// Global analyzer instance for MegaETH testnet
-const megaethAnalyzer = new MegaETHQuantumAnalyzer();
+// Global analyzer instance
+const quantumAnalyzer = new QuantumAnalyzer();
 
 export async function POST(request: NextRequest) {
   try {
@@ -193,26 +184,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // RESTORED: MegaETH testnet quantum analysis (removed Grok AI dependency)
-    const response = megaethAnalyzer.analyzeQuantumResults(context);
+    // Analyze quantum results
+    const response = quantumAnalyzer.analyzeQuantumResults(context);
 
     return NextResponse.json({
       response,
       confidence: 95,
-      concepts: ['megaeth_testnet', 'quantum_analysis', 'blockchain_verification'],
-      sources: ["MegaETH Testnet Analysis", "Quantum Computing Knowledge Base"],
+      concepts: ['quantum_analysis', 'blockchain_verification'],
+      sources: ["QuantumChain Analysis", "Quantum Computing Knowledge Base"],
       network: "MegaETH Testnet",
       explorer: "https://www.megaexplorer.xyz",
       timestamp: Date.now()
     });
 
   } catch (error) {
-    console.error('MegaETH Quantum Analysis error:', error);
+    console.error('Quantum Analysis error:', error);
     return NextResponse.json(
       { 
-        response: `🔧 **MegaETH Analysis Temporarily Unavailable**
+        response: `🔧 **Analysis Temporarily Unavailable**
 
-The MegaETH testnet quantum analysis system is temporarily experiencing issues. 
+The quantum analysis system is temporarily experiencing issues. 
 
 **Manual Analysis Available:**
 • Check your quantum results against expected patterns
@@ -223,7 +214,6 @@ The MegaETH testnet quantum analysis system is temporarily experiencing issues.
 **MegaETH Testnet Status:**
 • Network: Operational
 • Explorer: https://www.megaexplorer.xyz
-• RPC: https://testnet.megaeth.io
 
 Please try your analysis again in a moment, or use the MegaETH Explorer for transaction verification.`,
         confidence: 80,

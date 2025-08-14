@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useCallback, useEffect } from "react";
-import { BrowserProvider, JsonRpcSigner, Network, formatEther } from "ethers";
+import { BrowserProvider, JsonRpcSigner, formatEther } from "ethers";
+import { MEGAETH_TESTNET } from "@/lib/constants";
 
 interface WalletContextType {
   provider: BrowserProvider | null;
@@ -49,10 +50,35 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [provider, address]);
 
+  const switchToMegaETH = async (ethereum: any) => {
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: MEGAETH_TESTNET.chainId }],
+      });
+    } catch (switchError: any) {
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [MEGAETH_TESTNET],
+          });
+        } catch (addError) {
+          console.error("Failed to add MegaETH network:", addError);
+          throw addError;
+        }
+      } else {
+        console.error("Failed to switch to MegaETH network:", switchError);
+        throw switchError;
+      }
+    }
+  };
+
   const updateWalletState = useCallback(async (ethereum: any) => {
     try {
       const browserProvider = new BrowserProvider(ethereum);
       const accounts = await browserProvider.listAccounts();
+      
       if (accounts.length > 0) {
         const currentSigner = await browserProvider.getSigner();
         const currentAddress = await currentSigner.getAddress();
@@ -75,12 +101,16 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     const ethereum = getEthereumObject();
     if (!ethereum) {
       throw new Error("MetaMask not detected. Please install MetaMask to continue.");
-      return;
     }
 
     try {
       // Request account access
       await ethereum.request({ method: "eth_requestAccounts" });
+      
+      // Switch to MegaETH testnet
+      await switchToMegaETH(ethereum);
+      
+      // Update wallet state
       await updateWalletState(ethereum);
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -101,6 +131,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Check if already connected on mount
       updateWalletState(ethereum);
+      
       return () => {
         ethereum.removeListener("accountsChanged", handleAccountsChanged);
         ethereum.removeListener("chainChanged", handleChainChanged);

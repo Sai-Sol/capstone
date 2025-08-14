@@ -9,16 +9,14 @@ export const CONTRACT_ADDRESS = "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2";
 
 export const MEGAETH_TESTNET = {
   chainId: "0x2328", // 9000
-  chainName: "Megaeth Testnet",
+  chainName: "MegaETH Testnet",
   nativeCurrency: {
     name: "ETH",
     symbol: "ETH",
     decimals: 18,
   },
-  // RESTORED: MegaETH testnet RPC configuration
-  rpcUrls: ["https://testnet.megaeth.io", "https://rpc.megaeth.io/testnet"],
+  rpcUrls: ["https://testnet.megaeth.io"],
   blockExplorerUrls: ["https://www.megaexplorer.xyz/"],
-  // RESTORED: Additional MegaETH testnet configuration
   iconUrls: ["https://megaeth.io/logo.png"],
   faucetUrls: ["https://faucet.megaeth.io"],
 };
