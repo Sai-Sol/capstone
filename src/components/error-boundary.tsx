@@ -32,8 +32,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({ errorInfo });
     
-    // Log error to analytics in production
-    if (process.env.NODE_ENV === 'production') {
+    // Log error to analytics
+    try {
       fetch('/api/analytics', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,6 +46,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           }
         })
       }).catch(console.error);
+    } catch (analyticsError) {
+      console.error('Failed to log error to analytics:', analyticsError);
     }
   }
 

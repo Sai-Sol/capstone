@@ -30,12 +30,15 @@ const nextConfig: NextConfig = {
   env: {
     SERVICE_ACCOUNT_PRIVATE_KEY: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    // REMOVED: Grok AI environment variables
-    // RESTORED: MegaETH testnet configuration
     MEGAETH_RPC_URL: process.env.MEGAETH_RPC_URL,
     MEGAETH_EXPLORER_URL: process.env.MEGAETH_EXPLORER_URL,
   },
   poweredByHeader: false,
+  // Add error handling for build process
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
 };
 
 export default nextConfig;

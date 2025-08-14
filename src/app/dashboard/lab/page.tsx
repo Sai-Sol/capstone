@@ -149,7 +149,7 @@ measure q[2] -> c[2];`,
 };
 
 export default function LabPage() {
-  const { isConnected, signer } = useWallet();
+  const { isConnected, signer, error, clearError } = useWallet();
   const { toast } = useToast();
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("bell_state");
   const [customCode, setCustomCode] = useState("");
@@ -181,8 +181,18 @@ export default function LabPage() {
       return;
     }
 
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Wallet Error",
+        description: "Please resolve wallet issues before executing algorithms."
+      });
+      return;
+    }
+
     setIsExecuting(true);
     setActiveTab("results");
+    clearError();
     
     try {
       const algorithm = submissionType === "algorithm" ? quantumAlgorithms[selectedAlgorithm as keyof typeof quantumAlgorithms] : null;

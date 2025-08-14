@@ -39,6 +39,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,13 +54,18 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && user) {
-      router.replace("/dashboard");
+    if (mounted && user && !redirecting) {
+      setRedirecting(true);
+      router.replace("/dashboard").catch((error) => {
+        console.error("Redirect failed:", error);
+        setRedirecting(false);
+      });
     }
-  }, [mounted, user, router]);
+  }, [mounted, user, router, redirecting]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    
     try {
       const user = await login(values);
       if (user) {
@@ -67,10 +73,9 @@ export default function LoginPage() {
           title: "Welcome! 🚀",
           description: `Successfully logged in as ${user.name || user.email}`,
         });
-        // Small delay to ensure state is updated
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 100);
+        
+        // Navigate immediately, the useEffect will handle the redirect
+        setRedirecting(true);
       } else {
         toast({
           variant: "destructive",
@@ -79,10 +84,11 @@ export default function LoginPage() {
         });
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         variant: "destructive",
         title: "Connection Error",
-        description: "Login failed. Please try again.",
+        description: "Login failed. Please check your connection and try again.",
       });
     } finally {
       setIsLoading(false);
@@ -222,12 +228,12 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 font-semibold text-base" 
-                  disabled={isLoading}
+                  disabled={isLoading || redirecting}
                 >
-                  {isLoading ? (
+                  {isLoading || redirecting ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Signing in...
+                      {isLoading ? "Signing in..." : "Redirecting..."}
                     </>
                   ) : (
                     <>

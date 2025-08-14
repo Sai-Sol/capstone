@@ -36,7 +36,7 @@ import { CONTRACT_ADDRESS, MEGAETH_TESTNET } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
 
 export default function BlockchainPage() {
-  const { isConnected, address, balance, provider, signer } = useWallet();
+  const { isConnected, address, balance, provider, signer, error, clearError } = useWallet();
   const { toast } = useToast();
   const [gasPrice, setGasPrice] = useState<string>("0");
   const [networkStats, setNetworkStats] = useState({
@@ -51,21 +51,67 @@ export default function BlockchainPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
 
-  const isCorrectNetwork = true; // Simplified for demo
-  const switchToMegaETH = () => {}; // Simplified for demo
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(true);
 
   useEffect(() => {
     if (provider && isConnected) {
+      checkNetwork();
       fetchNetworkStats();
       fetchRecentTransactions();
       fetchContractJobs();
     }
   }, [provider, isConnected]);
 
+  const checkNetwork = async () => {
+    if (!provider) return;
+    
+    try {
+      const network = await provider.getNetwork();
+      const isCorrect = network.chainId === BigInt(9000); // MegaETH testnet
+      setIsCorrectNetwork(isCorrect);
+    } catch (error) {
+      console.error("Failed to check network:", error);
+      setIsCorrectNetwork(false);
+    }
+  };
+
+  const switchToMegaETH = async () => {
+    if (!window.ethereum) {
+      toast({
+        variant: "destructive",
+        title: "MetaMask Required",
+        description: "Please install MetaMask to switch networks"
+      });
+      return;
+    }
+
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x2328' }], // 9000 in hex
+      });
+      
+      toast({
+        title: "Network Switched! 🔄",
+        description: "Successfully switched to MegaETH testnet"
+      });
+      
+      setIsCorrectNetwork(true);
+    } catch (error: any) {
+      console.error("Failed to switch network:", error);
+      toast({
+        variant: "destructive",
+        title: "Network Switch Failed",
+        description: "Failed to switch to MegaETH testnet"
+      });
+    }
+  };
+
   const fetchNetworkStats = async () => {
     if (!provider) return;
     
     try {
+      clearError();
       const blockNumber = await provider.getBlockNumber();
       const feeData = await provider.getFeeData();
       const block = await provider.getBlock(blockNumber);
@@ -83,7 +129,7 @@ export default function BlockchainPage() {
       toast({
         variant: "destructive",
         title: "Network Error",
-        description: "Failed to fetch network statistics"
+        description: "Failed to fetch network statistics. Please check your connection."
       });
     }
   };

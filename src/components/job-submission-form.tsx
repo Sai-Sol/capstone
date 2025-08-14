@@ -76,7 +76,7 @@ interface JobSubmissionFormProps {
 export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [gasEstimate, setGasEstimate] = useState<string | null>(null);
-  const { isConnected, signer, provider } = useWallet();
+  const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -159,7 +159,18 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       return;
     }
 
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Wallet Error",
+        description: "Please resolve wallet connection issues before submitting jobs.",
+      });
+      return;
+    }
+
     setIsLoading(true);
+    clearError();
+    
     try {
       const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, signer);
       
@@ -215,11 +226,23 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       
     } catch (error: any) {
       console.error(error);
-      const errorMessage = error.reason || error.message || "Quantum tunnel disrupted.";
+      
+      let errorMessage = "Quantum tunnel disrupted.";
+      
+      if (error.code === 4001) {
+        errorMessage = "Transaction cancelled by user.";
+      } else if (error.code === -32603) {
+        errorMessage = "Insufficient funds for gas fees.";
+      } else if (error.reason) {
+        errorMessage = error.reason;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Quantum Error",
-        description: errorMessage.length > 100 ? `${errorMessage.substring(0, 100)}...` : errorMessage,
+        description: errorMessage.length > 120 ? `${errorMessage.substring(0, 120)}...` : errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -520,6 +543,22 @@ measure q -> c;`}
                     <AlertTitle className="text-yellow-500">Quantum Link Required</AlertTitle>
                     <AlertDescription className="text-yellow-200/80">
                       Connect your MetaMask wallet to submit quantum jobs to the blockchain network.
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+              
+              {error && isConnected && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                >
+                  <Alert className="border-red-500/20 bg-red-500/5">
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                    <AlertTitle className="text-red-500">Wallet Error</AlertTitle>
+                    <AlertDescription className="text-red-200/80">
+                      {error}
                     </AlertDescription>
                   </Alert>
                 </motion.div>

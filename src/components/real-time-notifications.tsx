@@ -21,9 +21,11 @@ export default function RealTimeNotifications() {
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isEnabled, setIsEnabled] = useState(true);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
-  const { isConnected, lastMessage } = useWebSocket('wss://api.quantumchain.io/ws', {
+  const { isConnected: wsConnected, lastMessage } = useWebSocket('wss://api.quantumchain.io/ws', {
     onMessage: (message) => {
+      setConnectionError(null);
       if (isEnabled && message.type === 'transaction') {
         const notification: Notification = {
           id: Math.random().toString(36).substr(2, 9),
@@ -46,6 +48,7 @@ export default function RealTimeNotifications() {
       }
     },
     onConnect: () => {
+      setConnectionError(null);
       if (isEnabled) {
         const notification: Notification = {
           id: Math.random().toString(36).substr(2, 9),
@@ -59,6 +62,7 @@ export default function RealTimeNotifications() {
       }
     },
     onDisconnect: () => {
+      setConnectionError("Real-time updates disconnected");
       if (isEnabled) {
         const notification: Notification = {
           id: Math.random().toString(36).substr(2, 9),
@@ -70,6 +74,10 @@ export default function RealTimeNotifications() {
         };
         addNotification(notification);
       }
+    },
+    onError: (error) => {
+      setConnectionError("Connection error occurred");
+      console.error("WebSocket error:", error);
     }
   });
 

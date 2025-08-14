@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
+import { WalletProvider } from "@/contexts/wallet-context";
 import { Toaster } from "@/components/ui/toaster";
 import RealTimeNotifications from "@/components/real-time-notifications";
 import ErrorBoundary from "@/components/error-boundary";
-
-const WalletProvider = dynamic(
-  () => import("@/contexts/wallet-context").then((mod) => ({ default: mod.WalletProvider })),
-  { ssr: false }
-);
 
 const inter = Inter({ subsets: ["latin"] });
 

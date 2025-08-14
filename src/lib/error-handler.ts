@@ -103,6 +103,6 @@ export function createErrorResponse(error: unknown, defaultMessage: string = 'In
   return {
     error: errorInfo.message || defaultMessage,
     timestamp: errorInfo.timestamp,
-    ...(process.env.NODE_ENV === 'development' && { details: errorInfo.details })
+    ...(process.env.NODE_ENV === 'development' && errorInfo.details && { details: errorInfo.details })
   };
 }

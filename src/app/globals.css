@@ -95,23 +95,42 @@
     animation: quantum-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  .quantum-glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+
   .quantum-card {
     @apply border-primary/20 bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm;
     transition: all 0.3s ease;
   }
 
   .quantum-card:hover {
-    @apply border-primary/30 shadow-lg shadow-primary/10;
+    @apply border-primary/30 shadow-lg shadow-primary/10 quantum-glow;
   }
 
   .quantum-button {
     @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quantum-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.4);
+  }
+
+  .quantum-button:active {
+    transform: translateY(0);
   }
 
   .quantum-input {
     @apply border-primary/20 focus:border-primary/50 bg-background/50 backdrop-blur-sm;
     transition: all 0.3s ease;
+  }
+
+  .quantum-input:focus {
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
   }
 
   .neon-text {

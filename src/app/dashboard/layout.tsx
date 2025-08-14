@@ -16,18 +16,25 @@ export default function DashboardLayout({
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
+  const [redirecting, setRedirecting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   React.useEffect(() => {
-    if (mounted && !loading && !user) {
-      router.replace("/login");
+    if (mounted && !loading && !user && !redirecting) {
+      setRedirecting(true);
+      router.replace("/login").catch((error) => {
+        console.error("Redirect failed:", error);
+        setError("Navigation failed. Please refresh the page.");
+        setRedirecting(false);
+      });
     }
-  }, [user, loading, router, mounted]);
+  }, [user, loading, router, mounted, redirecting]);
 
-  if (!mounted || loading) {
+  if (!mounted || loading || redirecting) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <motion.div
@@ -44,27 +51,36 @@ export default function DashboardLayout({
           </div>
           <div className="flex items-center justify-center gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-lg text-muted-foreground">Loading quantum platform...</p>
+            <p className="text-lg text-muted-foreground">
+              {loading ? "Loading quantum platform..." : "Redirecting..."}
+            </p>
           </div>
+          
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 max-w-md text-center"
+            >
+              <Alert className="border-red-500/20 bg-red-500/5">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="quantum-button mt-4"
+              >
+                Refresh Page
+              </Button>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     );
   }
 
   if (!user) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="text-center"
-        >
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <p className="text-lg text-muted-foreground mt-4">Redirecting to login...</p>
-        </motion.div>
-      </div>
-    );
+    return null; // Will redirect in useEffect
   }
 
   return (
