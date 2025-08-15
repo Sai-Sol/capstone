@@ -150,20 +150,6 @@ export default function DashboardHomePage() {
             </Card>
           </Link>
 
-          <Link href="/dashboard/mining">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-orange-500/20 hover:border-orange-500/40">
-              <CardContent className="p-6 text-center">
-                <div className="p-3 bg-orange-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Pickaxe className="h-8 w-8 text-orange-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Mining Pool</h3>
-                <p className="text-muted-foreground text-sm">
-                  Participate in network mining
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
           <Link href="/dashboard/create">
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40">
               <CardContent className="p-6 text-center">
