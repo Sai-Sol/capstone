@@ -24,8 +24,8 @@ export default function MobileSearch({ isOpen, onClose }: MobileSearchProps) {
 
   const quickActions = [
     { label: "Submit Quantum Job", icon: Zap, href: "/dashboard/create" },
-    { label: "Check Gas Prices", icon: TrendingUp, href: "/dashboard/blockchain" },
-    { label: "Bridge Assets", icon: History, href: "/dashboard/bridge" },
+    { label: "Blockchain Hub", icon: TrendingUp, href: "/dashboard/blockchain" },
+    { label: "AI Assistant", icon: History, href: "/dashboard/ai" },
   ];
 
   return (

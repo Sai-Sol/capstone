@@ -11,32 +11,29 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
-import { Contract, parseEther, formatEther } from "ethers";
+import { Contract, formatEther } from "ethers";
 import { 
-  Wallet, 
-  Send, 
-  ArrowUpDown, 
+  Globe, 
   TrendingUp, 
   Activity,
   ExternalLink,
   Copy,
   RefreshCw,
   Zap,
-  DollarSign,
   BarChart3,
   Shield,
-  Globe,
   Code,
-  Settings,
   Brain,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Network,
+  Database
 } from "lucide-react";
 import { CONTRACT_ADDRESS, MEGAETH_TESTNET } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
 
 export default function BlockchainPage() {
-  const { isConnected, address, balance, provider, signer, error, clearError } = useWallet();
+  const { isConnected, address, balance, provider, error, clearError } = useWallet();
   const { toast } = useToast();
   const [gasPrice, setGasPrice] = useState<string>("0");
   const [networkStats, setNetworkStats] = useState({
@@ -46,8 +43,6 @@ export default function BlockchainPage() {
     hashRate: "0"
   });
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [sendAmount, setSendAmount] = useState("");
-  const [sendAddress, setSendAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
 
@@ -190,59 +185,6 @@ export default function BlockchainPage() {
     }
   };
 
-  const sendTransaction = async () => {
-    if (!signer) {
-      toast({
-        variant: "destructive",
-        title: "Wallet Required",
-        description: "Please connect your wallet first"
-      });
-      return;
-    }
-
-    if (!sendAddress || !sendAmount) {
-      toast({
-        variant: "destructive",
-        title: "Invalid Input",
-        description: "Please fill in all fields"
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const tx = await signer.sendTransaction({
-        to: sendAddress,
-        value: parseEther(sendAmount)
-      });
-
-      toast({
-        title: "Transaction Sent! 🚀",
-        description: `Transaction hash: ${tx.hash.slice(0, 10)}...`,
-      });
-
-      setSendAmount("");
-      setSendAddress("");
-      await tx.wait();
-      
-      toast({
-        title: "Transaction Confirmed! ✅",
-        description: "Your transaction has been confirmed on MegaETH"
-      });
-      
-      fetchRecentTransactions();
-      fetchNetworkStats(); // Refresh balance
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Transaction Failed",
-        description: error.message
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
@@ -262,7 +204,7 @@ export default function BlockchainPage() {
           <Card className="quantum-card max-w-md text-center">
             <CardHeader>
               <div className="mx-auto mb-4 p-4 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-2xl w-fit">
-                <Wallet className="h-16 w-16 text-primary" />
+                <Globe className="h-16 w-16 text-primary" />
               </div>
               <CardTitle className="text-2xl font-headline">Connect Your Wallet</CardTitle>
               <CardDescription className="text-base">
@@ -271,7 +213,7 @@ export default function BlockchainPage() {
             </CardHeader>
             <CardContent>
               <Button onClick={() => window.location.reload()} className="quantum-button w-full">
-                <Wallet className="mr-2 h-4 w-4" />
+                <Globe className="mr-2 h-4 w-4" />
                 Refresh to Connect
               </Button>
             </CardContent>
@@ -349,7 +291,7 @@ export default function BlockchainPage() {
                 <p className="text-3xl font-bold text-purple-400">MegaETH</p>
               </div>
               <div className="p-2 bg-purple-500/20 rounded-xl">
-                <Globe className="h-8 w-8 text-purple-400 quantum-pulse" />
+                <Network className="h-8 w-8 text-purple-400 quantum-pulse" />
               </div>
             </div>
           </CardContent>
@@ -357,27 +299,26 @@ export default function BlockchainPage() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-muted/30">
+        <TabsList className="grid w-full grid-cols-3 bg-muted/30">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="contracts">Smart Contracts</TabsTrigger>
-          <TabsTrigger value="tools">Tools</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Wallet Overview */}
+          <div className="grid gap-6">
+            {/* Network Overview */}
             <Card className="quantum-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Wallet className="h-5 w-5 text-primary" />
-                  Wallet Overview
+                  <Network className="h-5 w-5 text-primary" />
+                  Network Overview
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-primary">Account Balance</h3>
+                    <h3 className="text-lg font-semibold text-primary">Connected Account</h3>
                     <Button variant="outline" size="sm" onClick={fetchNetworkStats}>
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Refresh
@@ -407,66 +348,6 @@ export default function BlockchainPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Send */}
-            <Card className="quantum-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Send className="h-5 w-5 text-primary" />
-                  Quick Send
-                </CardTitle>
-                <CardDescription>Send ETH to another address on MegaETH</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="recipient">Recipient Address</Label>
-                    <Input
-                      id="recipient"
-                      placeholder="0x..."
-                      value={sendAddress}
-                      onChange={(e) => setSendAddress(e.target.value)}
-                      className="quantum-input"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="amount">Amount (ETH)</Label>
-                    <Input
-                      id="amount"
-                      type="number"
-                      step="0.0001"
-                      placeholder="0.0"
-                      value={sendAmount}
-                      onChange={(e) => setSendAmount(e.target.value)}
-                      className="quantum-input"
-                    />
-                  </div>
-                  <Alert className="border-yellow-500/20 bg-yellow-500/5">
-                    <Shield className="h-4 w-4" />
-                    <AlertDescription>
-                      Gas fee: ~{(parseFloat(gasPrice || "0") * 21000).toFixed(6)} ETH
-                    </AlertDescription>
-                  </Alert>
-                  <Button 
-                    onClick={sendTransaction} 
-                    disabled={isLoading || !sendAddress || !sendAmount}
-                    className="w-full quantum-button h-12 shadow-lg hover:shadow-xl"
-                  >
-                    {isLoading ? (
-                      <>
-                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" />
-                        Send Transaction
-                      </>
-                    )}
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -604,64 +485,6 @@ export default function BlockchainPage() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="tools" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card className="quantum-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-primary" />
-                  Network Tools
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button variant="outline" className="w-full justify-start" onClick={fetchNetworkStats}>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh Data
-                </Button>
-                <Button variant="outline" className="w-full justify-start" onClick={fetchContractJobs}>
-                  <Activity className="mr-2 h-4 w-4" />
-                  Refresh Jobs
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="https://www.megaexplorer.xyz" target="_blank" rel="noopener noreferrer" className="hover:bg-primary/10 transition-colors">
-                    <Globe className="mr-2 h-4 w-4" />
-                    Block Explorer
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="quantum-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  Security Features
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-400" />
-                    <span>Immutable quantum job logging</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-400" />
-                    <span>Cryptographic transaction verification</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-400" />
-                    <span>Decentralized network consensus</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-400" />
-                    <span>Tamper-proof audit trail</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
       </Tabs>
     </div>

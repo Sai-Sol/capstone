@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminDashboard from "@/components/admin-dashboard";
 import JobSubmissionForm from "@/components/job-submission-form";
-import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Play, BookOpen, Lightbulb, Wallet } from "lucide-react";
+import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Play, BookOpen, Lightbulb, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Pickaxe, BarChart3, PlusSquare } from "lucide-react";
+import { Search, BarChart3, PlusSquare } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardHomePage() {
@@ -84,7 +84,7 @@ export default function DashboardHomePage() {
                       Platform Online
                     </Badge>
                     <Badge variant="outline" className={isConnected ? "text-blue-400 border-blue-400/50" : "text-yellow-400 border-yellow-400/50"}>
-                      <Wallet className="mr-2 h-4 w-4" />
+                      <Globe className="mr-2 h-4 w-4" />
                       {isConnected ? "Wallet Connected" : "Wallet Disconnected"}
                     </Badge>
                   </div>
@@ -106,17 +106,17 @@ export default function DashboardHomePage() {
           <Play className="h-7 w-7 text-primary" />
           Quick Actions
         </h2>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-          <Link href="/dashboard/blockchain">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-purple-500/20 hover:border-purple-500/40">
+          <Link href="/dashboard/create">
+            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40">
               <CardContent className="p-6 text-center">
-                <div className="p-3 bg-purple-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Wallet className="h-8 w-8 text-purple-500" />
+                <div className="p-3 bg-green-500/20 rounded-xl w-fit mx-auto mb-4">
+                  <PlusSquare className="h-8 w-8 text-green-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Blockchain Hub</h3>
+                <h3 className="text-xl font-semibold mb-2">Submit Job</h3>
                 <p className="text-muted-foreground text-sm">
-                  Monitor network and manage transactions
+                  Create and submit quantum computing jobs
                 </p>
               </CardContent>
             </Card>
@@ -136,29 +136,29 @@ export default function DashboardHomePage() {
             </Card>
           </Link>
 
-          <Link href="/dashboard/wallet">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-yellow-500/20 hover:border-yellow-500/40">
+          <Link href="/dashboard/blockchain">
+            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-purple-500/20 hover:border-purple-500/40">
               <CardContent className="p-6 text-center">
-                <div className="p-3 bg-yellow-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Wallet className="h-8 w-8 text-yellow-500" />
+                <div className="p-3 bg-purple-500/20 rounded-xl w-fit mx-auto mb-4">
+                  <Globe className="h-8 w-8 text-purple-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Wallet Manager</h3>
+                <h3 className="text-xl font-semibold mb-2">Blockchain Hub</h3>
                 <p className="text-muted-foreground text-sm">
-                  Manage accounts and send transactions
+                  Monitor network and blockchain features
                 </p>
               </CardContent>
             </Card>
           </Link>
 
-          <Link href="/dashboard/create">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40">
+          <Link href="/dashboard/ai">
+            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-pink-500/20 hover:border-pink-500/40">
               <CardContent className="p-6 text-center">
-                <div className="p-3 bg-green-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <PlusSquare className="h-8 w-8 text-green-500" />
+                <div className="p-3 bg-pink-500/20 rounded-xl w-fit mx-auto mb-4">
+                  <Brain className="h-8 w-8 text-pink-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Submit Job</h3>
+                <h3 className="text-xl font-semibold mb-2">AI Assistant</h3>
                 <p className="text-muted-foreground text-sm">
-                  Create and submit quantum computing jobs
+                  Get help with quantum computing and blockchain
                 </p>
               </CardContent>
             </Card>
