@@ -38,6 +38,9 @@ export default function Header() {
   const navItems = [
     { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/create", label: "Create", icon: PlusSquare },
+    { href: "/dashboard/explorer", label: "Explorer", icon: Search },
+    { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
+    { href: "/dashboard/mining", label: "Mining", icon: Cpu },
     { href: "/dashboard/blockchain", label: "Blockchain", icon: Wallet },
     { href: "/dashboard/history", label: "History", icon: History },
   ];

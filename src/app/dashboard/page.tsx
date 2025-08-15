@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Search, Pickaxe, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardHomePage() {
@@ -116,6 +117,48 @@ export default function DashboardHomePage() {
                 <h3 className="text-xl font-semibold mb-2">Blockchain Hub</h3>
                 <p className="text-muted-foreground text-sm">
                   Monitor network and manage transactions
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/explorer">
+            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-blue-500/20 hover:border-blue-500/40">
+              <CardContent className="p-6 text-center">
+                <div className="p-3 bg-blue-500/20 rounded-xl w-fit mx-auto mb-4">
+                  <Search className="h-8 w-8 text-blue-500" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Blockchain Explorer</h3>
+                <p className="text-muted-foreground text-sm">
+                  Explore blocks, transactions, and network data
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/wallet">
+            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-yellow-500/20 hover:border-yellow-500/40">
+              <CardContent className="p-6 text-center">
+                <div className="p-3 bg-yellow-500/20 rounded-xl w-fit mx-auto mb-4">
+                  <Wallet className="h-8 w-8 text-yellow-500" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Wallet Manager</h3>
+                <p className="text-muted-foreground text-sm">
+                  Manage accounts and send transactions
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/mining">
+            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-orange-500/20 hover:border-orange-500/40">
+              <CardContent className="p-6 text-center">
+                <div className="p-3 bg-orange-500/20 rounded-xl w-fit mx-auto mb-4">
+                  <Pickaxe className="h-8 w-8 text-orange-500" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Mining Pool</h3>
+                <p className="text-muted-foreground text-sm">
+                  Participate in network mining
                 </p>
               </CardContent>
             </Card>
