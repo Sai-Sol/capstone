@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Pickaxe, BarChart3 } from "lucide-react";
+import { Search, Pickaxe, BarChart3, PlusSquare } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardHomePage() {
