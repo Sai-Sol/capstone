@@ -24,13 +24,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Atom, Zap, Shield } from "lucide-react";
+import { Loader2, Atom, Zap, Shield, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(3, { message: "Password must be at least 3 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(1, { message: "Password is required." }),
 });
 
 export default function LoginPage() {
@@ -40,6 +41,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,44 +58,51 @@ export default function LoginPage() {
   useEffect(() => {
     if (mounted && user && !redirecting) {
       setRedirecting(true);
-      router.replace("/dashboard").catch((error) => {
-        console.error("Redirect failed:", error);
-        setRedirecting(false);
-      });
+      const timer = setTimeout(() => {
+        router.replace("/dashboard").catch((error) => {
+          console.error("Redirect failed:", error);
+          setRedirecting(false);
+          setLoginError("Navigation failed. Please try refreshing the page.");
+        });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [mounted, user, router, redirecting]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (isLoading || redirecting) return;
+    
     setIsLoading(true);
+    setLoginError(null);
     
     try {
-      const user = await login(values);
-      if (user) {
+      const authenticatedUser = await login(values);
+      
+      if (authenticatedUser) {
         toast({
           title: "Welcome! 🚀",
-          description: `Successfully logged in as ${user.name || user.email}`,
+          description: `Successfully logged in as ${authenticatedUser.name || authenticatedUser.email}`,
         });
         
-        // Navigate immediately, the useEffect will handle the redirect
-        setRedirecting(true);
+        // The useEffect will handle the redirect
       } else {
-        toast({
-          variant: "destructive",
-          title: "Access Denied",
-          description: "Invalid email or password. Please try again.",
-        });
+        setLoginError("Invalid email or password. Please check your credentials and try again.");
+        form.setFocus("email");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Connection Error",
-        description: "Login failed. Please check your connection and try again.",
-      });
+      setLoginError(error.message || "Login failed. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }
   }
+
+  const handleDemoLogin = (email: string, password: string) => {
+    form.setValue("email", email);
+    form.setValue("password", password);
+    form.handleSubmit(onSubmit)();
+  };
 
   if (!mounted) {
     return (
@@ -102,6 +111,29 @@ export default function LoginPage() {
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/20 animate-ping" />
         </div>
+      </div>
+    );
+  }
+
+  if (redirecting) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
+            <div className="relative bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
+              <Atom className="h-12 w-12 text-white quantum-pulse mx-auto" />
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <p className="text-lg text-muted-foreground">Redirecting to dashboard...</p>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -115,12 +147,12 @@ export default function LoginPage() {
             key={i}
             className="absolute w-1 h-1 bg-primary/30 rounded-full"
             initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
             }}
             animate={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
             }}
             transition={{
               duration: Math.random() * 10 + 10,
@@ -154,37 +186,77 @@ export default function LoginPage() {
             </motion.div>
             
             <CardTitle className="text-4xl font-headline font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent neon-text">
-              Quantum Learning Platform
+              QuantumChain
             </CardTitle>
             <CardDescription className="text-base mt-3 text-muted-foreground">
-              Interactive quantum computing education platform
+              Secure blockchain-based quantum computing platform
             </CardDescription>
             
             {/* Feature highlights */}
             <div className="flex justify-center gap-4 mt-6">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Zap className="h-4 w-4 text-blue-500" />
-                <span>Interactive Learning</span>
+                <span>Quantum Computing</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Shield className="h-4 w-4 text-green-500" />
-                <span>Beginner Friendly</span>
+                <span>Blockchain Security</span>
               </div>
             </div>
           </CardHeader>
           
           <CardContent className="space-y-6">
+            {/* Error Display */}
+            {loginError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Alert className="border-red-500/20 bg-red-500/5">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription className="text-red-200">
+                    {loginError}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 {/* Demo Credentials Helper */}
                 <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
                   <div className="flex items-start gap-3">
                     <Shield className="h-5 w-5 text-blue-400 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-medium text-blue-400 mb-1">Demo Access</p>
-                      <p className="text-xs text-blue-200/80">
-                        Try: admin@example.com (password: 456) or p1@example.com (password: 123)
-                      </p>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-blue-400 mb-2">Demo Access Available</p>
+                      <div className="space-y-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto p-2 text-xs text-blue-200 hover:bg-blue-500/10 w-full text-left"
+                          onClick={() => handleDemoLogin("admin@example.com", "456")}
+                          disabled={isLoading}
+                        >
+                          <div>
+                            <div className="font-medium">Admin Account</div>
+                            <div className="text-blue-200/60">admin@example.com • Full access</div>
+                          </div>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto p-2 text-xs text-blue-200 hover:bg-blue-500/10 w-full text-left"
+                          onClick={() => handleDemoLogin("p1@example.com", "123")}
+                          disabled={isLoading}
+                        >
+                          <div>
+                            <div className="font-medium">User Account</div>
+                            <div className="text-blue-200/60">p1@example.com • Standard access</div>
+                          </div>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -199,6 +271,7 @@ export default function LoginPage() {
                         <Input 
                           placeholder="Enter your email address" 
                           className="h-12 border-blue-500/20 focus:border-blue-500/50"
+                          disabled={isLoading}
                           {...field} 
                         />
                       </FormControl>
@@ -217,6 +290,7 @@ export default function LoginPage() {
                           type="password" 
                           placeholder="••••••••••••" 
                           className="h-12 border-blue-500/20 focus:border-blue-500/50"
+                          disabled={isLoading}
                           {...field} 
                         />
                       </FormControl>
@@ -228,12 +302,12 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 font-semibold text-base" 
-                  disabled={isLoading || redirecting}
+                  disabled={isLoading}
                 >
-                  {isLoading || redirecting ? (
+                  {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      {isLoading ? "Signing in..." : "Redirecting..."}
+                      Signing in...
                     </>
                   ) : (
                     <>
@@ -245,6 +319,19 @@ export default function LoginPage() {
               </form>
             </Form>
 
+            {/* Registration Link */}
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link 
+                  href="/register" 
+                  className="font-semibold text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
+                >
+                  Create one here
+                </Link>
+              </p>
+            </div>
+
             {/* Security Notice */}
             <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
               <div className="flex items-start gap-3">
@@ -252,7 +339,7 @@ export default function LoginPage() {
                 <div>
                   <p className="text-xs font-medium text-green-400 mb-1">Secure Platform</p>
                   <p className="text-xs text-green-200/80">
-                    Your learning progress is securely saved and protected.
+                    Your data is protected with enterprise-grade security and blockchain verification.
                   </p>
                 </div>
               </div>
