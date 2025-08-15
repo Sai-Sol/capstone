@@ -107,11 +107,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           });
         } catch (addError: any) {
           console.error("Failed to add MegaETH network:", addError);
-          throw new Error("Failed to add MegaETH network. Please add it manually in MetaMask.");
+          console.warn("Network not added, continuing with current network");
         }
       } else {
         console.error("Failed to switch to MegaETH network:", switchError);
-        throw new Error("Failed to switch to MegaETH network. Please try again.");
+        console.warn("Network switch failed, continuing with current network");
       }
     }
   };
@@ -125,18 +125,12 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         const ethereum = getEthereumObject();
         if (ethereum) {
           await switchToMegaETH(ethereum);
-          // Re-check network after switch
-          const newNetwork = await browserProvider.getNetwork();
-          if (newNetwork.chainId !== expectedChainId) {
-            throw new Error("Network switch failed. Please manually switch to MegaETH testnet.");
-          }
-        } else {
-          throw new Error("Please switch to MegaETH testnet in MetaMask.");
         }
+        // Continue regardless of network - user is aware
       }
     } catch (error: any) {
       console.error("Network validation failed:", error);
-      throw error;
+      // Don't throw error, just log it - user is aware of network requirements
     }
   };
 

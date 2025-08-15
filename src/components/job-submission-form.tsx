@@ -153,8 +153,8 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     if (!signer) {
       toast({
         variant: "destructive",
-        title: "Quantum Link Required",
-        description: "Please connect your MetaMask wallet to access the quantum network.",
+        title: "Wallet Required",
+        description: "Please connect your wallet to submit quantum jobs.",
       });
       return;
     }
@@ -163,7 +163,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       toast({
         variant: "destructive",
         title: "Wallet Error",
-        description: "Please resolve wallet connection issues before submitting jobs.",
+        description: "Please check your wallet connection and try again.",
       });
       return;
     }
@@ -188,7 +188,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       const jobDescription = JSON.stringify(jobMetadata);
 
       toast({
-        title: "Quantum Transaction Initiated 🔮",
+        title: "Transaction Initiated 🚀",
         description: "Please confirm the blockchain transaction in your wallet.",
       });
 
@@ -197,15 +197,15 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       const tx = await contract.logJob(values.jobType, jobDescription);
       
       toast({
-        title: "Quantum Job Submitted ⚡",
-        description: "Your job is being processed on the quantum network...",
+        title: "Job Submitted ⚡",
+        description: "Your job is being processed...",
       });
 
       await tx.wait();
 
       toast({
-        title: "Success! Quantum Job Logged 🎉",
-        description: "Your quantum computation has been securely recorded on the blockchain.",
+        title: "Success! Job Logged 🎉",
+        description: "Your job has been securely recorded on the blockchain.",
         action: (
           <Button asChild variant="link" size="sm">
             <a href={`https://www.megaexplorer.xyz/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
@@ -227,7 +227,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     } catch (error: any) {
       console.error(error);
       
-      let errorMessage = "Quantum tunnel disrupted.";
+      let errorMessage = "Transaction failed.";
       
       if (error.code === 4001) {
         errorMessage = "Transaction cancelled by user.";
@@ -241,7 +241,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       
       toast({
         variant: "destructive",
-        title: "Quantum Error",
+        title: "Transaction Error",
         description: errorMessage.length > 120 ? `${errorMessage.substring(0, 120)}...` : errorMessage,
       });
     } finally {
@@ -521,12 +521,12 @@ measure q -> c;`}
               {isLoading ? (
                 <>
                   <Loader2 className="mr-3 h-5 w-5 animate-spin" /> 
-                  Processing Quantum Transaction...
+                  Processing Transaction...
                 </>
               ) : (
                 <>
                   <Terminal className="mr-3 h-5 w-5" />
-                  Submit to Quantum Network
+                  Submit Job to Blockchain
                 </>
               )}
             </Button>
@@ -540,9 +540,9 @@ measure q -> c;`}
                 >
                   <Alert className="border-yellow-500/20 bg-yellow-500/5">
                     <Zap className="h-4 w-4 text-yellow-500" />
-                    <AlertTitle className="text-yellow-500">Quantum Link Required</AlertTitle>
+                    <AlertTitle className="text-yellow-500">Wallet Connection Required</AlertTitle>
                     <AlertDescription className="text-yellow-200/80">
-                      Connect your MetaMask wallet to submit quantum jobs to the blockchain network.
+                      Connect your wallet to submit quantum jobs to the blockchain.
                     </AlertDescription>
                   </Alert>
                 </motion.div>

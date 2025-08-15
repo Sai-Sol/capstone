@@ -105,20 +105,7 @@ export default function DashboardHomePage() {
           <Play className="h-7 w-7 text-primary" />
           Quick Actions
         </h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          <Link href="/dashboard/lab">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-primary/20 hover:border-primary/40">
-              <CardContent className="p-6 text-center">
-                <div className="p-3 bg-primary/20 rounded-xl w-fit mx-auto mb-4">
-                  <Atom className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Quantum Lab</h3>
-                <p className="text-muted-foreground text-sm">
-                  Execute quantum algorithms on real processors
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+        <div className="grid gap-6 md:grid-cols-2">
 
           <Link href="/dashboard/blockchain">
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-purple-500/20 hover:border-purple-500/40">
@@ -134,15 +121,15 @@ export default function DashboardHomePage() {
             </Card>
           </Link>
 
-          <Link href="/dashboard/ai">
+          <Link href="/dashboard/create">
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40">
               <CardContent className="p-6 text-center">
                 <div className="p-3 bg-green-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <BookOpen className="h-8 w-8 text-green-500" />
+                  <PlusSquare className="h-8 w-8 text-green-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">AI Assistant</h3>
+                <h3 className="text-xl font-semibold mb-2">Submit Job</h3>
                 <p className="text-muted-foreground text-sm">
-                  Get help with quantum computing concepts
+                  Create and submit quantum computing jobs
                 </p>
               </CardContent>
             </Card>

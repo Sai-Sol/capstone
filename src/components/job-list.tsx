@@ -123,7 +123,7 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
 
   const fetchJobs = useCallback(async () => {
     if (!isConnected || !provider) {
-      setError("Connect your wallet to access the quantum job history.");
+      setError("Connect your wallet to access job history.");
       setIsLoading(false);
       return;
     }
@@ -310,8 +310,8 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
               {searchTerm 
                 ? "Try adjusting your search terms or filters."
                 : userRole === 'user' 
-                  ? "Your quantum computations will appear here once submitted." 
-                  : "No jobs have been logged to the quantum network yet."
+                  ? "Your submitted jobs will appear here." 
+                  : "No jobs have been logged yet."
               }
             </p>
           </motion.div>

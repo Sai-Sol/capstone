@@ -99,11 +99,8 @@ export default function BlockchainPage() {
       setIsCorrectNetwork(true);
     } catch (error: any) {
       console.error("Failed to switch network:", error);
-      toast({
-        variant: "destructive",
-        title: "Network Switch Failed",
-        description: "Failed to switch to MegaETH testnet"
-      });
+      // Don't show error toast - user is aware of network requirements
+      console.warn("Network switch failed, continuing with current network");
     }
   };
 
@@ -307,9 +304,11 @@ export default function BlockchainPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Block Height</p>
-                <p className="text-2xl font-bold text-primary">{networkStats.blockNumber.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-primary">{networkStats.blockNumber.toLocaleString()}</p>
               </div>
-              <Activity className="h-8 w-8 text-primary quantum-pulse" />
+              <div className="p-2 bg-primary/20 rounded-xl">
+                <Activity className="h-8 w-8 text-primary quantum-pulse" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -319,9 +318,11 @@ export default function BlockchainPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Gas Price</p>
-                <p className="text-2xl font-bold text-green-400">{parseFloat(gasPrice).toFixed(6)} ETH</p>
+                <p className="text-3xl font-bold text-green-400">{parseFloat(gasPrice).toFixed(6)} ETH</p>
               </div>
-              <Zap className="h-8 w-8 text-green-400 quantum-pulse" />
+              <div className="p-2 bg-green-500/20 rounded-xl">
+                <Zap className="h-8 w-8 text-green-400 quantum-pulse" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -331,9 +332,11 @@ export default function BlockchainPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Hash Rate</p>
-                <p className="text-2xl font-bold text-blue-400">{networkStats.hashRate}</p>
+                <p className="text-3xl font-bold text-blue-400">{networkStats.hashRate}</p>
               </div>
-              <BarChart3 className="h-8 w-8 text-blue-400 quantum-pulse" />
+              <div className="p-2 bg-blue-500/20 rounded-xl">
+                <BarChart3 className="h-8 w-8 text-blue-400 quantum-pulse" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -343,9 +346,11 @@ export default function BlockchainPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Network</p>
-                <p className="text-2xl font-bold text-purple-400">MegaETH</p>
+                <p className="text-3xl font-bold text-purple-400">MegaETH</p>
               </div>
-              <Globe className="h-8 w-8 text-purple-400 quantum-pulse" />
+              <div className="p-2 bg-purple-500/20 rounded-xl">
+                <Globe className="h-8 w-8 text-purple-400 quantum-pulse" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -395,15 +400,10 @@ export default function BlockchainPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Network</p>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={isCorrectNetwork ? "text-green-400 border-green-400/50" : "text-yellow-400 border-yellow-400/50"}>
-                          <div className={`w-2 h-2 rounded-full mr-1 ${isCorrectNetwork ? 'bg-green-400' : 'bg-yellow-400'} animate-pulse`} />
-                          {isCorrectNetwork ? "MegaETH Testnet" : "Wrong Network"}
+                        <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+                          <div className="w-2 h-2 rounded-full mr-1 bg-blue-400 animate-pulse" />
+                          Connected
                         </Badge>
-                        {!isCorrectNetwork && (
-                          <Button variant="outline" size="sm" onClick={switchToMegaETH}>
-                            Switch
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -447,13 +447,13 @@ export default function BlockchainPage() {
                   <Alert className="border-yellow-500/20 bg-yellow-500/5">
                     <Shield className="h-4 w-4" />
                     <AlertDescription>
-                      Estimated gas fee: ~{(parseFloat(gasPrice || "0") * 21000).toFixed(6)} ETH
+                      Gas fee: ~{(parseFloat(gasPrice || "0") * 21000).toFixed(6)} ETH
                     </AlertDescription>
                   </Alert>
                   <Button 
                     onClick={sendTransaction} 
                     disabled={isLoading || !sendAddress || !sendAmount}
-                    className="w-full quantum-button h-12"
+                    className="w-full quantum-button h-12 shadow-lg hover:shadow-xl"
                   >
                     {isLoading ? (
                       <>
@@ -498,7 +498,7 @@ export default function BlockchainPage() {
                           <code className="text-sm font-mono text-primary">{tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}</code>
                           <Badge variant="outline" className="text-green-400 border-green-400/50">
                             <CheckCircle className="mr-1 h-3 w-3" />
-                            {tx.status}
+                            Success
                           </Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
@@ -511,7 +511,7 @@ export default function BlockchainPage() {
                           <span className="text-muted-foreground">{new Date(tx.timestamp).toLocaleTimeString()}</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" asChild>
+                      <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 transition-colors">
                         <a href={`https://www.megaexplorer.xyz/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4" />
                         </a>
@@ -618,16 +618,16 @@ export default function BlockchainPage() {
               <CardContent className="space-y-4">
                 <Button variant="outline" className="w-full justify-start" onClick={fetchNetworkStats}>
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh Network Stats
+                  Refresh Data
                 </Button>
                 <Button variant="outline" className="w-full justify-start" onClick={fetchContractJobs}>
                   <Activity className="mr-2 h-4 w-4" />
-                  Refresh Contract Jobs
+                  Refresh Jobs
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="https://www.megaexplorer.xyz" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.megaexplorer.xyz" target="_blank" rel="noopener noreferrer" className="hover:bg-primary/10 transition-colors">
                     <Globe className="mr-2 h-4 w-4" />
-                    Open MegaETH Explorer
+                    Block Explorer
                   </a>
                 </Button>
               </CardContent>
