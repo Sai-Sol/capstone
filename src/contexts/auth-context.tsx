@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       let users = storedUsers ? JSON.parse(storedUsers) : [...HARDCODED_USERS];
 
       if (users.some((u: any) => u.email === credentials.email)) {
-        throw new Error("User already exists.");
+        throw new Error("An account with this email already exists. Please use a different email or sign in instead.");
       }
 
       const newUser = { 
@@ -92,6 +92,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("quantum-users-db", JSON.stringify(users));
 
       return newUser;
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

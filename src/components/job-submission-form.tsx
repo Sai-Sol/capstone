@@ -40,7 +40,7 @@ import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, M
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Alert, AlertDescription } from "./ui/alert";
 import { Badge } from "./ui/badge";
 
 const formSchema = z.object({
@@ -540,8 +540,8 @@ measure q -> c;`}
                 >
                   <Alert className="border-yellow-500/20 bg-yellow-500/5">
                     <Zap className="h-4 w-4 text-yellow-500" />
-                    <AlertTitle className="text-yellow-500">Wallet Connection Required</AlertTitle>
                     <AlertDescription className="text-yellow-200/80">
+                      <div className="font-semibold text-yellow-500 mb-1">Wallet Connection Required</div>
                       Connect your wallet to submit quantum jobs to the blockchain.
                     </AlertDescription>
                   </Alert>
@@ -556,8 +556,8 @@ measure q -> c;`}
                 >
                   <Alert className="border-red-500/20 bg-red-500/5">
                     <AlertTriangle className="h-4 w-4 text-red-500" />
-                    <AlertTitle className="text-red-500">Wallet Error</AlertTitle>
                     <AlertDescription className="text-red-200/80">
+                      <div className="font-semibold text-red-500 mb-1">Wallet Error</div>
                       {error}
                     </AlertDescription>
                   </Alert>

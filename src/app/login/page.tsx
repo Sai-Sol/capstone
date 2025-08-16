@@ -40,7 +40,6 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,14 +55,13 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && user && !redirecting) {
-      setRedirecting(true);
+    if (mounted && user) {
       router.replace("/dashboard");
     }
-  }, [mounted, user, router, redirecting]);
+  }, [mounted, user, router]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isLoading || redirecting) return;
+    if (isLoading) return;
     
     setIsLoading(true);
     setLoginError(null);
@@ -76,8 +74,7 @@ export default function LoginPage() {
           title: "Welcome! 🚀",
           description: `Successfully logged in as ${authenticatedUser.name || authenticatedUser.email}`,
         });
-        
-        // The useEffect will handle the redirect
+        router.replace("/dashboard");
       } else {
         setLoginError("Invalid email or password. Please check your credentials and try again.");
         form.setFocus("email");
@@ -91,6 +88,7 @@ export default function LoginPage() {
   }
 
   const handleDemoLogin = (email: string, password: string) => {
+    if (isLoading) return;
     form.setValue("email", email);
     form.setValue("password", password);
     form.handleSubmit(onSubmit)();
@@ -107,27 +105,10 @@ export default function LoginPage() {
     );
   }
 
-  if (redirecting) {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="relative mb-6">
-            <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-            <div className="relative bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
-              <Atom className="h-12 w-12 text-white quantum-pulse mx-auto" />
-            </div>
-          </div>
-          <div className="flex items-center justify-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-lg text-muted-foreground">Redirecting to dashboard...</p>
-          </div>
-        </motion.div>
-      </div>
-    );
+  // Redirect if user is already logged in
+  if (user) {
+    router.replace("/dashboard");
+    return null;
   }
 
   return (

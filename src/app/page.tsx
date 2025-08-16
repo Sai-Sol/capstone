@@ -12,22 +12,24 @@ export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !loading) {
+    if (mounted && !loading && !redirecting) {
+      setRedirecting(true);
       if (user) {
         router.replace("/dashboard");
       } else {
         router.replace("/login");
       }
     }
-  }, [mounted, loading, user, router]);
+  }, [mounted, loading, user, router, redirecting]);
 
-  if (!mounted || loading) {
+  if (!mounted || loading || redirecting) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <motion.div
@@ -48,7 +50,7 @@ export default function Home() {
           <div className="flex items-center justify-center gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <p className="text-lg text-muted-foreground">
-              Initializing quantum platform...
+              {redirecting ? "Redirecting..." : "Initializing quantum platform..."}
             </p>
           </div>
         </motion.div>

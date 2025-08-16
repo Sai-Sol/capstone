@@ -25,8 +25,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserPlus, Globe, Shield, Zap, Atom } from "lucide-react";
+import { Loader2, UserPlus, Globe, Shield, Zap, Atom, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const formSchema = z.object({
@@ -53,6 +54,7 @@ export default function RegisterPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,7 +78,11 @@ export default function RegisterPage() {
   }, [mounted, user, router]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (isLoading) return;
+    
     setIsLoading(true);
+    setRegistrationError(null);
+    
     try {
       const { confirmPassword, ...registerData } = values;
       await register(registerData);
@@ -86,10 +92,13 @@ export default function RegisterPage() {
       });
       router.push("/login");
     } catch (error: any) {
+      console.error("Registration error:", error);
+      const errorMessage = error.message || "Registration failed. Please try again.";
+      setRegistrationError(errorMessage);
       toast({
         variant: "destructive",
         title: "Registration Error",
-        description: error.message || "An error occurred. Please try again.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -107,6 +116,11 @@ export default function RegisterPage() {
     );
   }
 
+  // Redirect if user is already logged in
+  if (user) {
+    router.replace("/dashboard");
+    return null;
+  }
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background */}
@@ -163,6 +177,21 @@ export default function RegisterPage() {
           </CardHeader>
           
           <CardContent className="space-y-4">
+            {/* Error Display */}
+            {registrationError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Alert className="border-red-500/20 bg-red-500/5">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription className="text-red-200">
+                    {registrationError}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
@@ -175,6 +204,7 @@ export default function RegisterPage() {
                         <Input 
                           placeholder="John Doe" 
                           className="quantum-input"
+                          disabled={isLoading}
                           {...field} 
                         />
                       </FormControl>
@@ -193,6 +223,7 @@ export default function RegisterPage() {
                         <Input 
                           placeholder="john@example.com" 
                           className="quantum-input"
+                          disabled={isLoading}
                           {...field} 
                         />
                       </FormControl>
@@ -207,7 +238,7 @@ export default function RegisterPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Country</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                         <FormControl>
                           <SelectTrigger className="quantum-input">
                             <SelectValue placeholder="Select country" />
@@ -237,6 +268,7 @@ export default function RegisterPage() {
                           type="password" 
                           placeholder="••••••••" 
                           className="quantum-input"
+                          disabled={isLoading}
                           {...field} 
                         />
                       </FormControl>
@@ -256,6 +288,7 @@ export default function RegisterPage() {
                           type="password" 
                           placeholder="••••••••" 
                           className="quantum-input"
+                          disabled={isLoading}
                           {...field} 
                         />
                       </FormControl>
