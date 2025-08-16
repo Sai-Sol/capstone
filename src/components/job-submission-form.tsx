@@ -40,7 +40,7 @@ import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, M
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Alert, AlertDescription } from "./ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 
 const formSchema = z.object({
