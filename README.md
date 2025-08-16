@@ -1,129 +1,121 @@
-# QuantumChain - Blockchain-Based Quantum Cloud Logging System
+# QuantumChain - Blockchain Quantum Computing Platform
 
-QuantumChain is a revolutionary blockchain-based quantum cloud logging system that solves the critical security problem of traditional quantum cloud platforms. By leveraging blockchain immutability, we ensure that quantum computations are tamper-proof and verifiable.
+A revolutionary blockchain-based quantum computing platform that ensures tamper-proof quantum computations through immutable logging on the MegaETH testnet.
 
-## 🔧 Recent Enhancements
+## 🚀 Features
 
-### Login System Enhancement
-- **Professional Interface**: Removed visible demo credentials from UI while maintaining backend functionality
-- **Secure Access**: Demo accounts remain accessible for development (admin: 456, user: 123)
-- **Clean Design**: Implemented professional login interface without exposed test data
+- **Quantum Computing**: Execute algorithms on Google Willow, IBM Condor, and Amazon Braket
+- **Blockchain Security**: Immutable logging on MegaETH testnet for tamper-proof verification
+- **Smart Contracts**: QuantumJobLogger contract for secure job recording
+- **Wallet Integration**: MetaMask integration with MegaETH testnet support
+- **Real-time Monitoring**: Live blockchain explorer and network statistics
+- **Advanced Lab**: Comprehensive quantum algorithm execution environment
 
-### Blockchain Hub Functionality
-- **Wallet Operations**: Complete wallet connection, balance checking, and transaction management
-- **Smart Contract Interactions**: Full-featured contract interaction interface with ABI support
-- **Transaction History**: Real-time transaction monitoring with detailed status tracking
-- **Portfolio Management**: Portfolio value tracking and performance metrics
-- **Gas Optimization**: Advanced gas price monitoring and optimization tools
+## 🔧 Getting Started
 
-### AI Integration
-- **Blockchain AI Assistant**: Specialized AI focused on blockchain and cryptocurrency technology
-- **Technical Expertise**: Covers smart contracts, DeFi protocols, trading strategies, and Web3 development
-- **Free Implementation**: Uses open-source knowledge base without paid API dependencies
-- **Interactive Chat**: Professional chat interface with quick action buttons and categorized responses
-- **Domain-Specific**: Provides technically accurate guidance for blockchain/crypto domain
+### Prerequisites
 
-## 🔒 Problem Statement
+- Node.js 18+ and npm
+- MetaMask browser extension
+- MegaETH testnet configuration
 
-Traditional quantum cloud logging systems lack security and can be tampered with. This creates significant trust issues where:
-- Quantum computation results can be altered without detection
-- No immutable audit trail exists for verification
-- Users cannot independently verify computational integrity
-- Centralized systems are vulnerable to manipulation
+### Installation
 
-## 💡 Our Solution
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open [http://localhost:9002](http://localhost:9002) in your browser
 
-QuantumChain introduces a blockchain-based system where:
-- **Blockchain Immutability**: All quantum jobs are permanently recorded on the blockchain ledger
-- **Tamper-Proof Security**: Cryptographic hashing prevents unauthorized modifications
-- **User Verification**: Users can independently verify that computations haven't been altered
-- **Complete Transparency**: Full audit trail of all quantum operations
+### MetaMask Setup
 
-## 🚀 Key Features
+Configure MegaETH testnet in MetaMask:
+- **Network Name**: MegaETH Testnet
+- **RPC URL**: https://testnet.megaeth.io
+- **Chain ID**: 9000
+- **Currency Symbol**: ETH
+- **Block Explorer**: https://www.megaexplorer.xyz
 
-### Core Security Features
-- **Immutable Logging**: Every quantum job is cryptographically secured on MegaETH blockchain
-- **Tamper Detection**: Any attempt to modify results is immediately detectable
-- **Verification System**: Users can verify computational integrity through blockchain records
-- **Audit Trail**: Complete history of all quantum operations with timestamps
+## 🔐 Demo Accounts
 
-### Enhanced Functionality
-- **Multi-Provider Support**: Connect to IBM Quantum, Google Quantum, and Amazon Braket
-- **Real-time Monitoring**: Live job status updates and blockchain confirmations
-- **Priority Processing**: Choose execution priority levels (low, medium, high)
-- **Gas Estimation**: Automatic transaction cost calculation
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Admin**: admin@example.com / 456
+- **User**: p1@example.com / 123
+
+## 🏗️ Architecture
+
+### Frontend
+- **Framework**: Next.js 15 with React 18
+- **Styling**: Tailwind CSS with custom quantum theme
+- **UI Components**: Radix UI with custom components
+- **Animations**: Framer Motion
 
 ### Blockchain Integration
-- **MegaETH Network**: High-performance L2 blockchain for fast, secure logging
-- **Smart Contract**: Dedicated QuantumJobLogger contract for all operations
-- **MetaMask Integration**: Secure wallet connection with network validation
-- **Transaction Tracking**: Full blockchain explorer integration
+- **Network**: MegaETH Testnet (Chain ID: 9000)
+- **Smart Contract**: QuantumJobLogger at `0xd1471126F18d76be253625CcA75e16a0F1C5B3e2`
+- **Wallet**: MetaMask integration with ethers.js
 
-## 🔧 Technology Stack
+### Key Components
+- **Quantum Lab**: Advanced algorithm execution environment
+- **Blockchain Explorer**: Real-time network monitoring
+- **Job History**: Comprehensive job tracking and verification
+- **Wallet Management**: Secure transaction handling
 
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion, Radix UI
-- **Blockchain**: Ethers.js, MetaMask integration
-- **Network**: MegaETH Testnet
-- **Smart Contract**: Solidity-based logging system with interaction tools
-- **AI Assistant**: Custom blockchain-focused knowledge base
-- **Wallet Operations**: Complete transaction management system
-
-## 🔗 Smart Contract Details
+## 📊 Smart Contract
 
 **Contract Address**: `0xd1471126F18d76be253625CcA75e16a0F1C5B3e2`
 **Network**: MegaETH Testnet
-**Explorer**: [MegaExplorer](https://www.megaexplorer.xyz/)
+**Explorer**: [View on MegaExplorer](https://www.megaexplorer.xyz/address/0xd1471126F18d76be253625CcA75e16a0F1C5B3e2)
 
-## 🛡️ Security Architecture
+### Functions
+- `logJob(string jobType, string ipfsHash)`: Log quantum job to blockchain
+- `getAllJobs()`: Retrieve all logged jobs
 
-### 1. Quantum Execution
-- Jobs are executed on quantum cloud platforms with real-time monitoring
-- Results are captured and prepared for blockchain logging
+## 🧪 Quantum Providers
 
-### 2. Blockchain Logging
-- Results are cryptographically hashed using SHA-256
-- Metadata includes timestamps, user addresses, and job parameters
-- Data is permanently stored on the immutable blockchain ledger
+- **Google Willow**: 105 qubits with error correction
+- **IBM Condor**: 1,121 qubits for large-scale computations  
+- **Amazon Braket**: 256 qubits with multi-provider access
 
-### 3. Verification System
-- Users can verify computational integrity through blockchain records
-- Hash comparison ensures no tampering has occurred
-- Complete audit trail provides transparency
+## 🔒 Security
 
-## 🎯 Benefits
+- Post-quantum cryptography for future-proof security
+- Immutable blockchain logging prevents tampering
+- MetaMask integration for secure wallet operations
+- Comprehensive input validation and error handling
 
-- **Security**: Eliminates tampering risks through blockchain immutability
-- **Trust**: Users can independently verify their computations
-- **Transparency**: Complete audit trail of all operations
-- **Reliability**: Decentralized system with no single point of failure
-- **Scalability**: High-throughput blockchain for enterprise use
+## 📱 Usage
 
-## 🚀 Getting Started
+1. **Connect Wallet**: Use MetaMask to connect to MegaETH testnet
+2. **Submit Jobs**: Create quantum algorithms in the Quantum Lab
+3. **Monitor Execution**: View real-time results and blockchain verification
+4. **Explore Network**: Use blockchain explorer for network insights
 
-1. **Connect Wallet**: Use MetaMask to connect to MegaETH Testnet
-2. **Submit Job**: Choose quantum provider and submit your computation
-3. **Blockchain Logging**: Job is automatically logged on the blockchain
-4. **Verify Results**: Use blockchain explorer to verify computational integrity
+## 🛠️ Development
 
-## 📈 Future Roadmap
+### Scripts
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run start`: Start production server
+- `npm run lint`: Run ESLint
+- `npm run typecheck`: TypeScript type checking
 
-- **Q1 2025**: Mainnet launch with enhanced security features
-- **Q2 2025**: Mobile app with biometric verification
-- **Q3 2025**: Enterprise API and advanced analytics
-- **Q4 2025**: Multi-chain support and quantum marketplace
+### Testing
+- `npm test`: Run test suite
+- Jest configuration with comprehensive API and component tests
 
-## 🤝 Contributing
+## 🌐 Deployment
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/security-enhancement`)
-3. Commit changes (`git commit -m 'Add enhanced verification'`)
-4. Push to branch (`git push origin feature/security-enhancement`)
-5. Open Pull Request
+The application is configured for deployment on Firebase App Hosting with automatic builds and MegaETH testnet integration.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see LICENSE file for details.
 
-**Built with ❤️ for secure quantum computing**
+---
+
+**Built for secure quantum computing on the blockchain** 🚀

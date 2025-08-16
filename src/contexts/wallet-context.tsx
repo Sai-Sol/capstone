@@ -122,7 +122,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       const expectedChainId = BigInt(parseInt(MEGAETH_TESTNET.chainId, 16));
       
       if (network.chainId !== expectedChainId) {
-        console.log(`Connected to chain ${network.chainId}, MegaETH testnet recommended`);
+        console.log(`Connected to chain ${network.chainId}, continuing with current network`);
         // Continue with current network
       }
     } catch (error: any) {

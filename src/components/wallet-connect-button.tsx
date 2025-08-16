@@ -44,14 +44,12 @@ export default function WalletConnectButton() {
   useEffect(() => {
     if (error) {
       setShowError(true);
-      // Only show critical errors, not network warnings
-      if (!error.includes("network") && !error.includes("switch")) {
-        toast({
-          variant: "destructive",
-          title: "Wallet Error",
-          description: error,
-        });
-      }
+      // Show error toast for user feedback
+      toast({
+        variant: "destructive",
+        title: "Wallet Error",
+        description: error,
+      });
     }
   }, [error, toast]);
 

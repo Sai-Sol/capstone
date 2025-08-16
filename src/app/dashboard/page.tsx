@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminDashboard from "@/components/admin-dashboard";
 import JobSubmissionForm from "@/components/job-submission-form";
-import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Play, BookOpen, Lightbulb, Brain } from "lucide-react";
+import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Play, BookOpen, Lightbulb } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, BarChart3, PlusSquare } from "lucide-react";
+import { Search, BarChart3, PlusSquare, Terminal } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardHomePage() {
@@ -150,15 +150,15 @@ export default function DashboardHomePage() {
             </Card>
           </Link>
 
-          <Link href="/dashboard/ai">
+          <Link href="/dashboard/lab">
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-pink-500/20 hover:border-pink-500/40">
               <CardContent className="p-6 text-center">
                 <div className="p-3 bg-pink-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Brain className="h-8 w-8 text-pink-500" />
+                  <Terminal className="h-8 w-8 text-pink-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">AI Assistant</h3>
+                <h3 className="text-xl font-semibold mb-2">Quantum Lab</h3>
                 <p className="text-muted-foreground text-sm">
-                  Get help with quantum computing and blockchain
+                  Advanced quantum algorithm execution
                 </p>
               </CardContent>
             </Card>

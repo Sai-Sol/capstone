@@ -33,7 +33,6 @@ import {
   Zap,
   BarChart3,
   Download,
-  Brain,
   Sparkles,
   TrendingUp
 } from "lucide-react";
@@ -110,6 +109,7 @@ export default function LabPage() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [currentResult, setCurrentResult] = useState<QuantumResult | null>(null);
   const [shots, setShots] = useState(1024);
+  const [executionHistory, setExecutionHistory] = useState<QuantumResult[]>([]);
 
   const providers = [
     { value: "Google Willow", label: "Google Willow", qubits: 105, fidelity: 99.9 },
@@ -216,6 +216,9 @@ export default function LabPage() {
     };
     
     setCurrentResult(completedResult);
+    
+    // Add to execution history
+    setExecutionHistory(prev => [completedResult, ...prev.slice(0, 9)]); // Keep last 10 results
 
     toast({
       title: "🎉 Quantum Algorithm Completed!",
@@ -294,6 +297,86 @@ export default function LabPage() {
       </motion.div>
 
       <div className="grid gap-8 lg:grid-cols-2">
+        {/* Execution Results History */}
+        <Card className="quantum-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-primary" />
+              Execution Results
+            </CardTitle>
+            <CardDescription>Recent quantum algorithm execution results</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {executionHistory.length > 0 ? (
+              <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                {executionHistory.map((result, index) => (
+                  <motion.div
+                    key={result.jobId}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-primary border-primary/50">
+                          {result.jobId}
+                        </Badge>
+                        <Badge variant="outline" className="text-green-400 border-green-400/50">
+                          <CheckCircle className="mr-1 h-3 w-3" />
+                          Complete
+                        </Badge>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => setCurrentResult(result)}>
+                        View Details
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Algorithm:</span>
+                        <span className="font-medium">{result.algorithm}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Provider:</span>
+                        <span className="font-medium">{result.provider}</span>
+                      </div>
+                      {result.results && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Fidelity:</span>
+                            <span className="font-medium text-green-400">{result.results.fidelity.toFixed(1)}%</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Execution:</span>
+                            <span className="font-medium">{result.results.executionTime.toFixed(1)}ms</span>
+                          </div>
+                        </>
+                      )}
+                      {result.timestamp && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Time:</span>
+                          <span className="font-medium">{new Date(result.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <Atom className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4 quantum-pulse" />
+                <h3 className="text-xl font-semibold text-muted-foreground mb-2">
+                  No Results Yet
+                </h3>
+                <p className="text-muted-foreground">
+                  Execute quantum algorithms to see results here
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Algorithm Configuration */}
         <Card className="quantum-card">
           <CardHeader>
@@ -439,19 +522,21 @@ export default function LabPage() {
             )}
           </CardContent>
         </Card>
+      </div>
 
-        {/* Results Display */}
+      {/* Current Result Display */}
+      {currentResult && (
         <Card className="quantum-card">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-primary" />
-                  Quantum Results & Analysis
+                  Current Execution: {currentResult.jobId}
                 </CardTitle>
                 <CardDescription>Real-time quantum algorithm execution results</CardDescription>
               </div>
-              {currentResult?.results && (
+              {currentResult.results && (
                 <Button variant="outline" size="sm" onClick={downloadResults}>
                   <Download className="mr-2 h-4 w-4" />
                   Export
@@ -460,147 +545,134 @@ export default function LabPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {currentResult ? (
-              <div className="space-y-6">
-                {/* Execution Status */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-primary">Execution Status</h4>
-                    <Badge variant="outline" className={
-                      currentResult.status === 'completed' ? 'text-green-400 border-green-400/50' :
-                      currentResult.status === 'running' ? 'text-yellow-400 border-yellow-400/50' :
-                      'text-red-400 border-red-400/50'
-                    }>
-                      {currentResult.status === 'running' && <Activity className="mr-1 h-3 w-3 animate-spin" />}
-                      {currentResult.status === 'completed' && <CheckCircle className="mr-1 h-3 w-3" />}
-                      {currentResult.status}
-                    </Badge>
+            <div className="space-y-6">
+              {/* Execution Status */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-primary">Execution Status</h4>
+                  <Badge variant="outline" className={
+                    currentResult.status === 'completed' ? 'text-green-400 border-green-400/50' :
+                    currentResult.status === 'running' ? 'text-yellow-400 border-yellow-400/50' :
+                    'text-red-400 border-red-400/50'
+                  }>
+                    {currentResult.status === 'running' && <Activity className="mr-1 h-3 w-3 animate-spin" />}
+                    {currentResult.status === 'completed' && <CheckCircle className="mr-1 h-3 w-3" />}
+                    {currentResult.status}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span>Job ID:</span>
+                    <span className="font-mono text-primary">{currentResult.jobId}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Algorithm:</span>
+                    <span className="font-medium">{currentResult.algorithm}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Provider:</span>
+                    <span className="font-medium">{currentResult.provider}</span>
                   </div>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Job ID:</span>
-                      <span className="font-mono text-primary">{currentResult.jobId}</span>
+                      <span>Progress:</span>
+                      <span>{currentResult.progress}%</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Algorithm:</span>
-                      <span className="font-medium">{currentResult.algorithm}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Provider:</span>
-                      <span className="font-medium">{currentResult.provider}</span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Progress:</span>
-                        <span>{currentResult.progress}%</span>
-                      </div>
-                      <Progress value={currentResult.progress} className="h-2" />
-                    </div>
+                    <Progress value={currentResult.progress} className="h-2" />
                   </div>
                 </div>
+              </div>
 
-                {/* Final Results */}
-                {currentResult.results && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-6"
-                  >
-                    {/* Success Banner */}
-                    <div className="p-6 rounded-xl bg-gradient-to-r from-green-500/10 to-green-600/5 border-2 border-green-500/30">
-                      <h3 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
-                        🎉 Quantum Execution Complete!
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/30">
-                          <p className="text-sm text-green-300">Fidelity</p>
-                          <p className="text-2xl font-bold text-green-100">{currentResult.results.fidelity.toFixed(1)}% ✨</p>
-                        </div>
-                        <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/30">
-                          <p className="text-sm text-green-300">Execution Time</p>
-                          <p className="text-2xl font-bold text-green-100">{currentResult.results.executionTime.toFixed(1)}ms ⚡</p>
-                        </div>
+              {/* Final Results */}
+              {currentResult.results && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6"
+                >
+                  {/* Success Banner */}
+                  <div className="p-6 rounded-xl bg-gradient-to-r from-green-500/10 to-green-600/5 border-2 border-green-500/30">
+                    <h3 className="text-2xl font-bold text-green-400 mb-4 flex items-center gap-2">
+                      🎉 Quantum Execution Complete!
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/30">
+                        <p className="text-sm text-green-300">Fidelity</p>
+                        <p className="text-2xl font-bold text-green-100">{currentResult.results.fidelity.toFixed(1)}% ✨</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/30">
+                        <p className="text-sm text-green-300">Execution Time</p>
+                        <p className="text-2xl font-bold text-green-100">{currentResult.results.executionTime.toFixed(1)}ms ⚡</p>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Quantum State Results */}
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-primary text-lg flex items-center gap-2">
-                        🎯 Quantum State Measurements
-                      </h4>
-                      <div className="space-y-3">
-                        {Object.entries(currentResult.results.measurements)
-                          .sort(([,a], [,b]) => b - a)
-                          .map(([state, count]) => {
-                            const percentage = (count / currentResult.results!.shots * 100);
-                            return (
-                              <div key={state} className="flex items-center justify-between p-4 rounded-lg bg-muted/20 border border-primary/10">
-                                <span className="font-mono text-primary text-lg">|{state}⟩</span>
-                                <div className="flex items-center gap-4">
-                                  <div className="w-32 bg-muted/30 rounded-full h-2">
-                                    <div 
-                                      className="bg-gradient-to-r from-primary to-purple-500 h-2 rounded-full transition-all duration-1000"
-                                      style={{ width: `${percentage}%` }}
-                                    />
-                                  </div>
-                                  <div className="text-right min-w-[80px]">
-                                    <span className="font-bold text-primary text-lg">{percentage.toFixed(1)}%</span>
-                                    <span className="text-muted-foreground ml-2 text-sm">({count})</span>
-                                  </div>
+                  {/* Quantum State Results */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-primary text-lg flex items-center gap-2">
+                      🎯 Quantum State Measurements
+                    </h4>
+                    <div className="space-y-3">
+                      {Object.entries(currentResult.results.measurements)
+                        .sort(([,a], [,b]) => b - a)
+                        .map(([state, count]) => {
+                          const percentage = (count / currentResult.results!.shots * 100);
+                          return (
+                            <div key={state} className="flex items-center justify-between p-4 rounded-lg bg-muted/20 border border-primary/10">
+                              <span className="font-mono text-primary text-lg">|{state}⟩</span>
+                              <div className="flex items-center gap-4">
+                                <div className="w-32 bg-muted/30 rounded-full h-2">
+                                  <div 
+                                    className="bg-gradient-to-r from-primary to-purple-500 h-2 rounded-full transition-all duration-1000"
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                </div>
+                                <div className="text-right min-w-[80px]">
+                                  <span className="font-bold text-primary text-lg">{percentage.toFixed(1)}%</span>
+                                  <span className="text-muted-foreground ml-2 text-sm">({count})</span>
                                 </div>
                               </div>
-                            );
-                          })}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+
+                  {/* Performance Metrics */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <p className="text-sm text-blue-200">Circuit Depth</p>
+                      <p className="text-xl font-bold text-blue-100">{currentResult.results.circuitDepth}</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <p className="text-sm text-purple-200">Total Shots</p>
+                      <p className="text-xl font-bold text-purple-100">{currentResult.results.shots.toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {/* Blockchain Verification */}
+                  {currentResult.txHash && (
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
+                      <h5 className="font-semibold text-blue-400 mb-2">🔗 Blockchain Verification</h5>
+                      <div className="flex items-center justify-between">
+                        <code className="text-sm font-mono">{currentResult.txHash}</code>
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={`https://www.megaexplorer.xyz/tx/${currentResult.txHash}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            Verify
+                          </a>
+                        </Button>
                       </div>
                     </div>
-
-                    {/* Performance Metrics */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                        <p className="text-sm text-blue-200">Circuit Depth</p>
-                        <p className="text-xl font-bold text-blue-100">{currentResult.results.circuitDepth}</p>
-                      </div>
-                      <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                        <p className="text-sm text-purple-200">Total Shots</p>
-                        <p className="text-xl font-bold text-purple-100">{currentResult.results.shots.toLocaleString()}</p>
-                      </div>
-                    </div>
-
-                    {/* Blockchain Verification */}
-                    {currentResult.txHash && (
-                      <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
-                        <h5 className="font-semibold text-blue-400 mb-2">🔗 Blockchain Verification</h5>
-                        <div className="flex items-center justify-between">
-                          <code className="text-sm font-mono">{currentResult.txHash}</code>
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={`https://www.megaexplorer.xyz/tx/${currentResult.txHash}`} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="mr-2 h-4 w-4" />
-                              Verify
-                            </a>
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <Atom className="h-20 w-20 text-muted-foreground/50 mx-auto mb-6 quantum-pulse" />
-                <h3 className="text-2xl font-semibold text-muted-foreground mb-3">
-                  Ready for Quantum Execution
-                </h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Configure your quantum algorithm and execute it on real quantum processors. 
-                  Results will appear here with detailed analysis and visualization.
-                </p>
-              </div>
-            )}
+                  )}
+                </motion.div>
+              )}
+            </div>
           </CardContent>
         </Card>
-      </div>
+      )}
     </div>
   );
 }

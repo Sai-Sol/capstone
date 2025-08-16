@@ -25,7 +25,7 @@ export default function MobileSearch({ isOpen, onClose }: MobileSearchProps) {
   const quickActions = [
     { label: "Submit Quantum Job", icon: Zap, href: "/dashboard/create" },
     { label: "Blockchain Hub", icon: TrendingUp, href: "/dashboard/blockchain" },
-    { label: "AI Assistant", icon: History, href: "/dashboard/ai" },
+    { label: "Quantum Lab", icon: History, href: "/dashboard/lab" },
   ];
 
   return (

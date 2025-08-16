@@ -58,15 +58,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (mounted && user && !redirecting) {
       setRedirecting(true);
-      const timer = setTimeout(() => {
-        router.replace("/dashboard").catch((error) => {
-          console.error("Redirect failed:", error);
-          setRedirecting(false);
-          setLoginError("Navigation failed. Please try refreshing the page.");
-        });
-      }, 100);
-      
-      return () => clearTimeout(timer);
+      router.replace("/dashboard");
     }
   }, [mounted, user, router, redirecting]);
 
