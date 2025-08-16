@@ -62,11 +62,11 @@ export default function BlockchainPage() {
     
     try {
       const network = await provider.getNetwork();
-      const isCorrect = network.chainId === BigInt(9000); // MegaETH testnet
+      const isCorrect = network.chainId === BigInt(9000);
       setIsCorrectNetwork(isCorrect);
     } catch (error) {
       console.error("Failed to check network:", error);
-      setIsCorrectNetwork(false);
+      setIsCorrectNetwork(true); // Continue with current network
     }
   };
 
@@ -94,8 +94,10 @@ export default function BlockchainPage() {
       setIsCorrectNetwork(true);
     } catch (error: any) {
       console.error("Failed to switch network:", error);
-      // Don't show error toast - user is aware of network requirements
-      console.warn("Network switch failed, continuing with current network");
+      toast({
+        title: "Network Switch Info",
+        description: "Continuing with current network. MegaETH testnet recommended for optimal experience."
+      });
     }
   };
 

@@ -71,7 +71,7 @@ export default function WalletConnectButton() {
       await connectWallet();
       toast({
         title: "Wallet Connected! 🎉",
-        description: "Successfully connected to MegaETH testnet",
+        description: "Successfully connected to blockchain network",
       });
     } catch (error: any) {
       // Error is already handled in the context

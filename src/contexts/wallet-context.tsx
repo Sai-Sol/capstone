@@ -122,15 +122,12 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       const expectedChainId = BigInt(parseInt(MEGAETH_TESTNET.chainId, 16));
       
       if (network.chainId !== expectedChainId) {
-        const ethereum = getEthereumObject();
-        if (ethereum) {
-          await switchToMegaETH(ethereum);
-        }
-        // Continue regardless of network - user is aware
+        console.log(`Connected to chain ${network.chainId}, MegaETH testnet recommended`);
+        // Continue with current network
       }
     } catch (error: any) {
       console.error("Network validation failed:", error);
-      // Don't throw error, just log it - user is aware of network requirements
+      // Continue regardless of network validation
     }
   };
 

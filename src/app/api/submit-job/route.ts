@@ -241,25 +241,25 @@ function getFidelityForAlgorithm(description: string): string {
   const lowerDesc = description.toLowerCase();
   
   if (lowerDesc.includes('bell') || lowerDesc.includes('entangl')) {
-    return "97.8%"; // High fidelity for Bell states
+    return "97.8%";
   }
   if (lowerDesc.includes('grover')) {
-    return "94.2%"; // Good fidelity for Grover's
+    return "94.2%";
   }
   if (lowerDesc.includes('shor')) {
-    return "91.5%"; // Lower fidelity for complex Shor's
+    return "91.5%";
   }
   if (lowerDesc.includes('superposition')) {
-    return "98.5%"; // Very high for simple superposition
+    return "98.5%";
   }
   if (lowerDesc.includes('vqe') || lowerDesc.includes('optimization')) {
-    return "89.3%"; // Lower for variational algorithms
+    return "89.3%";
   }
   if (lowerDesc.includes('teleport')) {
-    return "93.7%"; // Good for teleportation
+    return "93.7%";
   }
   
-  return "95.1%"; // Default good fidelity
+  return "95.1%";
 }
 
 function getExecutionTimeForAlgorithm(description: string): string {
