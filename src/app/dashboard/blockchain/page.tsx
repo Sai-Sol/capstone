@@ -29,8 +29,10 @@ import {
   Network,
   Database
 } from "lucide-react";
-import { CONTRACT_ADDRESS, MEGAETH_TESTNET } from "@/lib/constants";
+import { CONTRACT_ADDRESS } from "@/lib/constants";
+import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork, MEGAETH_ERRORS } from "@/lib/megaeth-config";
 import { quantumJobLoggerABI } from "@/lib/contracts";
+import MegaETHNetworkStatus from "@/components/megaeth-network-status";
 
 export default function BlockchainPage() {
   const { isConnected, address, balance, provider, error, clearError } = useWallet();
@@ -62,20 +64,78 @@ export default function BlockchainPage() {
     
     try {
       const network = await provider.getNetwork();
-      const isCorrect = network.chainId === BigInt(9000);
+      const isCorrect = validateMegaETHNetwork(network.chainId);
       setIsCorrectNetwork(isCorrect);
+      
+      if (!isCorrect) {
+        console.warn(`Wrong network: ${network.chainId}, expected MegaETH Testnet (${MEGAETH_TESTNET_CONFIG.chainId})`);
+        toast({
+          variant: "destructive",
+          title: "Wrong Network",
+          description: MEGAETH_ERRORS.WRONG_NETWORK
+        });
+      }
     } catch (error) {
       console.error("Failed to check network:", error);
-      setIsCorrectNetwork(true); // Continue with current network
+      setIsCorrectNetwork(false);
+      toast({
+        variant: "destructive",
+        title: "Network Error",
+        description: "Failed to verify MegaETH Testnet connection"
+      });
     }
   };
 
   const switchToMegaETH = async () => {
-    toast({
-      title: "Network Info",
-      description: "Using current network for optimal performance."
-    });
-    setIsCorrectNetwork(true);
+    if (!window.ethereum) {
+      toast({
+        variant: "destructive",
+        title: "MetaMask Required",
+        description: "Please install MetaMask to switch networks"
+      });
+      return;
+    }
+
+    try {
+      // Try to switch to MegaETH Testnet
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: MEGAETH_TESTNET_CONFIG.chainIdHex }],
+      });
+      
+      setIsCorrectNetwork(true);
+      toast({
+        title: "Network Switched! 🎉",
+        description: "Successfully connected to MegaETH Testnet"
+      });
+    } catch (error: any) {
+      if (error.code === 4902) {
+        // Network not added, try to add it
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [getMegaETHNetworkConfig()],
+          });
+          setIsCorrectNetwork(true);
+          toast({
+            title: "MegaETH Added! 🚀",
+            description: "MegaETH Testnet has been added to MetaMask"
+          });
+        } catch (addError) {
+          toast({
+            variant: "destructive",
+            title: "Failed to Add Network",
+            description: "Could not add MegaETH Testnet to MetaMask"
+          });
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Network Switch Failed",
+          description: error.message || "Failed to switch to MegaETH Testnet"
+        });
+      }
+    }
   };
 
   const fetchNetworkStats = async () => {
@@ -286,6 +346,9 @@ export default function BlockchainPage() {
 
         <TabsContent value="overview" className="mt-6">
           <div className="grid gap-6">
+            {/* MegaETH Network Status */}
+            <MegaETHNetworkStatus />
+            
             {/* Network Overview */}
             <Card className="quantum-card">
               <CardHeader>
@@ -409,20 +472,39 @@ export default function BlockchainPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Network:</span>
-                    <span className="font-medium">MegaETH Testnet</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">MegaETH Testnet</span>
+                      {isCorrectNetwork ? (
+                        <Badge variant="outline" className="text-green-400 border-green-400/50">
+                          <CheckCircle className="mr-1 h-3 w-3" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-red-400 border-red-400/50">
+                          <AlertTriangle className="mr-1 h-3 w-3" />
+                          Wrong Network
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Jobs:</span>
                     <span className="font-medium text-green-400">{contractJobs.length}</span>
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 flex gap-3">
                   <Button variant="outline" asChild>
                     <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       View on Explorer
                     </a>
                   </Button>
+                  {!isCorrectNetwork && (
+                    <Button onClick={switchToMegaETH} className="quantum-button">
+                      <Network className="mr-2 h-4 w-4" />
+                      Switch to MegaETH
+                    </Button>
+                  )}
                 </div>
               </div>
 

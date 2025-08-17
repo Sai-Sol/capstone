@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useCallback, useEffect } from "react";
 import { BrowserProvider, JsonRpcSigner, formatEther } from "ethers";
-import { MEGAETH_TESTNET } from "@/lib/constants";
+import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork, getMegaETHNetworkConfig, MEGAETH_ERRORS } from "@/lib/megaeth-config";
 
 interface WalletContextType {
   provider: BrowserProvider | null;
@@ -86,20 +86,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       // First try to switch to the network
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: MEGAETH_TESTNET.chainId }],
+        params: [{ chainId: MEGAETH_TESTNET_CONFIG.chainIdHex }],
       });
     } catch (switchError: any) {
       // If network doesn't exist, add it
       if (switchError.code === 4902) {
         try {
-          // Create clean network config without unsupported fields
-          const networkConfig = {
-            chainId: MEGAETH_TESTNET.chainId,
-            chainName: MEGAETH_TESTNET.chainName,
-            nativeCurrency: MEGAETH_TESTNET.nativeCurrency,
-            rpcUrls: MEGAETH_TESTNET.rpcUrls,
-            blockExplorerUrls: MEGAETH_TESTNET.blockExplorerUrls,
-          };
+          // Use MegaETH-specific network configuration
+          const networkConfig = getMegaETHNetworkConfig();
 
           await ethereum.request({
             method: 'wallet_addEthereumChain',
@@ -107,11 +101,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           });
         } catch (addError: any) {
           console.error("Failed to add MegaETH network:", addError);
-          console.warn("Network not added, continuing with current network");
+          throw new Error(MEGAETH_ERRORS.RPC_ERROR);
         }
       } else {
         console.error("Failed to switch to MegaETH network:", switchError);
-        console.warn("Network switch failed, continuing with current network");
+        throw new Error(MEGAETH_ERRORS.WRONG_NETWORK);
       }
     }
   };
@@ -119,15 +113,17 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const validateNetwork = async (browserProvider: BrowserProvider) => {
     try {
       const network = await browserProvider.getNetwork();
-      const expectedChainId = BigInt(parseInt(MEGAETH_TESTNET.chainId, 16));
+      const expectedChainId = BigInt(MEGAETH_TESTNET_CONFIG.chainId);
       
       if (network.chainId !== expectedChainId) {
-        console.log(`Connected to chain ${network.chainId}, continuing with current network`);
-        // Continue with current network
+        console.warn(`Wrong network detected: ${network.chainId}, expected: ${expectedChainId}`);
+        throw new Error(MEGAETH_ERRORS.WRONG_NETWORK);
       }
+      
+      console.log(`✅ Connected to MegaETH Testnet (Chain ID: ${network.chainId})`);
     } catch (error: any) {
       console.error("Network validation failed:", error);
-      // Continue regardless of network validation
+      throw error;
     }
   };
 

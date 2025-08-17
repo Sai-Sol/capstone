@@ -41,6 +41,23 @@ Configure MegaETH testnet in MetaMask:
 - **Currency Symbol**: ETH
 - **Block Explorer**: https://www.megaexplorer.xyz
 
+### MegaETH Testnet Features
+
+**High Performance:**
+- 2-second block times for fast confirmations
+- 100,000+ TPS theoretical throughput
+- Low latency transaction processing
+
+**Developer Tools:**
+- Faucet: https://faucet.megaeth.io
+- Explorer: https://www.megaexplorer.xyz
+- Documentation: https://docs.megaeth.io
+
+**Security:**
+- Post-quantum cryptography ready
+- EIP-1559 fee mechanism
+- Advanced consensus algorithms
+
 ## 🔐 Demo Accounts
 
 - **Admin**: admin@example.com / 456

@@ -25,6 +25,7 @@ import {
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork } from "@/lib/megaeth-config";
 
 export default function WalletConnectButton() {
   const { 
@@ -191,14 +192,17 @@ export default function WalletConnectButton() {
                 <span className="font-semibold">Wallet Connected</span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
                   <CheckCircle className="mr-1 h-3 w-3" />
-                  MegaETH
+                  MegaETH Testnet
                 </Badge>
               </div>
               
               <div className="space-y-2">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Address</p>
-                  <div className="flex items-center gap-2 p-2 bg-muted/20 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">MegaETH Testnet</span>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  </div>
                     <code className="font-mono text-xs flex-1 truncate">{address}</code>
                     <Button 
                       variant="ghost" 
@@ -255,7 +259,7 @@ export default function WalletConnectButton() {
           
           <DropdownMenuItem asChild>
             <a
-              href="https://faucet.megaeth.io"
+              href={MEGAETH_TESTNET_CONFIG.tools.faucetUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer flex items-center gap-2 p-3 hover:bg-blue-500/10 transition-colors"
