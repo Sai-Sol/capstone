@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminDashboard from "@/components/admin-dashboard";
 import JobSubmissionForm from "@/components/job-submission-form";
-import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, PlusSquare, Send } from "lucide-react";
+import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Plus, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
@@ -110,7 +110,7 @@ export default function DashboardHomePage() {
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40">
               <CardContent className="p-6 text-center">
                 <div className="p-3 bg-green-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <PlusSquare className="h-8 w-8 text-green-500" />
+                  <Plus className="h-8 w-8 text-green-500" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Submit Job</h3>
                 <p className="text-muted-foreground text-sm">

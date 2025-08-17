@@ -210,7 +210,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       } else if (error.message?.includes("User rejected")) {
         setError("Connection cancelled by user.");
       } else {
-        setError("Failed to connect wallet. Please try again.");
+        setError("Failed to connect wallet. Please ensure MetaMask is unlocked and try again.");
       }
       
       disconnectWallet();

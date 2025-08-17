@@ -16,17 +16,32 @@ export default function DashboardLayout({
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
+  const [redirecting, setRedirecting] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   React.useEffect(() => {
-    if (mounted && !loading && !user) {
-      router.replace("/login");
+    if (mounted && !loading && !user && !redirecting) {
+      setRedirecting(true);
+      router.push("/login");
     }
-  }, [user, loading, router, mounted]);
+  }, [user, loading, router, mounted, redirecting]);
 
+  // Add timeout for loading state
+  React.useEffect(() => {
+    if (loading) {
+      const timeout = setTimeout(() => {
+        if (!user && mounted) {
+          setRedirecting(true);
+          router.push("/login");
+        }
+      }, 5000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [loading, user, mounted, router]);
   if (!mounted || loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">

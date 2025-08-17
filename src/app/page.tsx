@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
@@ -10,21 +10,38 @@ export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const handleRedirect = useCallback((path: string) => {
+    if (redirecting) return;
+    setRedirecting(true);
+    router.replace(path);
+  }, [router, redirecting]);
+
   useEffect(() => {
-    if (mounted && !loading) {
+    if (mounted && !loading && !redirecting) {
       if (user) {
-        router.replace("/dashboard");
+        handleRedirect("/dashboard");
       } else {
-        router.replace("/login");
+        handleRedirect("/login");
       }
     }
-  }, [mounted, loading, user, router]);
+  }, [mounted, loading, user, handleRedirect, redirecting]);
 
+  // Add timeout to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!user && !loading && mounted) {
+        handleRedirect("/login");
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [user, loading, mounted, handleRedirect]);
   if (!mounted || loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">

@@ -41,6 +41,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,12 +57,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (mounted && user) {
-      router.replace("/dashboard");
+      setIsRedirecting(true);
+      router.push("/dashboard");
     }
   }, [mounted, user, router]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isLoading) return;
+    if (isLoading || isRedirecting) return;
     
     setIsLoading(true);
     setLoginError(null);
@@ -73,6 +75,7 @@ export default function LoginPage() {
       const authenticatedUser = await login(values);
       
       if (authenticatedUser) {
+        setIsRedirecting(true);
         toast({
           title: "Welcome! 🚀",
           description: `Successfully logged in as ${authenticatedUser.name || authenticatedUser.email}`,
@@ -92,7 +95,7 @@ export default function LoginPage() {
   }
 
   const handleDemoLogin = (email: string, password: string) => {
-    if (isLoading) return;
+    if (isLoading || isRedirecting) return;
     form.setValue("email", email);
     form.setValue("password", password);
     form.handleSubmit(onSubmit)();
@@ -111,7 +114,6 @@ export default function LoginPage() {
 
   // Redirect if user is already logged in
   if (user) {
-    router.replace("/dashboard");
     return null;
   }
 

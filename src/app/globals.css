@@ -70,6 +70,7 @@
     @apply bg-background text-foreground font-body;
     min-height: 100vh;
     overflow-x: hidden;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   /* Scrollbar styling */
@@ -90,6 +91,22 @@
     background: linear-gradient(180deg, #2563eb, #2563ebaa);
   }
 
+  /* Performance optimizations */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
   /* Quantum-specific animations */
   .quantum-pulse {
     animation: quantum-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -102,6 +119,7 @@
   .quantum-card {
     @apply border-primary/30 bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-md shadow-lg;
     transition: all 0.2s ease;
+    will-change: transform, box-shadow;
   }
 
   .quantum-card:hover {
@@ -114,6 +132,7 @@
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    will-change: transform, box-shadow;
   }
 
   .quantum-button:hover {
@@ -128,6 +147,7 @@
   .quantum-input {
     @apply border-primary/30 focus:border-primary/60 bg-background/60 backdrop-blur-md shadow-sm;
     transition: all 0.2s ease;
+    will-change: transform, box-shadow;
   }
 
   .quantum-input:focus {

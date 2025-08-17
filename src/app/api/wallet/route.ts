@@ -132,6 +132,18 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
+        
+        // Check sender balance
+        const senderBalance = blockchain.getAccountBalance(from);
+        const totalCost = amount + walletManager.estimateTransactionFee(to, amount, txData);
+        
+        if (senderBalance < totalCost) {
+          return NextResponse.json(
+            { error: `Insufficient balance. Need ${totalCost.toFixed(4)} ETH but have ${senderBalance.toFixed(4)} ETH` },
+            { status: 400 }
+          );
+        }
+        
         try {
           const transaction = await walletManager.sendTransaction(from, to, amount, txData);
           

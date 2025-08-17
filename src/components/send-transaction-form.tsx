@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Send, Loader2, Zap, DollarSign, Clock, AlertTriangle } from "lucide-react";
+import { Send, Loader2, Zap, DollarSign, Clock, AlertTriangle, CheckCircle } from "lucide-react";
 
 const formSchema = z.object({
   to: z.string().regex(/^0x[a-fA-F0-9]{40}$/, { message: "Invalid Ethereum address format" }),
@@ -28,6 +28,7 @@ export default function SendTransactionForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [estimatedFee, setEstimatedFee] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -90,37 +91,56 @@ export default function SendTransactionForm() {
     clearError();
 
     try {
-      const response = await fetch('/api/wallet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'send_transaction',
-          from: await signer.getAddress(),
-          to: values.to,
-          amount: amount
-        })
+      // Send transaction directly through ethers
+      const tx = await signer.sendTransaction({
+        to: values.to,
+        value: (amount * 1e18).toString(), // Convert to wei
+        gasLimit: 21000
       });
 
-      const data = await response.json();
+      setTxHash(tx.hash);
 
-      if (data.success) {
-        toast({
-          title: "Transaction Sent! 🚀",
-          description: `Successfully sent ${amount} ETH to ${values.to.slice(0, 8)}...`,
-        });
+      toast({
+        title: "Transaction Sent! 🚀",
+        description: `Transaction hash: ${tx.hash.slice(0, 10)}...`,
+        action: (
+          <Button asChild variant="link" size="sm">
+            <a href={`https://www.megaexplorer.xyz/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
+              View on Explorer
+            </a>
+          </Button>
+        ),
+      });
 
-        form.reset();
-        setEstimatedFee(null);
-      } else {
-        throw new Error(data.error || 'Transaction failed');
-      }
+      // Wait for confirmation
+      await tx.wait();
+      
+      toast({
+        title: "Transaction Confirmed! ✅",
+        description: `Successfully sent ${amount} ETH to ${values.to.slice(0, 8)}...`,
+      });
 
+      form.reset();
+      setEstimatedFee(null);
+      setTxHash(null);
     } catch (error: any) {
       console.error('Transaction failed:', error);
+      
+      let errorMessage = "Transaction failed";
+      if (error.code === 4001) {
+        errorMessage = "Transaction cancelled by user";
+      } else if (error.code === -32603) {
+        errorMessage = "Insufficient funds for gas";
+      } else if (error.reason) {
+        errorMessage = error.reason;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Transaction Failed",
-        description: error.message || "Failed to send transaction",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -248,6 +268,15 @@ export default function SendTransactionForm() {
               )}
             </Button>
 
+            {txHash && (
+              <Alert className="border-blue-500/20 bg-blue-500/5">
+                <CheckCircle className="h-4 w-4 text-blue-500" />
+                <AlertDescription className="text-blue-200/80">
+                  <div className="font-semibold text-blue-400 mb-1">Transaction Submitted</div>
+                  <div className="font-mono text-xs break-all">{txHash}</div>
+                </AlertDescription>
+              </Alert>
+            )}
             {!isConnected && (
               <Alert className="border-yellow-500/20 bg-yellow-500/5">
                 <Zap className="h-4 w-4 text-yellow-500" />

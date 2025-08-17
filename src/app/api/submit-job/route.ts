@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
       if (failedJob) {
         failedJob.status = "failed";
         failedJob.error = error.message;
+        failedJob.completedAt = Date.now();
         jobs.set(jobId, failedJob);
       }
     });

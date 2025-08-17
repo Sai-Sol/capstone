@@ -55,6 +55,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,12 +74,13 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (mounted && user) {
-      router.replace("/dashboard");
+      setIsRedirecting(true);
+      router.push("/dashboard");
     }
   }, [mounted, user, router]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isLoading) return;
+    if (isLoading || isRedirecting) return;
     
     setIsLoading(true);
     setRegistrationError(null);
@@ -89,12 +91,13 @@ export default function RegisterPage() {
       
       const { confirmPassword, ...registerData } = values;
       await register(registerData);
+      setIsRedirecting(true);
       toast({
         title: "Welcome to QuantumChain! 🎉",
         description: "Your account has been created successfully. You can now sign in.",
       });
       // Faster redirect
-      router.replace("/login");
+      router.push("/login");
     } catch (error: any) {
       console.error("Registration error:", error);
       const errorMessage = error.message || "Registration failed. Please try again.";
@@ -122,7 +125,6 @@ export default function RegisterPage() {
 
   // Redirect if user is already logged in
   if (user) {
-    router.replace("/dashboard");
     return null;
   }
   return (

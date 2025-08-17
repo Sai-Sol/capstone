@@ -35,13 +35,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, MessageSquare } from "lucide-react";
+import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, MessageSquare, AlertTriangle } from "lucide-react";
 
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Badge } from "./ui/badge";
+import QuantumResultsDisplay from "./quantum-results-display";
 
 const formSchema = z.object({
   jobType: z.string().min(1, { message: "Job type cannot be empty." }),
@@ -76,6 +77,7 @@ interface JobSubmissionFormProps {
 export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [gasEstimate, setGasEstimate] = useState<string | null>(null);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
@@ -203,6 +205,25 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
 
       await tx.wait();
 
+      // Submit job for execution
+      const jobResponse = await fetch('/api/submit-job', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobType: values.jobType,
+          description: values.description,
+          provider: values.jobType,
+          priority: values.priority,
+          submissionType: values.submissionType,
+          txHash: tx.hash,
+          userId: await signer.getAddress()
+        })
+      });
+
+      const jobData = await jobResponse.json();
+      if (jobData.jobId) {
+        setCurrentJobId(jobData.jobId);
+      }
       toast({
         title: "Success! Job Logged 🎉",
         description: "Your job has been securely recorded on the blockchain.",
@@ -568,6 +589,12 @@ measure q -> c;`}
           </CardFooter>
         </form>
       </Form>
+      
+      {/* Quantum Results Display */}
+      <QuantumResultsDisplay 
+        jobId={currentJobId} 
+        onClose={() => setCurrentJobId(null)} 
+      />
     </Card>
   );
 }
