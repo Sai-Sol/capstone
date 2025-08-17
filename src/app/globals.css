@@ -92,7 +92,7 @@
 
   /* Quantum-specific animations */
   .quantum-pulse {
-    animation: quantum-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: quantum-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .quantum-glow {
@@ -101,7 +101,7 @@
 
   .quantum-card {
     @apply border-primary/30 bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-md shadow-lg;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
   }
 
   .quantum-card:hover {
@@ -111,7 +111,7 @@
 
   .quantum-button {
     @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium shadow-lg hover:shadow-xl;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
   }
@@ -127,7 +127,7 @@
 
   .quantum-input {
     @apply border-primary/30 focus:border-primary/60 bg-background/60 backdrop-blur-md shadow-sm;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
   }
 
   .quantum-input:focus {

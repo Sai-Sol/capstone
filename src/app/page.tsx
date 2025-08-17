@@ -4,32 +4,28 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { Atom, Loader2, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Atom, Loader2 } from "lucide-react";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !loading && !redirecting) {
-      setRedirecting(true);
+    if (mounted && !loading) {
       if (user) {
         router.replace("/dashboard");
       } else {
         router.replace("/login");
       }
     }
-  }, [mounted, loading, user, router, redirecting]);
+  }, [mounted, loading, user, router]);
 
-  if (!mounted || loading || redirecting) {
+  if (!mounted || loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <motion.div
@@ -50,7 +46,7 @@ export default function Home() {
           <div className="flex items-center justify-center gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <p className="text-lg text-muted-foreground">
-              {redirecting ? "Redirecting..." : "Initializing quantum platform..."}
+              Initializing platform...
             </p>
           </div>
         </motion.div>

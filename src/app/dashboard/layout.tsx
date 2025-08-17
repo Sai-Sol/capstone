@@ -3,12 +3,10 @@
 import * as React from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { Loader2, Atom, AlertTriangle } from "lucide-react";
+import { Loader2, Atom } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "@/components/header";
 import { Toaster } from "@/components/ui/toaster";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 
 export default function DashboardLayout({
   children,
@@ -47,7 +45,7 @@ export default function DashboardLayout({
           <div className="flex items-center justify-center gap-3">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <p className="text-lg text-muted-foreground">
-              Loading quantum platform...
+              Loading platform...
             </p>
           </div>
         </motion.div>

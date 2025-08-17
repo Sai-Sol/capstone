@@ -84,13 +84,17 @@ export default function RegisterPage() {
     setRegistrationError(null);
     
     try {
+      // Add small delay to prevent rapid submissions
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const { confirmPassword, ...registerData } = values;
       await register(registerData);
       toast({
         title: "Welcome to QuantumChain! 🎉",
         description: "Your account has been created successfully. You can now sign in.",
       });
-      router.push("/login");
+      // Faster redirect
+      router.replace("/login");
     } catch (error: any) {
       console.error("Registration error:", error);
       const errorMessage = error.message || "Registration failed. Please try again.";

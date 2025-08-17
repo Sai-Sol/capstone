@@ -6,13 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminDashboard from "@/components/admin-dashboard";
 import JobSubmissionForm from "@/components/job-submission-form";
-import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Lock, Play, BookOpen, Lightbulb } from "lucide-react";
+import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, PlusSquare, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Search, BarChart3, PlusSquare, Terminal } from "lucide-react";
 import Link from "next/link";
+import SendTransactionForm from "@/components/send-transaction-form";
 
 export default function DashboardHomePage() {
   const { user } = useAuth();
@@ -103,11 +102,10 @@ export default function DashboardHomePage() {
         className="mb-8"
       >
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-          <Play className="h-7 w-7 text-primary" />
+          <Zap className="h-7 w-7 text-primary" />
           Quick Actions
         </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-
           <Link href="/dashboard/create">
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40">
               <CardContent className="p-6 text-center">
@@ -122,20 +120,6 @@ export default function DashboardHomePage() {
             </Card>
           </Link>
 
-          <Link href="/dashboard/explorer">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-blue-500/20 hover:border-blue-500/40">
-              <CardContent className="p-6 text-center">
-                <div className="p-3 bg-blue-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Search className="h-8 w-8 text-blue-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Blockchain Explorer</h3>
-                <p className="text-muted-foreground text-sm">
-                  Explore blocks, transactions, and network data
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
           <Link href="/dashboard/blockchain">
             <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-purple-500/20 hover:border-purple-500/40">
               <CardContent className="p-6 text-center">
@@ -144,33 +128,40 @@ export default function DashboardHomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Blockchain Hub</h3>
                 <p className="text-muted-foreground text-sm">
-                  Monitor network and blockchain features
+                  Monitor network and send transactions
                 </p>
               </CardContent>
             </Card>
           </Link>
 
-          <Link href="/dashboard/lab">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-pink-500/20 hover:border-pink-500/40">
-              <CardContent className="p-6 text-center">
-                <div className="p-3 bg-pink-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Terminal className="h-8 w-8 text-pink-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Quantum Lab</h3>
-                <p className="text-muted-foreground text-sm">
-                  Advanced quantum algorithm execution
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-blue-500/20 hover:border-blue-500/40">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-blue-500/20 rounded-xl w-fit mx-auto mb-4">
+                <Send className="h-8 w-8 text-blue-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Send ETH</h3>
+              <p className="text-muted-foreground text-sm">
+                Transfer ETH to other addresses
+              </p>
+            </CardContent>
+          </Card>
         </div>
+      </motion.div>
+
+      {/* Send Transaction Form */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <SendTransactionForm />
       </motion.div>
 
       {/* Job Submission Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
       >
         <JobSubmissionForm onJobLogged={handleJobLogged} />
       </motion.div>
@@ -180,7 +171,7 @@ export default function DashboardHomePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
         >
           <AdminDashboard totalJobs={totalJobs} />
         </motion.div>
@@ -190,7 +181,7 @@ export default function DashboardHomePage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
       >
         <h2 className="text-2xl font-bold font-headline mb-6 flex items-center gap-3">
           <Cpu className="h-7 w-7 text-primary" />
@@ -202,7 +193,7 @@ export default function DashboardHomePage() {
               key={provider.name}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+              transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
             >
               <Card className="hover:scale-105 transition-all duration-300 border-primary/20">
                 <CardHeader className="pb-3">
@@ -238,7 +229,7 @@ export default function DashboardHomePage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
+        transition={{ duration: 0.6, delay: 0.7 }}
       >
         <h2 className="text-2xl font-bold font-headline mb-6 flex items-center gap-3">
           <TrendingUp className="h-7 w-7 text-primary" />
@@ -250,7 +241,7 @@ export default function DashboardHomePage() {
               key={metric.label}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
+              transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
             >
               <Card className="hover:scale-105 transition-all duration-300 border-primary/20">
                 <CardContent className="p-6">
@@ -272,7 +263,7 @@ export default function DashboardHomePage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
+        transition={{ duration: 0.6, delay: 0.9 }}
       >
         <Card className="border-primary/20">
           <CardHeader>
@@ -306,7 +297,7 @@ export default function DashboardHomePage() {
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-green-500/20 rounded-lg">
-                    <Lock className="h-6 w-6 text-green-400" />
+                    <Shield className="h-6 w-6 text-green-400" />
                   </div>
                   <h3 className="font-semibold text-green-100">2. Blockchain Logging</h3>
                 </div>
@@ -322,12 +313,12 @@ export default function DashboardHomePage() {
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-purple-500/20 rounded-lg">
-                    <Shield className="h-6 w-6 text-purple-400" />
+                    <Send className="h-6 w-6 text-purple-400" />
                   </div>
-                  <h3 className="font-semibold text-purple-100">3. Verification</h3>
+                  <h3 className="font-semibold text-purple-100">3. Transactions</h3>
                 </div>
                 <p className="text-sm text-purple-200/80">
-                  Users can independently verify computational integrity through blockchain records.
+                  Send ETH securely to other addresses with blockchain verification.
                 </p>
               </motion.div>
             </div>
@@ -353,7 +344,7 @@ export default function DashboardHomePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>Decentralized trust architecture</span>
+                  <span>Secure ETH transactions</span>
                 </div>
               </div>
             </div>

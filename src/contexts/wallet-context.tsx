@@ -196,8 +196,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error("No accounts found. Please unlock MetaMask and try again.");
       }
       
-      // Update wallet state (this will handle network switching)
-      await updateWalletState(ethereum);
+      // Update wallet state without network switching
+      await updateWalletState(ethereum, true);
       
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
@@ -209,10 +209,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         setError("Connection request pending. Please check MetaMask for pending requests.");
       } else if (error.message?.includes("User rejected")) {
         setError("Connection cancelled by user.");
-      } else if (error.message?.includes("network")) {
-        setError("Network configuration error. Please ensure MegaETH testnet is properly configured.");
       } else {
-        setError(error.message || "Failed to connect wallet. Please try again.");
+        setError("Failed to connect wallet. Please try again.");
       }
       
       disconnectWallet();

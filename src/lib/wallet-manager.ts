@@ -126,8 +126,9 @@ export class WalletManager {
       throw new Error('Account not found');
     }
 
-    if (account.balance < amount) {
-      throw new Error('Insufficient balance');
+    const totalCost = amount + this.estimateTransactionFee(to, amount, data);
+    if (account.balance < totalCost) {
+      throw new Error(`Insufficient balance. Need ${totalCost.toFixed(4)} ETH but have ${account.balance.toFixed(4)} ETH`);
     }
 
     const transaction = blockchain.createTransaction(from, to, amount, account.privateKey);
@@ -152,6 +153,7 @@ export class WalletManager {
 
     // Update nonce
     account.nonce++;
+    account.balance -= totalCost;
     this.accounts.set(from, account);
 
     return transaction;

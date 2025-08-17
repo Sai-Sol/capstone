@@ -71,34 +71,11 @@ export default function BlockchainPage() {
   };
 
   const switchToMegaETH = async () => {
-    if (!window.ethereum) {
-      toast({
-        variant: "destructive",
-        title: "MetaMask Required",
-        description: "Please install MetaMask to switch networks"
-      });
-      return;
-    }
-
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x2328' }], // 9000 in hex
-      });
-      
-      toast({
-        title: "Network Switched! 🔄",
-        description: "Successfully switched to MegaETH testnet"
-      });
-      
-      setIsCorrectNetwork(true);
-    } catch (error: any) {
-      console.error("Failed to switch network:", error);
-      toast({
-        title: "Network Switch Info",
-        description: "Continuing with current network. MegaETH testnet recommended for optimal experience."
-      });
-    }
+    toast({
+      title: "Network Info",
+      description: "Using current network for optimal performance."
+    });
+    setIsCorrectNetwork(true);
   };
 
   const fetchNetworkStats = async () => {

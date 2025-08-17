@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, UserCircle, Atom, Home, PlusSquare, History, Search, MessageSquare, Menu, X, Globe } from "lucide-react";
+import { LogOut, UserCircle, Atom, Home, PlusSquare, History, Globe, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import WalletConnectButton from "./wallet-connect-button";
@@ -19,7 +19,6 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import MobileSearch from "./mobile-search";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -27,7 +26,6 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -38,7 +36,6 @@ export default function Header() {
   const navItems = [
     { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/create", label: "Create", icon: PlusSquare },
-    { href: "/dashboard/explorer", label: "Explorer", icon: Search },
     { href: "/dashboard/blockchain", label: "Blockchain", icon: Globe },
     { href: "/dashboard/history", label: "History", icon: History },
   ];
@@ -81,19 +78,7 @@ export default function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-3">
-          {/* Wallet Connect Button */}
           <WalletConnectButton />
-          
-          {/* Search Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileSearchOpen(true)}
-          >
-            <Search className="h-5 w-5" />
-          </Button>
-          
           <ThemeToggle />
           
           {/* Mobile menu button */}
@@ -143,11 +128,6 @@ export default function Header() {
           )}
         </div>
       </div>
-      
-      <MobileSearch 
-        isOpen={mobileSearchOpen} 
-        onClose={() => setMobileSearchOpen(false)} 
-      />
 
       {/* Mobile Navigation */}
       <AnimatePresence>

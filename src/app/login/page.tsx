@@ -67,6 +67,9 @@ export default function LoginPage() {
     setLoginError(null);
     
     try {
+      // Add small delay to prevent rapid submissions
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const authenticatedUser = await login(values);
       
       if (authenticatedUser) {
@@ -74,7 +77,8 @@ export default function LoginPage() {
           title: "Welcome! 🚀",
           description: `Successfully logged in as ${authenticatedUser.name || authenticatedUser.email}`,
         });
-        router.replace("/dashboard");
+        // Use push instead of replace for better navigation
+        router.push("/dashboard");
       } else {
         setLoginError("Invalid email or password. Please check your credentials and try again.");
         form.setFocus("email");

@@ -117,6 +117,21 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // Validate amount
+        if (amount <= 0 || amount > 1000) {
+          return NextResponse.json(
+            { error: 'Invalid amount. Must be between 0 and 1000 ETH' },
+            { status: 400 }
+          );
+        }
+
+        // Validate address format
+        if (!/^0x[a-fA-F0-9]{40}$/.test(to)) {
+          return NextResponse.json(
+            { error: 'Invalid recipient address format' },
+            { status: 400 }
+          );
+        }
         try {
           const transaction = await walletManager.sendTransaction(from, to, amount, txData);
           

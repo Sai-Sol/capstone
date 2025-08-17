@@ -43,7 +43,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = useCallback(async (credentials: { email: string; password: string }): Promise<User | null> => {
-    setLoading(true);
     try {
       const storedUsers = localStorage.getItem("quantum-users-db");
       const users = storedUsers ? JSON.parse(storedUsers) : HARDCODED_USERS;
@@ -64,8 +63,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return userToStore;
       }
       return null;
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
     }
   }, []);
 
@@ -75,7 +75,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     password: string; 
     country: string; 
   }): Promise<User | null> => {
-    setLoading(true);
     try {
       const storedUsers = localStorage.getItem("quantum-users-db");
       let users = storedUsers ? JSON.parse(storedUsers) : [...HARDCODED_USERS];
@@ -95,8 +94,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error("Registration failed:", error);
       throw error;
-    } finally {
-      setLoading(false);
     }
   }, []);
 

@@ -394,12 +394,13 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                       <FormControl>
                         <Textarea 
                           placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement" 
-                          className="quantum-input min-h-[140px] font-mono text-sm resize-none" 
+                          placeholder="Testing" 
+                          className="quantum-input min-h-[100px] font-mono text-sm resize-none" 
                           {...field} 
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-2">
-                        💡 Be specific about quantum gates and algorithms for optimal results
+                        💡 Enter "Testing" or describe your quantum algorithm
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -425,7 +426,7 @@ creg c[2];
 h q[0];
 cx q[0],q[1];
 measure q -> c;`} 
-                          className="quantum-input min-h-[140px] font-mono text-sm resize-none" 
+                          className="quantum-input min-h-[100px] font-mono text-sm resize-none" 
                           {...field} 
                         />
                       </FormControl>

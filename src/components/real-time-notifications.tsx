@@ -21,65 +21,6 @@ export default function RealTimeNotifications() {
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isEnabled, setIsEnabled] = useState(true);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
-
-  const { isConnected: wsConnected, lastMessage } = useWebSocket('wss://api.quantumchain.io/ws', {
-    onMessage: (message) => {
-      setConnectionError(null);
-      if (isEnabled && message.type === 'transaction') {
-        const notification: Notification = {
-          id: Math.random().toString(36).substr(2, 9),
-          type: 'success',
-          title: 'Transaction Confirmed',
-          message: `${message.data.type} transaction completed: ${message.data.value} ETH`,
-          timestamp: message.timestamp,
-          autoClose: true
-        };
-        
-        addNotification(notification);
-        
-        // Also show toast for important transactions
-        if (parseFloat(message.data.value) > 1) {
-          toast({
-            title: "Large Transaction Detected",
-            description: `${message.data.value} ETH transaction confirmed`,
-          });
-        }
-      }
-    },
-    onConnect: () => {
-      setConnectionError(null);
-      if (isEnabled) {
-        const notification: Notification = {
-          id: Math.random().toString(36).substr(2, 9),
-          type: 'success',
-          title: 'Connected',
-          message: 'Real-time updates are now active',
-          timestamp: Date.now(),
-          autoClose: true
-        };
-        addNotification(notification);
-      }
-    },
-    onDisconnect: () => {
-      setConnectionError("Real-time updates disconnected");
-      if (isEnabled) {
-        const notification: Notification = {
-          id: Math.random().toString(36).substr(2, 9),
-          type: 'warning',
-          title: 'Disconnected',
-          message: 'Real-time updates are temporarily unavailable',
-          timestamp: Date.now(),
-          autoClose: false
-        };
-        addNotification(notification);
-      }
-    },
-    onError: (error) => {
-      setConnectionError("Connection error occurred");
-      console.error("WebSocket error:", error);
-    }
-  });
 
   const addNotification = (notification: Notification) => {
     setNotifications(prev => [notification, ...prev.slice(0, 4)]); // Keep only 5 notifications
