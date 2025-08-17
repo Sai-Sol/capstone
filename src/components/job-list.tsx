@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Contract } from "ethers";
 import { formatDistanceToNow } from "date-fns";
 import { useWallet } from "@/hooks/use-wallet";
 import { useAuth } from "@/hooks/use-auth";
@@ -14,15 +13,13 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ExternalLink, HardDrive, Filter, Activity, CheckCircle, Clock, DollarSign, Zap, Atom, Search } from "lucide-react";
+import { ExternalLink, HardDrive, Filter, Activity, CheckCircle, Clock, Atom, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-
-import { CONTRACT_ADDRESS } from "@/lib/constants";
-import { quantumJobLoggerABI } from "@/lib/contracts";
+import { blockchainIntegration, QuantumJob } from "@/lib/blockchain-integration";
 
 // Enhanced AI-powered job description summarizer
 const summarizeJobDescription = (description: string, jobType: string): string => {
@@ -87,23 +84,6 @@ const generateJobId = (txHash: string): string => {
   return `QC-${txHash.slice(2, 8).toUpperCase()}`;
 };
 
-type Job = {
-  user: string;
-  jobType: string;
-  ipfsHash: string;
-  timeSubmitted: string;
-  txHash: string;
-  metadata?: {
-    type: string;
-    description: string;
-    submissionType: string;
-    priority: string;
-    estimatedCost: string;
-    estimatedTime: string;
-    qubitCount?: string;
-  };
-};
-
 interface JobListProps {
   userRole: "admin" | "user";
   jobsLastUpdated: number;
@@ -111,7 +91,7 @@ interface JobListProps {
 }
 
 export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }: JobListProps) {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<QuantumJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterByUser, setFilterByUser] = useState(false);
@@ -131,34 +111,11 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
     setError(null);
 
     try {
-      const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, provider);
-      const filter = contract.filters.JobLogged();
-      const currentBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, currentBlock - 5000); // Reduced block range for better performance
-
-      const logs = await contract.queryFilter(filter, fromBlock, 'latest');
-
-      const parsedJobs: Job[] = logs.map((log: any) => {
-        let metadata;
-        try {
-          const ipfsData = log.args.ipfsHash;
-          metadata = typeof ipfsData === 'string' ? JSON.parse(ipfsData) : ipfsData;
-        } catch {
-          metadata = null;
-        }
-
-        return {
-          user: log.args.user,
-          jobType: log.args.jobType,
-          ipfsHash: log.args.ipfsHash,
-          timeSubmitted: new Date(Number(log.args.timeSubmitted) * 1000).toISOString(),
-          txHash: log.transactionHash,
-          metadata,
-        };
-      }).reverse();
-
-      setJobs(parsedJobs);
-      onTotalJobsChange(parsedJobs.length);
+      const userAddress = signer ? await signer.getAddress() : undefined;
+      const allJobs = await blockchainIntegration.getJobHistory(provider, userRole === 'user' ? userAddress : undefined);
+      
+      setJobs(allJobs);
+      onTotalJobsChange(allJobs.length);
     } catch (e: any) {
       console.error("Failed to fetch jobs:", e);
       setError(`Network connection error. Please check your wallet connection and try again.`);
@@ -167,7 +124,7 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
     } finally {
       setIsLoading(false);
     }
-  }, [provider, isConnected, onTotalJobsChange]);
+  }, [provider, isConnected, onTotalJobsChange, userRole, signer]);
 
   useEffect(() => {
     fetchJobs();
@@ -178,10 +135,10 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
     
     // Filter by user if needed
     if (userRole === "admin" && filterByUser && user?.email && signer) {
-      filtered = filtered.filter(job => job.user.toLowerCase() === signer.address.toLowerCase());
-    }
-    if (userRole === "user" && user && signer) {
-      filtered = filtered.filter(job => job.user.toLowerCase() === signer.address.toLowerCase());
+      filtered = filtered.filter(async job => {
+        const userAddress = await signer.getAddress();
+        return job.user.toLowerCase() === userAddress.toLowerCase();
+      });
     }
     
     // Filter by search term
@@ -197,39 +154,8 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
     return filtered;
   }, [jobs, userRole, filterByUser, user, signer, searchTerm]);
 
-  const getJobTitle = (job: Job) => {
-    if (job.metadata?.description || job.ipfsHash) {
-      const description = job.metadata?.description || job.ipfsHash;
-      return summarizeJobDescription(description, job.jobType);
-    }
-    return "⚛️ Quantum Computing Task";
-  };
-
-  const getPriorityConfig = (priority: string) => {
-    switch (priority) {
-      case 'high': return { color: 'text-red-400 border-red-400/50', bg: 'bg-red-500/10' };
-      case 'medium': return { color: 'text-yellow-400 border-yellow-400/50', bg: 'bg-yellow-500/10' };
-      case 'low': return { color: 'text-green-400 border-green-400/50', bg: 'bg-green-500/10' };
-      default: return { color: 'text-gray-400 border-gray-400/50', bg: 'bg-gray-500/10' };
-    }
-  };
-
-  const getProviderConfig = (provider: string) => {
-    switch (provider) {
-      case 'Google Willow': return { color: 'bg-blue-500', name: 'Willow' };
-      case 'IBM Condor': return { color: 'bg-indigo-500', name: 'Condor' };
-      case 'Amazon Braket': return { color: 'bg-orange-500', name: 'Braket' };
-      default: return { color: 'bg-gray-500', name: 'Unknown' };
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active": return "text-green-400 border-green-400/50";
-      case "pending": return "text-yellow-400 border-yellow-400/50";
-      case "completed": return "text-blue-400 border-blue-400/50";
-      default: return "text-gray-400 border-gray-400/50";
-    }
+  const getJobTitle = (job: QuantumJob) => {
+    return summarizeJobDescription(job.description, job.jobType);
   };
 
   return (
@@ -334,7 +260,7 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 flex-1">
                             <div className="flex items-center gap-3">
-                              <div className={`w-3 h-3 rounded-full ${getProviderConfig(job.jobType).color} quantum-pulse`} />
+                              <div className="w-3 h-3 rounded-full bg-blue-500 quantum-pulse" />
                               <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover:bg-primary/20 transition-colors">
                                 <Atom size={20} className="quantum-pulse" />
                               </div>
@@ -358,14 +284,9 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                                   <CheckCircle className="mr-1 h-3 w-3" />
                                   Verified
                                 </Badge>
-                                {job.metadata?.priority && (
-                                  <Badge variant="outline" className={getPriorityConfig(job.metadata.priority).color}>
-                                    {job.metadata.priority.toUpperCase()}
-                                  </Badge>
-                                )}
                                 <span className="flex items-center gap-1">
                                   <Clock className="h-3 w-3" />
-                                  {formatDistanceToNow(new Date(job.timeSubmitted), { addSuffix: true })}
+                                  {formatDistanceToNow(new Date(job.timestamp), { addSuffix: true })}
                                 </span>
                               </div>
                             </div>
@@ -373,13 +294,8 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                           
                           <div className="text-right">
                             <div className="text-sm font-medium text-primary">
-                              {getProviderConfig(job.jobType).name}
+                              {job.jobType}
                             </div>
-                            {job.metadata?.estimatedCost && (
-                              <div className="text-xs text-muted-foreground">
-                                {job.metadata.estimatedCost}
-                              </div>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -393,40 +309,6 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                         className="px-6 pb-6"
                       >
                         <div className="ml-12 space-y-6 bg-gradient-to-br from-muted/20 to-muted/10 rounded-xl p-6 border-l-4 border-primary">
-                          {/* Execution Metrics */}
-                          {job.metadata && (
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                              <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                <Clock className="h-5 w-5 text-blue-400" />
-                                <div>
-                                  <div className="text-xs text-blue-200">Execution Time</div>
-                                  <div className="font-bold text-blue-100">{job.metadata.estimatedTime}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                                <DollarSign className="h-5 w-5 text-green-400" />
-                                <div>
-                                  <div className="text-xs text-green-200">Compute Cost</div>
-                                  <div className="font-bold text-green-100">{job.metadata.estimatedCost}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                                <Atom className="h-5 w-5 text-purple-400" />
-                                <div>
-                                  <div className="text-xs text-purple-200">Qubits Used</div>
-                                  <div className="font-bold text-purple-100">{job.metadata.qubitCount || "2-5"}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3 p-3 rounded-lg bg-pink-500/10 border border-pink-500/20">
-                                <Zap className="h-5 w-5 text-pink-400" />
-                                <div>
-                                  <div className="text-xs text-pink-200">Submission</div>
-                                  <div className="font-bold text-pink-100 capitalize">{job.metadata.submissionType}</div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          
                           {/* Job Details */}
                           <div className="space-y-4">
                             <h4 className="font-semibold text-primary text-lg flex items-center gap-2">
@@ -451,15 +333,9 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                               </div>
                               
                               <div className="space-y-3">
-                                {job.metadata?.priority && (
-                                  <div>
-                                    <span className="text-muted-foreground">Priority:</span>
-                                    <div className="font-medium capitalize">{job.metadata.priority}</div>
-                                  </div>
-                                )}
                                 <div>
                                   <span className="text-muted-foreground">Submitted:</span>
-                                  <div className="font-medium">{new Date(job.timeSubmitted).toLocaleString()}</div>
+                                  <div className="font-medium">{new Date(job.timestamp).toLocaleString()}</div>
                                 </div>
                                 <div>
                                   <span className="text-muted-foreground">Status:</span>
@@ -467,6 +343,10 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                                     <CheckCircle className="mr-1 h-3 w-3" />
                                     Verified
                                   </Badge>
+                                </div>
+                                <div>
+                                  <span className="text-muted-foreground">User:</span>
+                                  <code className="font-mono text-primary text-xs">{job.user.slice(0, 8)}...{job.user.slice(-6)}</code>
                                 </div>
                               </div>
                             </div>
@@ -484,35 +364,6 @@ export default function JobList({ userRole, jobsLastUpdated, onTotalJobsChange }
                                   </Button>
                                 </a>
                               </div>
-                            </div>
-                          </div>
-                          
-                          {/* Detailed Results */}
-                          <div className="space-y-6">
-                            {/* PQC Security Status */}
-                            <div className="p-4 rounded-xl bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
-                              <h5 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
-                                <Shield className="h-5 w-5" />
-                                🔐 Post-Quantum Security
-                              </h5>
-                              <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                  <span className="text-green-200">Encryption:</span>
-                                  <div className="font-bold text-green-100">Kyber-1024</div>
-                                </div>
-                                <div>
-                                  <span className="text-green-200">Quantum Resistance:</span>
-                                  <div className="font-bold text-green-100">98.7%</div>
-                                </div>
-                              </div>
-                              <div className="mt-3 flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                <span className="text-xs text-green-200">Data protected against quantum attacks</span>
-                              </div>
-                            </div>
-
-                            {/* Performance Metrics */}
-                            <div className="grid grid-cols-2 gap-4">
                             </div>
                           </div>
                         </div>

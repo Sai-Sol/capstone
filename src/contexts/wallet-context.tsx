@@ -81,35 +81,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [provider, address, clearError]);
 
-  const switchToMegaETH = async (ethereum: any) => {
-    try {
-      // First try to switch to the network
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: MEGAETH_TESTNET_CONFIG.chainIdHex }],
-      });
-    } catch (switchError: any) {
-      // If network doesn't exist, add it
-      if (switchError.code === 4902) {
-        try {
-          // Use MegaETH-specific network configuration
-          const networkConfig = getMegaETHNetworkConfig();
-
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [networkConfig],
-          });
-        } catch (addError: any) {
-          console.error("Failed to add MegaETH network:", addError);
-          throw new Error(MEGAETH_ERRORS.RPC_ERROR);
-        }
-      } else {
-        console.error("Failed to switch to MegaETH network:", switchError);
-        throw new Error(MEGAETH_ERRORS.WRONG_NETWORK);
-      }
-    }
-  };
-
   const validateNetwork = async (browserProvider: BrowserProvider) => {
     try {
       const network = await browserProvider.getNetwork();
@@ -192,8 +163,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error("No accounts found. Please unlock MetaMask and try again.");
       }
       
-      // Update wallet state without network switching
-      await updateWalletState(ethereum, true);
+      // Update wallet state
+      await updateWalletState(ethereum);
       
     } catch (error: any) {
       console.error("Error connecting wallet:", error);

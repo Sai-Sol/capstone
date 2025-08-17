@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,20 +12,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Contract, formatEther } from "ethers";
 import { 
   Globe, 
-  TrendingUp, 
   Activity,
   ExternalLink,
   Copy,
   RefreshCw,
   Zap,
   BarChart3,
-  Shield,
-  Code,
-  Brain,
-  CheckCircle,
-  AlertTriangle,
   Network,
-  Database
+  Code,
+  CheckCircle,
+  AlertTriangle
 } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork, MEGAETH_ERRORS } from "@/lib/megaeth-config";
@@ -47,7 +41,6 @@ export default function BlockchainPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
-
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(true);
 
   useEffect(() => {
@@ -86,58 +79,6 @@ export default function BlockchainPage() {
     }
   };
 
-  const switchToMegaETH = async () => {
-    if (!window.ethereum) {
-      toast({
-        variant: "destructive",
-        title: "MetaMask Required",
-        description: "Please install MetaMask to switch networks"
-      });
-      return;
-    }
-
-    try {
-      // Try to switch to MegaETH Testnet
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: MEGAETH_TESTNET_CONFIG.chainIdHex }],
-      });
-      
-      setIsCorrectNetwork(true);
-      toast({
-        title: "Network Switched! 🎉",
-        description: "Successfully connected to MegaETH Testnet"
-      });
-    } catch (error: any) {
-      if (error.code === 4902) {
-        // Network not added, try to add it
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [getMegaETHNetworkConfig()],
-          });
-          setIsCorrectNetwork(true);
-          toast({
-            title: "MegaETH Added! 🚀",
-            description: "MegaETH Testnet has been added to MetaMask"
-          });
-        } catch (addError) {
-          toast({
-            variant: "destructive",
-            title: "Failed to Add Network",
-            description: "Could not add MegaETH Testnet to MetaMask"
-          });
-        }
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Network Switch Failed",
-          description: error.message || "Failed to switch to MegaETH Testnet"
-        });
-      }
-    }
-  };
-
   const fetchNetworkStats = async () => {
     if (!provider) return;
     
@@ -171,29 +112,22 @@ export default function BlockchainPage() {
       {
         hash: "0x1234567890abcdef1234567890abcdef12345678",
         from: "0xabcdefghijklmnopqrstuvwxyz1234567890abcdef",
-        to: "0x9876543210fedcba9876543210fedcba98765432",
-        value: "0.5",
-        gasUsed: "21000",
+        to: CONTRACT_ADDRESS,
+        value: "0.0",
+        gasUsed: "65000",
         timestamp: Date.now() - 300000,
-        status: "success"
+        status: "success",
+        type: "Quantum Job"
       },
       {
         hash: "0x2345678901bcdef12345678901bcdef123456789",
         from: "0xbcdefghijklmnopqrstuvwxyz1234567890bcdefg",
-        to: "0x8765432109edcba98765432109edcba987654321",
-        value: "1.2",
-        gasUsed: "45000",
+        to: CONTRACT_ADDRESS,
+        value: "0.0",
+        gasUsed: "58000",
         timestamp: Date.now() - 600000,
-        status: "success"
-      },
-      {
-        hash: "0x3456789012cdef123456789012cdef1234567890",
-        from: "0xcdefghijklmnopqrstuvwxyz1234567890cdefgh",
-        to: "0x7654321098dcba87654321098dcba8765432109",
-        value: "0.1",
-        gasUsed: "65000",
-        timestamp: Date.now() - 900000,
-        status: "success"
+        status: "success",
+        type: "Quantum Job"
       }
     ];
     setTransactions(mockTxs);
@@ -250,12 +184,6 @@ export default function BlockchainPage() {
                 Connect your MetaMask wallet to access blockchain features and quantum job logging
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Button onClick={() => window.location.reload()} className="quantum-button w-full">
-                <Globe className="mr-2 h-4 w-4" />
-                Refresh to Connect
-              </Button>
-            </CardContent>
           </Card>
         </motion.div>
       </div>
@@ -274,7 +202,7 @@ export default function BlockchainPage() {
           Blockchain Hub
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Monitor network activity, manage transactions, and interact with smart contracts on MegaETH
+          Monitor network activity and interact with smart contracts on MegaETH
         </p>
       </motion.div>
 
@@ -403,7 +331,7 @@ export default function BlockchainPage() {
                 <Activity className="h-5 w-5 text-primary" />
                 Recent Transactions
               </CardTitle>
-              <CardDescription>Latest transactions on MegaETH network</CardDescription>
+              <CardDescription>Latest quantum job transactions on MegaETH network</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -423,13 +351,15 @@ export default function BlockchainPage() {
                             <CheckCircle className="mr-1 h-3 w-3" />
                             Success
                           </Badge>
+                          <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+                            {tx.type}
+                          </Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
                           <div>From: {tx.from.slice(0, 8)}...{tx.from.slice(-6)}</div>
                           <div>To: {tx.to.slice(0, 8)}...{tx.to.slice(-6)}</div>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
-                          <span className="font-semibold text-green-400">{tx.value} ETH</span>
                           <span className="text-muted-foreground">Gas: {tx.gasUsed}</span>
                           <span className="text-muted-foreground">{new Date(tx.timestamp).toLocaleTimeString()}</span>
                         </div>
@@ -492,19 +422,13 @@ export default function BlockchainPage() {
                     <span className="font-medium text-green-400">{contractJobs.length}</span>
                   </div>
                 </div>
-                <div className="mt-4 flex gap-3">
+                <div className="mt-4">
                   <Button variant="outline" asChild>
                     <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       View on Explorer
                     </a>
                   </Button>
-                  {!isCorrectNetwork && (
-                    <Button onClick={switchToMegaETH} className="quantum-button">
-                      <Network className="mr-2 h-4 w-4" />
-                      Switch to MegaETH
-                    </Button>
-                  )}
                 </div>
               </div>
 

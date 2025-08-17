@@ -9,7 +9,6 @@ A revolutionary blockchain-based quantum computing platform that ensures tamper-
 - **Smart Contracts**: QuantumJobLogger contract for secure job recording
 - **Wallet Integration**: MetaMask integration with MegaETH testnet support
 - **Real-time Monitoring**: Live blockchain explorer and network statistics
-- **Advanced Lab**: Comprehensive quantum algorithm execution environment
 
 ## 🔧 Getting Started
 
@@ -41,23 +40,6 @@ Configure MegaETH testnet in MetaMask:
 - **Currency Symbol**: ETH
 - **Block Explorer**: https://www.megaexplorer.xyz
 
-### MegaETH Testnet Features
-
-**High Performance:**
-- 2-second block times for fast confirmations
-- 100,000+ TPS theoretical throughput
-- Low latency transaction processing
-
-**Developer Tools:**
-- Faucet: https://faucet.megaeth.io
-- Explorer: https://www.megaexplorer.xyz
-- Documentation: https://docs.megaeth.io
-
-**Security:**
-- Post-quantum cryptography ready
-- EIP-1559 fee mechanism
-- Advanced consensus algorithms
-
 ## 🔐 Demo Accounts
 
 - **Admin**: admin@example.com / 456
@@ -77,10 +59,9 @@ Configure MegaETH testnet in MetaMask:
 - **Wallet**: MetaMask integration with ethers.js
 
 ### Key Components
-- **Quantum Lab**: Advanced algorithm execution environment
+- **Quantum Lab**: Algorithm execution environment
 - **Blockchain Explorer**: Real-time network monitoring
 - **Job History**: Comprehensive job tracking and verification
-- **Wallet Management**: Secure transaction handling
 
 ## 📊 Smart Contract
 

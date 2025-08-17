@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Contract } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useWallet } from "@/hooks/use-wallet";
@@ -37,19 +36,17 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, MessageSquare, AlertTriangle } from "lucide-react";
 
-import { CONTRACT_ADDRESS } from "@/lib/constants";
-import { quantumJobLoggerABI } from "@/lib/contracts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import QuantumResultsDisplay from "./quantum-results-display";
+import { blockchainIntegration } from "@/lib/blockchain-integration";
 
 const formSchema = z.object({
   jobType: z.string().min(1, { message: "Job type cannot be empty." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   submissionType: z.enum(["prompt", "qasm"]),
   priority: z.enum(["low", "medium", "high"]),
-  estimatedCost: z.string().optional(),
 });
 
 const computerTimeFactors: Record<string, { base: number; factor: number; cost: number; qubits: number }> = {
@@ -76,7 +73,6 @@ interface JobSubmissionFormProps {
 
 export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [gasEstimate, setGasEstimate] = useState<string | null>(null);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
@@ -88,14 +84,12 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       description: "",
       submissionType: "prompt",
       priority: "medium",
-      estimatedCost: "",
     },
   });
 
   const selectedJobType = form.watch("jobType");
   const descriptionValue = form.watch("description");
   const priority = form.watch("priority");
-  const submissionType = form.watch("submissionType");
   
   const { estimatedTime, estimatedCost, qubitCount } = useMemo(() => {
     if (!selectedJobType || !descriptionValue) return { 
@@ -133,24 +127,6 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     };
   }, [selectedJobType, descriptionValue, priority]);
 
-  // Estimate gas cost
-  const estimateGas = async () => {
-    if (!signer || !provider) return;
-    
-    try {
-      const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, signer);
-      const gasEstimate = await contract.logJob.estimateGas(
-        form.getValues().jobType,
-        form.getValues().description
-      );
-      const gasPrice = await provider.getFeeData();
-      const totalGasCost = gasEstimate * (gasPrice.gasPrice || BigInt(0));
-      setGasEstimate((Number(totalGasCost) / 1e18).toFixed(6));
-    } catch (error) {
-      console.error("Gas estimation failed:", error);
-    }
-  };
-
   const handleLogJob = async (values: z.infer<typeof formSchema>) => {
     if (!signer) {
       toast({
@@ -174,36 +150,17 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     clearError();
     
     try {
-      const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, signer);
-      
-      const jobMetadata = {
-        type: values.jobType,
-        description: values.description,
-        submissionType: values.submissionType,
-        priority: values.priority,
-        timestamp: Date.now(),
-        estimatedCost: estimatedCost,
-        estimatedTime: estimatedTime,
-        qubitCount: qubitCount,
-      };
-
-      const jobDescription = JSON.stringify(jobMetadata);
-
       toast({
         title: "Transaction Initiated 🚀",
         description: "Please confirm the blockchain transaction in your wallet.",
       });
 
-      await estimateGas();
-
-      const tx = await contract.logJob(values.jobType, jobDescription);
-      
-      toast({
-        title: "Job Submitted ⚡",
-        description: "Your job is being processed...",
-      });
-
-      await tx.wait();
+      const { txHash, jobId } = await blockchainIntegration.logQuantumJob(
+        provider,
+        signer,
+        values.jobType,
+        values.description
+      );
 
       // Submit job for execution
       const jobResponse = await fetch('/api/submit-job', {
@@ -215,7 +172,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
           provider: values.jobType,
           priority: values.priority,
           submissionType: values.submissionType,
-          txHash: tx.hash,
+          txHash,
           userId: await signer.getAddress()
         })
       });
@@ -224,12 +181,13 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       if (jobData.jobId) {
         setCurrentJobId(jobData.jobId);
       }
+
       toast({
         title: "Success! Job Logged 🎉",
         description: "Your job has been securely recorded on the blockchain.",
         action: (
           <Button asChild variant="link" size="sm">
-            <a href={`https://www.megaexplorer.xyz/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://www.megaexplorer.xyz/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
               View Transaction
             </a>
           </Button>
@@ -415,13 +373,12 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                       <FormControl>
                         <Textarea 
                           placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement" 
-                          placeholder="Testing" 
-                          className="quantum-input min-h-[100px] font-mono text-sm resize-none" 
+                          className="quantum-input min-h-[100px] resize-none" 
                           {...field} 
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-2">
-                        💡 Enter "Testing" or describe your quantum algorithm
+                        💡 Describe your quantum algorithm in natural language
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -466,7 +423,7 @@ measure q -> c;`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20">
                 <div className="flex items-center gap-2 mb-2">
@@ -491,16 +448,6 @@ measure q -> c;`}
                 </div>
                 <p className="text-xl font-bold text-purple-100">{qubitCount}</p>
               </div>
-              
-              {gasEstimate && (
-                <div className="p-4 rounded-xl bg-gradient-to-br from-pink-500/10 to-pink-600/5 border border-pink-500/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="h-5 w-5 text-pink-400" />
-                    <span className="text-sm font-medium text-pink-200">Gas Fee</span>
-                  </div>
-                  <p className="text-xl font-bold text-pink-100">{gasEstimate} ETH</p>
-                </div>
-              )}
             </motion.div>
 
             {/* Provider Info */}
@@ -538,7 +485,6 @@ measure q -> c;`}
               type="submit" 
               disabled={isLoading || !isConnected} 
               className="w-full h-14 quantum-button font-semibold text-base"
-              onClick={() => estimateGas()}
             >
               {isLoading ? (
                 <>
