@@ -3,6 +3,7 @@
 import React, { createContext, useState, useCallback, useEffect } from "react";
 import { BrowserProvider, JsonRpcSigner, formatEther } from "ethers";
 import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork, getMegaETHNetworkConfig, MEGAETH_ERRORS } from "@/lib/megaeth-config";
+import { advancedErrorHandler, ErrorCategory, ErrorUtils } from "@/lib/advanced-error-handler";
 
 interface WalletContextType {
   provider: BrowserProvider | null;
@@ -34,11 +35,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
+  const [lastErrorTime, setLastErrorTime] = useState<number>(0);
 
   const isConnected = !!address && !!provider && !!signer && !error;
 
   const clearError = useCallback(() => {
     setError(null);
+    setLastErrorTime(0);
   }, []);
 
   const getEthereumObject = () => {
@@ -54,6 +58,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setAddress(null);
     setBalance(null);
     setError(null);
+    setConnectionAttempts(0);
+    setLastErrorTime(0);
     
     // Clear from localStorage
     if (typeof window !== "undefined") {
@@ -66,6 +72,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     if (provider && address) {
       try {
         clearError();
+        
+        // Add timeout for balance refresh
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Balance refresh timeout')), 10000)
+        );
+        
+        const balancePromise = provider.getBalance(address);
+        const currentBalance = await Promise.race([balancePromise, timeoutPromise]) as bigint;
+        
         const currentBalance = await provider.getBalance(address);
         const formattedBalance = formatEther(currentBalance);
         setBalance(formattedBalance);
@@ -76,7 +91,13 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (error: any) {
         console.error("Error refreshing balance:", error);
-        setError("Failed to refresh balance. Please check your connection.");
+        const enhancedError = ErrorUtils.handleWalletError(error, {
+          action: 'refresh_balance',
+          walletAddress: address,
+          component: 'WalletContext'
+        });
+        setError(enhancedError.userMessage);
+        setLastErrorTime(Date.now());
       }
     }
   }, [provider, address, clearError]);
@@ -88,7 +109,13 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (network.chainId !== expectedChainId) {
         console.warn(`Wrong network detected: ${network.chainId}, expected: ${expectedChainId}`);
-        throw new Error(MEGAETH_ERRORS.WRONG_NETWORK);
+        const networkError = new Error(MEGAETH_ERRORS.WRONG_NETWORK);
+        const enhancedError = ErrorUtils.handleBlockchainError(networkError, {
+          action: 'network_validation',
+          networkId: Number(network.chainId),
+          expectedNetworkId: MEGAETH_TESTNET_CONFIG.chainId
+        });
+        throw enhancedError;
       }
       
       console.log(`✅ Connected to MegaETH Testnet (Chain ID: ${network.chainId})`);
@@ -101,6 +128,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const updateWalletState = useCallback(async (ethereum: any, skipNetworkCheck = false) => {
     try {
       setError(null);
+      setLastErrorTime(0);
       const browserProvider = new BrowserProvider(ethereum);
       
       // Validate network first unless skipping
@@ -108,12 +136,26 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         await validateNetwork(browserProvider);
       }
       
-      const accounts = await browserProvider.listAccounts();
+      // Add timeout for account listing
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Account listing timeout')), 8000)
+      );
+      
+      const accountsPromise = browserProvider.listAccounts();
+      const accounts = await Promise.race([accountsPromise, timeoutPromise]) as any[];
       
       if (accounts.length > 0) {
         const currentSigner = await browserProvider.getSigner();
         const currentAddress = await currentSigner.getAddress();
-        const currentBalance = await browserProvider.getBalance(currentAddress);
+        
+        // Add timeout for balance fetching
+        const balanceTimeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Balance fetch timeout')), 8000)
+        );
+        
+        const balancePromise = browserProvider.getBalance(currentAddress);
+        const currentBalance = await Promise.race([balancePromise, balanceTimeoutPromise]) as bigint;
+        
         const formattedBalance = formatEther(currentBalance);
 
         setProvider(browserProvider);
@@ -132,54 +174,101 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error: any) {
       console.error("Error updating wallet state:", error);
-      setError(error.message || "Failed to connect to wallet. Please try again.");
+      
+      const enhancedError = ErrorUtils.handleWalletError(error, {
+        action: 'update_wallet_state',
+        component: 'WalletContext',
+        skipNetworkCheck
+      });
+      
+      setError(enhancedError.userMessage);
+      setLastErrorTime(Date.now());
       disconnectWallet();
     }
   }, [disconnectWallet]);
 
   const connectWallet = useCallback(async () => {
+    // Prevent rapid connection attempts
+    if (Date.now() - lastErrorTime < 3000) {
+      setError("Please wait a moment before trying again.");
+      return;
+    }
+    
     const ethereum = getEthereumObject();
     
     if (!ethereum) {
-      setError("MetaMask not detected. Please install MetaMask to continue.");
+      const noMetaMaskError = ErrorUtils.handleWalletError(
+        new Error("MetaMask not detected"), 
+        { action: 'connect_wallet', component: 'WalletContext' }
+      );
+      setError(noMetaMaskError.userMessage);
       return;
     }
 
     if (!ethereum.isMetaMask) {
-      setError("Please use MetaMask wallet for the best experience.");
+      const notMetaMaskError = ErrorUtils.handleWalletError(
+        new Error("Non-MetaMask wallet detected"), 
+        { action: 'connect_wallet', component: 'WalletContext' }
+      );
+      setError(notMetaMaskError.userMessage);
       return;
     }
 
     setIsConnecting(true);
     setError(null);
+    setConnectionAttempts(prev => prev + 1);
 
     try {
-      // Request account access
-      const accounts = await ethereum.request({ 
-        method: "eth_requestAccounts" 
-      });
+      // Request account access with timeout
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Connection request timeout')), 15000)
+      );
+      
+      const accountsPromise = ethereum.request({ method: "eth_requestAccounts" });
+      const accounts = await Promise.race([accountsPromise, timeoutPromise]) as string[];
       
       if (!accounts || accounts.length === 0) {
-        throw new Error("No accounts found. Please unlock MetaMask and try again.");
+        throw new Error("No accounts available. Please unlock MetaMask and try again.");
       }
       
       // Update wallet state
       await updateWalletState(ethereum);
+      setConnectionAttempts(0); // Reset on success
       
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
       
-      // Handle specific error cases
+      let enhancedError;
+      
       if (error.code === 4001) {
-        setError("Connection rejected. Please approve the connection request in MetaMask.");
+        enhancedError = ErrorUtils.handleWalletError(error, {
+          action: 'user_rejected_connection',
+          attempts: connectionAttempts
+        });
       } else if (error.code === -32002) {
-        setError("Connection request pending. Please check MetaMask for pending requests.");
+        enhancedError = ErrorUtils.handleWalletError(error, {
+          action: 'connection_pending',
+          attempts: connectionAttempts
+        });
       } else if (error.message?.includes("User rejected")) {
-        setError("Connection cancelled by user.");
+        enhancedError = ErrorUtils.handleWalletError(error, {
+          action: 'user_cancelled',
+          attempts: connectionAttempts
+        });
+      } else if (error.message?.includes("timeout")) {
+        enhancedError = ErrorUtils.handleNetworkError(error, {
+          action: 'connection_timeout',
+          attempts: connectionAttempts
+        });
       } else {
-        setError("Failed to connect wallet. Please ensure MetaMask is unlocked and try again.");
+        enhancedError = ErrorUtils.handleWalletError(error, {
+          action: 'connection_failed',
+          attempts: connectionAttempts
+        });
       }
       
+      setError(enhancedError.userMessage);
+      setLastErrorTime(Date.now());
       disconnectWallet();
     } finally {
       setIsConnecting(false);
