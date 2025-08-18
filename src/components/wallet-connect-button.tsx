@@ -214,7 +214,6 @@ export default function WalletConnectButton() {
                       <Copy className="h-3 w-3" />
                     </Button>
                   </div>
-                  </div>
                 </div>
                 
                 {balance && (
