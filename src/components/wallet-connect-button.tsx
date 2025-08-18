@@ -203,6 +203,7 @@ export default function WalletConnectButton() {
                     <span className="font-medium">MegaETH Testnet</span>
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   </div>
+                  <div className="flex items-center gap-2">
                     <code className="font-mono text-xs flex-1 truncate">{address}</code>
                     <Button 
                       variant="ghost" 
@@ -212,6 +213,7 @@ export default function WalletConnectButton() {
                     >
                       <Copy className="h-3 w-3" />
                     </Button>
+                  </div>
                   </div>
                 </div>
                 
