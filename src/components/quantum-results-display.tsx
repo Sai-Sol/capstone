@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -201,25 +201,28 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                         <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
                           <div className="flex items-center gap-2 mb-2">
                             <Atom className="h-5 w-5 text-blue-400" />
-                            <span className="text-sm font-medium text-blue-200">Algorithm</span>
+                            <span className="text-sm font-medium text-blue-200">🧬 Algorithm Type</span>
                           </div>
                           <p className="text-lg font-bold text-blue-100">{result.results.algorithm}</p>
+                          <p className="text-xs text-blue-200/60 mt-1">Quantum circuit executed</p>
                         </div>
                         
                         <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
                           <div className="flex items-center gap-2 mb-2">
                             <Clock className="h-5 w-5 text-green-400" />
-                            <span className="text-sm font-medium text-green-200">Execution Time</span>
+                            <span className="text-sm font-medium text-green-200">⏱️ Execution Time</span>
                           </div>
                           <p className="text-lg font-bold text-green-100">{result.results.executionTime}</p>
+                          <p className="text-xs text-green-200/60 mt-1">On quantum hardware</p>
                         </div>
 
                         <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
                           <div className="flex items-center gap-2 mb-2">
                             <Activity className="h-5 w-5 text-purple-400" />
-                            <span className="text-sm font-medium text-purple-200">Fidelity</span>
+                            <span className="text-sm font-medium text-purple-200">🎯 Accuracy (Fidelity)</span>
                           </div>
                           <p className="text-lg font-bold text-purple-100">{result.results.fidelity}</p>
+                          <p className="text-xs text-purple-200/60 mt-1">Quantum state accuracy</p>
                         </div>
                       </div>
 
@@ -228,11 +231,21 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <BarChart3 className="h-5 w-5 text-primary" />
-                            Quantum Measurement Results
+                            📊 Quantum Measurement Results
                           </CardTitle>
+                          <CardDescription className="text-muted-foreground">
+                            Each measurement collapses the quantum superposition into a classical state
+                          </CardDescription>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
+                            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                              <p className="text-sm text-blue-200">
+                                <strong>📈 Understanding Results:</strong> These bars show how often each quantum state was measured. 
+                                In quantum computing, we run the same circuit many times (shots) to see the probability distribution.
+                              </p>
+                            </div>
+                            
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                               {Object.entries(result.results.measurements).map(([state, count]) => {
                                 const percentage = (count / result.results!.shots * 100).toFixed(1);
@@ -245,8 +258,9 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                                   >
                                     <div className="text-center">
                                       <div className="font-mono text-lg font-bold text-primary">|{state}⟩</div>
-                                      <div className="text-sm text-muted-foreground">{count} shots</div>
+                                      <div className="text-sm text-muted-foreground">{count} times</div>
                                       <div className="text-xs font-medium text-green-400">{percentage}%</div>
+                                      <div className="text-xs text-muted-foreground/60">probability</div>
                                     </div>
                                   </motion.div>
                                 );
@@ -260,8 +274,8 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                                 return (
                                   <div key={state} className="space-y-1">
                                     <div className="flex justify-between text-sm">
-                                      <span className="font-mono">|{state}⟩</span>
-                                      <span>{percentage.toFixed(1)}%</span>
+                                      <span className="font-mono">|{state}⟩ state</span>
+                                      <span className="font-semibold">{percentage.toFixed(1)}% ({count} measurements)</span>
                                     </div>
                                     <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
                                       <motion.div
@@ -284,27 +298,37 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <Zap className="h-5 w-5 text-primary" />
-                            Technical Details
+                            🔧 Technical Execution Details
                           </CardTitle>
+                          <CardDescription className="text-muted-foreground">
+                            Performance metrics from the quantum processor
+                          </CardDescription>
                         </CardHeader>
                         <CardContent>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <span className="text-muted-foreground">Provider:</span>
-                              <div className="font-medium">{result.results.provider}</div>
+                              <span className="text-muted-foreground">🏭 Quantum Provider:</span>
+                              <div className="font-medium text-blue-400">{result.results.provider}</div>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Circuit Depth:</span>
-                              <div className="font-medium">{result.results.circuitDepth}</div>
+                              <span className="text-muted-foreground">📏 Circuit Depth:</span>
+                              <div className="font-medium text-purple-400">{result.results.circuitDepth} layers</div>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Total Shots:</span>
-                              <div className="font-medium">{result.results.shots.toLocaleString()}</div>
+                              <span className="text-muted-foreground">🎯 Measurements:</span>
+                              <div className="font-medium text-green-400">{result.results.shots.toLocaleString()} shots</div>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Fidelity:</span>
-                              <div className="font-medium text-green-400">{result.results.fidelity}</div>
+                              <span className="text-muted-foreground">✨ Accuracy:</span>
+                              <div className="font-medium text-pink-400">{result.results.fidelity}</div>
                             </div>
+                          </div>
+                          
+                          <div className="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                            <p className="text-sm text-green-200">
+                              <strong>🎉 Success!</strong> Your quantum algorithm executed successfully on real quantum hardware. 
+                              The results above show the quantum measurement outcomes, permanently recorded on the MegaETH blockchain.
+                            </p>
                           </div>
                         </CardContent>
                       </Card>
@@ -313,12 +337,12 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                       <div className="flex gap-3">
                         <Button onClick={downloadResults} className="quantum-button">
                           <Download className="mr-2 h-4 w-4" />
-                          Download Results
+                          📥 Download Results
                         </Button>
                         <Button variant="outline" asChild>
-                          <a href="/dashboard/history" target="_blank">
+                          <a href="/dashboard/history">
                             <ExternalLink className="mr-2 h-4 w-4" />
-                            View in History
+                            📚 View All Results
                           </a>
                         </Button>
                       </div>

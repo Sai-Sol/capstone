@@ -275,10 +275,10 @@ export default function DashboardHomePage() {
                   <div className="p-2 bg-primary/20 rounded-lg">
                     <Atom className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="font-semibold text-primary">1. Quantum Execution</h3>
+                  <h3 className="font-semibold text-primary">🧬 1. Quantum Execution</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Quantum algorithms are executed on real quantum processors with cryptographic result verification.
+                  Your quantum algorithms run on real quantum computers from Google, IBM, and Amazon - not simulators!
                 </p>
               </motion.div>
               
@@ -291,10 +291,10 @@ export default function DashboardHomePage() {
                   <div className="p-2 bg-green-500/20 rounded-lg">
                     <Shield className="h-6 w-6 text-green-400" />
                   </div>
-                  <h3 className="font-semibold text-green-100">2. Blockchain Logging</h3>
+                  <h3 className="font-semibold text-green-100">🔐 2. Blockchain Security</h3>
                 </div>
                 <p className="text-sm text-green-200/80">
-                  Results are immutably logged on Ethereum blockchain, ensuring tamper-proof verification.
+                  Every quantum computation is permanently recorded on the MegaETH blockchain - no one can fake or alter your results!
                 </p>
               </motion.div>
               
@@ -307,10 +307,10 @@ export default function DashboardHomePage() {
                   <div className="p-2 bg-purple-500/20 rounded-lg">
                     <Activity className="h-6 w-6 text-purple-400" />
                   </div>
-                  <h3 className="font-semibold text-purple-100">3. Verification</h3>
+                  <h3 className="font-semibold text-purple-100">✅ 3. Instant Verification</h3>
                 </div>
                 <p className="text-sm text-purple-200/80">
-                  All quantum computations are verified and stored permanently on the blockchain.
+                  Anyone can verify your quantum results using the blockchain - perfect for research, patents, and proving quantum advantage!
                 </p>
               </motion.div>
             </div>
@@ -318,24 +318,24 @@ export default function DashboardHomePage() {
             <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
               <h4 className="font-semibold text-primary mb-4 flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Why QuantumChain?
+                🚀 Why QuantumChain is Revolutionary
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span className="text-foreground">Immutable quantum computation logging</span>
+                  <span className="text-foreground">🔒 Tamper-proof quantum results</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span className="text-foreground">Tamper-proof result verification</span>
+                  <span className="text-foreground">🌐 Access to multiple quantum computers</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span className="text-foreground">Multi-provider quantum access</span>
+                  <span className="text-foreground">⚡ Lightning-fast MegaETH blockchain</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span className="text-foreground">Secure blockchain integration</span>
+                  <span className="text-foreground">🎓 Perfect for learning and research</span>
                 </div>
               </div>
             </div>

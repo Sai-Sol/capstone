@@ -29,12 +29,10 @@ import {
   Clock,
   Shield,
   Database,
-  Cpu,
-  Send
+  Cpu
 } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
-import SendTransactionForm from "@/components/send-transaction-form";
 
 interface NetworkMetrics {
   blockNumber: number;
@@ -414,10 +412,6 @@ export default function BlockchainPage() {
             <Globe className="h-4 w-4" />
             Overview
           </TabsTrigger>
-          <TabsTrigger value="transactions" className="flex items-center gap-2">
-            <Send className="h-4 w-4" />
-            Send ETH
-          </TabsTrigger>
           <TabsTrigger value="contracts" className="flex items-center gap-2">
             <Code className="h-4 w-4" />
             Contracts
@@ -425,6 +419,10 @@ export default function BlockchainPage() {
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Analytics
+          </TabsTrigger>
+          <TabsTrigger value="explorer" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Explorer
           </TabsTrigger>
         </TabsList>
 
@@ -510,9 +508,6 @@ export default function BlockchainPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="transactions" className="mt-6">
-          <SendTransactionForm />
-        </TabsContent>
 
         <TabsContent value="contracts" className="mt-6">
           <Card className="quantum-card">
@@ -571,7 +566,7 @@ export default function BlockchainPage() {
                 
                 <div className="flex gap-3 mt-6">
                   <Button variant="outline" asChild>
-                    <a href={`https://etherscan.io/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       View on Explorer
                     </a>
@@ -624,7 +619,7 @@ export default function BlockchainPage() {
                             <Copy className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm" asChild>
-                            <a href={`https://etherscan.io/tx/${job.txHash}`} target="_blank" rel="noopener noreferrer">
+                            <a href={`https://www.megaexplorer.xyz/tx/${job.txHash}`} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="h-4 w-4" />
                             </a>
                           </Button>
@@ -724,6 +719,100 @@ export default function BlockchainPage() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="explorer" className="mt-6">
+          <Card className="quantum-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-foreground">
+                <Activity className="h-5 w-5 text-primary" />
+                MegaETH Blockchain Explorer
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Explore blocks, transactions, and network activity on MegaETH Testnet
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                  <h4 className="font-semibold text-primary mb-4 flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Network Overview
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Latest Block:</span>
+                      <span className="font-mono text-primary">#{networkMetrics.blockNumber.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Gas Price:</span>
+                      <span className="font-mono text-green-400">{parseFloat(networkMetrics.gasPrice).toFixed(2)} Gwei</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Network Load:</span>
+                      <span className="font-mono text-blue-400">{networkMetrics.networkLoad}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Block Time:</span>
+                      <span className="font-mono text-purple-400">~2 seconds</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 rounded-xl bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
+                  <h4 className="font-semibold text-green-200 mb-4 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Quick Actions
+                  </h4>
+                  <div className="space-y-3">
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <a href="https://www.megaexplorer.xyz" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Open Full Explorer
+                      </a>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <a href={`https://www.megaexplorer.xyz/address/${address}`} target="_blank" rel="noopener noreferrer">
+                        <Activity className="mr-2 h-4 w-4" />
+                        View My Address
+                      </a>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" asChild>
+                      <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                        <Code className="mr-2 h-4 w-4" />
+                        View Contract
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm font-medium text-blue-200">MegaETH Testnet Information</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    <span className="text-muted-foreground">Chain ID:</span>
+                    <div className="font-mono font-bold text-blue-400">9000</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Symbol:</span>
+                    <div className="font-mono font-bold text-blue-400">ETH</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Block Time:</span>
+                    <div className="font-mono font-bold text-blue-400">~2s</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Max TPS:</span>
+                    <div className="font-mono font-bold text-blue-400">100k+</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

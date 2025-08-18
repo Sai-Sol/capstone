@@ -242,7 +242,7 @@ export default function WalletConnectButton() {
           
           <DropdownMenuItem asChild>
             <a
-              href={`https://etherscan.io/address/${address}`}
+              href={`https://www.megaexplorer.xyz/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer flex items-center gap-2 p-3 hover:bg-primary/10 transition-colors text-foreground"
@@ -254,7 +254,7 @@ export default function WalletConnectButton() {
           
           <DropdownMenuItem asChild>
             <a
-              href="https://faucet.paradigm.xyz/"
+              href="https://faucet.megaeth.io"
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer flex items-center gap-2 p-3 hover:bg-blue-500/10 transition-colors text-foreground"

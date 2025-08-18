@@ -219,7 +219,7 @@ export default function LoginPage() {
                         >
                           <div>
                             <div className="font-medium text-foreground">Admin Account</div>
-                            <div className="text-blue-200/60">admin@example.com • Full access</div>
+                            <div className="text-blue-200/60">admin@example.com • 🔑 Full platform access</div>
                           </div>
                         </Button>
                         <Button
@@ -232,7 +232,7 @@ export default function LoginPage() {
                         >
                           <div>
                             <div className="font-medium text-foreground">User Account</div>
-                            <div className="text-blue-200/60">p1@example.com • Standard access</div>
+                            <div className="text-blue-200/60">p1@example.com • 👤 Standard user access</div>
                           </div>
                         </Button>
                       </div>
@@ -314,9 +314,9 @@ export default function LoginPage() {
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-green-400 mt-0.5" />
                 <div>
-                  <p className="text-xs font-medium text-green-400 mb-1">Secure Platform</p>
+                  <p className="text-xs font-medium text-green-400 mb-1">🛡️ Enterprise Security</p>
                   <p className="text-xs text-green-200/80">
-                    Your data is protected with enterprise-grade security and blockchain verification.
+                    Your quantum computations are protected with military-grade encryption and permanent blockchain verification.
                   </p>
                 </div>
               </div>

@@ -71,8 +71,8 @@ const priorityConfig = {
 const presetAlgorithms = [
   {
     id: "bell-state",
-    name: "Bell State Creation",
-    description: "Create entangled Bell state using Hadamard and CNOT gates",
+    name: "🔗 Bell State Creation",
+    description: "Create quantum entanglement between two qubits - the foundation of quantum computing!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 
@@ -82,14 +82,14 @@ creg c[2];
 h q[0];
 cx q[0],q[1];
 measure q -> c;`,
-    explanation: "Creates quantum entanglement between two qubits. Results should show 50% |00⟩ and 50% |11⟩ states.",
+    explanation: "This creates 'spooky action at a distance' - measuring one qubit instantly affects the other! You'll see equal chances of |00⟩ and |11⟩ states, proving entanglement.",
     difficulty: "Beginner",
     qubits: 2
   },
   {
     id: "grover-search",
-    name: "Grover's Search Algorithm",
-    description: "Quantum database search algorithm for finding marked items",
+    name: "🔍 Grover's Search Algorithm",
+    description: "Find a needle in a haystack quadratically faster than any classical computer!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 
@@ -115,14 +115,14 @@ h q[0];
 h q[1];
 
 measure q -> c;`,
-    explanation: "Searches an unsorted database quadratically faster than classical algorithms. Amplifies the probability of finding the target state.",
+    explanation: "This quantum algorithm can search unsorted databases much faster than classical computers. Watch how it amplifies the probability of finding the target |11⟩ state!",
     difficulty: "Intermediate",
     qubits: 2
   },
   {
     id: "quantum-teleportation",
-    name: "Quantum Teleportation",
-    description: "Transfer quantum state from one qubit to another using entanglement",
+    name: "📡 Quantum Teleportation",
+    description: "Beam quantum information from one place to another using entanglement - like Star Trek!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 
@@ -147,14 +147,14 @@ if(c[1]==1) x q[2];
 if(c[0]==1) z q[2];
 
 measure q[2] -> c[2];`,
-    explanation: "Demonstrates quantum teleportation protocol. The state of qubit 0 is transferred to qubit 2 through quantum entanglement.",
+    explanation: "This recreates the famous quantum teleportation protocol! The quantum state of the first qubit magically appears on the third qubit, while the original is destroyed.",
     difficulty: "Advanced",
     qubits: 3
   },
   {
     id: "superposition",
-    name: "Quantum Superposition",
-    description: "Create equal superposition across multiple qubits",
+    name: "🌊 Quantum Superposition",
+    description: "Put qubits in multiple states simultaneously - the heart of quantum advantage!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 
@@ -166,14 +166,14 @@ h q[1];
 h q[2];
 
 measure q -> c;`,
-    explanation: "Creates equal probability distribution across all possible states. Each qubit is in superposition of |0⟩ and |1⟩.",
+    explanation: "This puts each qubit in a 'superposition' - existing in both |0⟩ and |1⟩ states at once! You'll see equal probabilities for all 8 possible outcomes.",
     difficulty: "Beginner",
     qubits: 3
   },
   {
     id: "quantum-fourier",
-    name: "Quantum Fourier Transform",
-    description: "Quantum version of the discrete Fourier transform",
+    name: "🎵 Quantum Fourier Transform",
+    description: "The quantum version of signal processing - essential for breaking encryption!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 
@@ -195,14 +195,14 @@ h q[0];
 swap q[0],q[2];
 
 measure q -> c;`,
-    explanation: "Quantum Fourier Transform is essential for many quantum algorithms including Shor's algorithm. Shows frequency domain representation.",
+    explanation: "This is the quantum equivalent of signal processing! It's the secret sauce in Shor's algorithm for breaking RSA encryption and finding hidden patterns.",
     difficulty: "Advanced",
     qubits: 3
   },
   {
     id: "random-number",
-    name: "Quantum Random Number Generator",
-    description: "Generate truly random numbers using quantum mechanics",
+    name: "🎲 Quantum Random Generator",
+    description: "Generate truly random numbers that even Einstein couldn't predict!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 
@@ -215,7 +215,7 @@ h q[2];
 h q[3];
 
 measure q -> c;`,
-    explanation: "Uses quantum superposition to generate truly random numbers. Each measurement gives a random 4-bit number.",
+    explanation: "Unlike computer 'random' numbers, these are truly unpredictable thanks to quantum mechanics! Each run gives you a genuinely random 4-bit number from the universe itself.",
     difficulty: "Beginner",
     qubits: 4
   }
@@ -351,7 +351,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
         description: "Your job has been securely recorded on the blockchain.",
         action: (
           <Button asChild variant="link" size="sm">
-            <a href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://www.megaexplorer.xyz/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
               View Transaction
             </a>
           </Button>
@@ -541,9 +541,9 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
               <TabsContent value="preset" className="mt-6">
                 <div className="space-y-4">
                   <div className="text-center mb-6">
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Choose a Quantum Algorithm</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">🧪 Ready-to-Use Quantum Algorithms</h3>
                     <p className="text-sm text-muted-foreground">
-                      Select from pre-built quantum algorithms to test and learn
+                      Select from expertly crafted quantum algorithms - perfect for learning and experimentation
                     </p>
                   </div>
                   
@@ -580,7 +580,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                         </div>
                         
                         <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
-                          💡 {preset.explanation}
+                          💡 <strong>What it does:</strong> {preset.explanation}
                         </div>
                       </motion.div>
                     ))}
@@ -595,13 +595,13 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                           <FormLabel className="text-base font-medium text-foreground">Generated QASM Code</FormLabel>
                           <FormControl>
                             <Textarea 
-                              className="quantum-input min-h-[150px] font-mono text-sm resize-none" 
+                              className="quantum-input min-h-[150px] font-mono text-sm resize-none bg-muted/20" 
                               readOnly
                               {...field} 
                             />
                           </FormControl>
                           <div className="text-xs text-muted-foreground mt-2">
-                            ✨ This code will be executed on the selected quantum provider
+                            ✨ <strong>Ready to execute!</strong> This quantum circuit will run on {selectedJobType} with {computerTimeFactors[selectedJobType]?.qubits} qubits available
                           </div>
                           <FormMessage />
                         </FormItem>
@@ -620,13 +620,13 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                       <FormLabel className="text-base font-medium text-foreground">Quantum Algorithm Description</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement" 
+                          placeholder="🌟 Try this: 'Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement between two qubits'" 
                           className="quantum-input min-h-[100px] resize-none" 
                           {...field} 
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-2">
-                        💡 Describe your quantum algorithm in natural language
+                        💡 <strong>Speak naturally!</strong> Describe what you want your quantum algorithm to do - our AI will translate it into quantum circuits
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -643,7 +643,8 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                       <FormLabel className="text-base font-medium text-foreground">QASM Circuit Code</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder={`OPENQASM 2.0;
+                          placeholder={`// 🚀 Example Bell State Circuit
+OPENQASM 2.0;
 include "qelib1.inc";
 
 qreg q[2];
@@ -651,13 +652,15 @@ creg c[2];
 
 h q[0];
 cx q[0],q[1];
-measure q -> c;`} 
+measure q -> c;
+
+// This creates quantum entanglement!`} 
                           className="quantum-input min-h-[100px] font-mono text-sm resize-none" 
                           {...field} 
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-2">
-                        💡 Enter OpenQASM 2.0/3.0 quantum circuit code
+                        💡 <strong>For experts:</strong> Write your quantum circuit in OpenQASM 2.0/3.0 - the standard quantum assembly language
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -708,19 +711,19 @@ measure q -> c;`}
               >
                 <div className="flex items-center gap-3 mb-3">
                   <Cpu className="h-5 w-5 text-primary" />
-                  <h4 className="font-semibold text-primary">Provider Details</h4>
+                  <h4 className="font-semibold text-primary">🔬 Quantum Hardware Details</h4>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Total Qubits:</span>
+                    <span className="text-muted-foreground">🎯 Available Qubits:</span>
                     <div className="font-bold text-primary">{computerTimeFactors[selectedJobType].qubits}</div>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Base Latency:</span>
+                    <span className="text-muted-foreground">⚡ Response Time:</span>
                     <div className="font-bold text-green-400">{computerTimeFactors[selectedJobType].base}ms</div>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Cost Factor:</span>
+                    <span className="text-muted-foreground">💰 Base Cost:</span>
                     <div className="font-bold text-yellow-400">{computerTimeFactors[selectedJobType].cost} ETH/job</div>
                   </div>
                 </div>
@@ -757,8 +760,8 @@ measure q -> c;`}
                   <Alert className="border-yellow-500/20 bg-yellow-500/5">
                     <Zap className="h-4 w-4 text-yellow-500" />
                     <AlertDescription className="text-foreground">
-                      <div className="font-semibold text-yellow-500 mb-1">Wallet Connection Required</div>
-                      Connect your wallet to submit quantum jobs to the blockchain.
+                      <div className="font-semibold text-yellow-500 mb-1">🔐 Wallet Connection Required</div>
+                      Connect your MetaMask wallet to submit quantum jobs and record results on the MegaETH blockchain for permanent verification.
                     </AlertDescription>
                   </Alert>
                 </motion.div>
@@ -773,7 +776,7 @@ measure q -> c;`}
                   <Alert className="border-red-500/20 bg-red-500/5">
                     <AlertTriangle className="h-4 w-4 text-red-500" />
                     <AlertDescription className="text-foreground">
-                      <div className="font-semibold text-red-500 mb-1">Wallet Error</div>
+                      <div className="font-semibold text-red-500 mb-1">⚠️ Wallet Connection Issue</div>
                       {error}
                     </AlertDescription>
                   </Alert>

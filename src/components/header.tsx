@@ -56,7 +56,7 @@ export default function Header() {
               QuantumChain
             </span>
             <span className="text-xs text-muted-foreground font-medium">
-              Blockchain Quantum Computing
+              🚀 Quantum Computing Platform
             </span>
           </div>
         </Link>

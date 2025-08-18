@@ -175,10 +175,10 @@ export default function RegisterPage() {
             </motion.div>
             
             <CardTitle className="text-3xl font-headline font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Join QuantumChain
+              🚀 Join QuantumChain
             </CardTitle>
             <CardDescription className="text-base mt-2 text-muted-foreground">
-              Create your account for secure quantum computing
+              Create your account and start exploring the quantum universe!
             </CardDescription>
           </CardHeader>
           

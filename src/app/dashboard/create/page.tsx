@@ -20,10 +20,10 @@ export default function CreatePage() {
         className="text-center"
       >
         <h1 className="text-4xl font-bold font-headline bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-          Submit Quantum Job
+          🧪 Quantum Computing Lab
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Execute quantum algorithms on leading quantum processors and log results on the blockchain
+          Run real quantum algorithms on Google, IBM, and Amazon quantum computers. All results are permanently verified on the blockchain!
         </p>
       </motion.div>
 

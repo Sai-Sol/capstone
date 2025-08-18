@@ -28,56 +28,56 @@ const summarizeJobDescription = (description: string, jobType: string): string =
   // QASM code detection and summarization
   if (lowerDesc.includes('openqasm') || lowerDesc.includes('qreg') || lowerDesc.includes('creg')) {
     if (lowerDesc.includes('bell') || (lowerDesc.includes('h ') && lowerDesc.includes('cx'))) {
-      return "🔗 Bell State Entanglement Circuit";
+      return "🔗 Bell State Entanglement";
     }
     if (lowerDesc.includes('grover')) {
-      return "🔍 Grover's Search Algorithm";
+      return "🔍 Grover's Quantum Search";
     }
     if (lowerDesc.includes('shor')) {
-      return "🔢 Shor's Factorization Algorithm";
+      return "🔢 Shor's Factorization";
     }
     if (lowerDesc.includes('teleport')) {
-      return "📡 Quantum Teleportation Protocol";
+      return "📡 Quantum Teleportation";
     }
     if (lowerDesc.includes('measure')) {
-      return "📊 Quantum Measurement Circuit";
+      return "📊 Quantum Measurement";
     }
-    return "⚛️ Custom Quantum Circuit";
+    return "⚛️ Custom Quantum Algorithm";
   }
   
   // Natural language prompt summarization
   if (lowerDesc.includes('factor') || lowerDesc.includes('shor')) {
-    return "🔢 Integer Factorization (Shor's)";
+    return "🔢 Number Factorization";
   }
   if (lowerDesc.includes('search') || lowerDesc.includes('grover')) {
-    return "🔍 Database Search (Grover's)";
+    return "🔍 Quantum Database Search";
   }
   if (lowerDesc.includes('bell') || lowerDesc.includes('entangl')) {
-    return "🔗 Quantum Entanglement Demo";
+    return "🔗 Quantum Entanglement";
   }
   if (lowerDesc.includes('teleport')) {
     return "📡 Quantum Teleportation";
   }
   if (lowerDesc.includes('random') || lowerDesc.includes('rng')) {
-    return "🎲 Quantum Random Generation";
+    return "🎲 True Random Numbers";
   }
   if (lowerDesc.includes('superposition')) {
-    return "🌊 Superposition Analysis";
+    return "🌊 Quantum Superposition";
   }
   if (lowerDesc.includes('optimization') || lowerDesc.includes('qaoa')) {
     return "📈 Quantum Optimization";
   }
   if (lowerDesc.includes('simulation') || lowerDesc.includes('vqe')) {
-    return "🧪 Quantum Simulation";
+    return "🧪 Molecular Simulation";
   }
   if (lowerDesc.includes('machine learning') || lowerDesc.includes('qml')) {
-    return "🤖 Quantum ML Model";
+    return "🤖 Quantum AI Model";
   }
   
   // Fallback to first meaningful words
   const words = description.split(' ').filter(word => word.length > 3);
   const summary = words.slice(0, 3).join(' ');
-  return summary.length > 40 ? `⚛️ ${summary.substring(0, 37)}...` : `⚛️ ${summary}` || "⚛️ Quantum Task";
+  return summary.length > 40 ? `⚛️ ${summary.substring(0, 37)}...` : `⚛️ ${summary}` || "⚛️ Quantum Experiment";
 };
 
 const generateJobId = (txHash: string): string => {
