@@ -29,15 +29,12 @@ import {
   Clock,
   Shield,
   Database,
-  Cpu
+  Cpu,
+  Send
 } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
-import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork, MEGAETH_ERRORS } from "@/lib/megaeth-config";
 import { quantumJobLoggerABI } from "@/lib/contracts";
-import MegaETHNetworkStatus from "@/components/megaeth-network-status";
-import AdvancedErrorDisplay from "@/components/advanced-error-display";
-import BlockchainErrorRecovery from "@/components/blockchain-error-recovery";
-import { advancedErrorHandler, ErrorCategory, ErrorUtils } from "@/lib/advanced-error-handler";
+import SendTransactionForm from "@/components/send-transaction-form";
 
 interface NetworkMetrics {
   blockNumber: number;
@@ -66,7 +63,6 @@ export default function BlockchainPage() {
   const { isConnected, address, balance, provider, error, clearError } = useWallet();
   const { toast } = useToast();
   
-  // State management
   const [networkMetrics, setNetworkMetrics] = useState<NetworkMetrics>({
     blockNumber: 0,
     gasPrice: "0",
@@ -81,90 +77,9 @@ export default function BlockchainPage() {
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCorrectNetwork, setIsCorrectNetwork] = useState(true);
-  const [enhancedError, setEnhancedError] = useState<any>(null);
-  const [showErrorRecovery, setShowErrorRecovery] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(0);
   const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
 
-  // Enhanced error handling
-  const handleError = useCallback((error: any, context?: any) => {
-    console.error('Blockchain page error:', error);
-    const enhanced = ErrorUtils.handleBlockchainError(error, {
-      component: 'BlockchainPage',
-      walletAddress: address,
-      networkId: MEGAETH_TESTNET_CONFIG.chainId,
-      ...context
-    });
-    setEnhancedError(enhanced);
-    setShowErrorRecovery(true);
-  }, [address]);
-
-  // Network validation with enhanced error handling
-  const checkNetwork = useCallback(async () => {
-    if (!provider) return;
-    
-    try {
-      clearError();
-      const network = await provider.getNetwork();
-      const isCorrect = validateMegaETHNetwork(network.chainId);
-      setIsCorrectNetwork(isCorrect);
-      
-      if (!isCorrect) {
-        const errorMsg = `Wrong network detected: Chain ID ${network.chainId}. Expected MegaETH Testnet (${MEGAETH_TESTNET_CONFIG.chainId})`;
-        handleError(new Error(errorMsg), { action: 'network_validation', chainId: Number(network.chainId) });
-        
-        toast({
-          variant: "destructive",
-          title: "Wrong Network",
-          description: MEGAETH_ERRORS.WRONG_NETWORK,
-          action: (
-            <Button variant="outline" size="sm" onClick={switchToMegaETH}>
-              Switch Network
-            </Button>
-          )
-        });
-      }
-    } catch (error: any) {
-      console.error("Network check failed:", error);
-      setIsCorrectNetwork(false);
-      handleError(error, { action: 'network_check' });
-    }
-  }, [provider, clearError, handleError]);
-
-  // Switch to MegaETH network
-  const switchToMegaETH = async () => {
-    if (!window.ethereum) return;
-    
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: MEGAETH_TESTNET_CONFIG.chainIdHex }],
-      });
-    } catch (switchError: any) {
-      if (switchError.code === 4902) {
-        // Network not added, add it
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: MEGAETH_TESTNET_CONFIG.chainIdHex,
-              chainName: MEGAETH_TESTNET_CONFIG.networkName,
-              nativeCurrency: MEGAETH_TESTNET_CONFIG.nativeCurrency,
-              rpcUrls: MEGAETH_TESTNET_CONFIG.rpcUrls,
-              blockExplorerUrls: MEGAETH_TESTNET_CONFIG.blockExplorerUrls,
-            }],
-          });
-        } catch (addError) {
-          handleError(addError, { action: 'add_network' });
-        }
-      } else {
-        handleError(switchError, { action: 'switch_network' });
-      }
-    }
-  };
-
-  // Enhanced network stats fetching
   const fetchNetworkStats = useCallback(async () => {
     if (!provider) return;
     
@@ -174,7 +89,6 @@ export default function BlockchainPage() {
     try {
       clearError();
       
-      // Simulate progress updates
       const progressInterval = setInterval(() => {
         setRefreshProgress(prev => Math.min(prev + 20, 90));
       }, 200);
@@ -188,16 +102,15 @@ export default function BlockchainPage() {
       clearInterval(progressInterval);
       setRefreshProgress(100);
       
-      // Enhanced network metrics
       const metrics: NetworkMetrics = {
         blockNumber,
         gasPrice: formatEther(feeData.gasPrice || 0n),
         difficulty: block?.difficulty?.toString() || "0",
-        hashRate: "2.5 TH/s", // Mock data for MegaETH
-        networkLoad: Math.floor(Math.random() * 30) + 10, // 10-40% load
-        latency: Math.floor(Math.random() * 50) + 25, // 25-75ms
-        tps: Math.floor(Math.random() * 1000) + 500, // 500-1500 TPS
-        validators: Math.floor(Math.random() * 50) + 100 // 100-150 validators
+        hashRate: "2.5 TH/s",
+        networkLoad: Math.floor(Math.random() * 30) + 10,
+        latency: Math.floor(Math.random() * 50) + 25,
+        tps: Math.floor(Math.random() * 1000) + 500,
+        validators: Math.floor(Math.random() * 50) + 100
       };
       
       setNetworkMetrics(metrics);
@@ -207,16 +120,18 @@ export default function BlockchainPage() {
       
     } catch (error: any) {
       console.error("Failed to fetch network stats:", error);
-      handleError(error, { action: 'fetch_network_stats' });
+      toast({
+        variant: "destructive",
+        title: "Network Error",
+        description: "Failed to fetch network statistics. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
-  }, [provider, clearError, handleError]);
+  }, [provider, clearError, toast]);
 
-  // Enhanced transaction fetching
   const fetchRecentTransactions = useCallback(async () => {
     try {
-      // Enhanced mock transaction data with more realistic information
       const mockTxs: TransactionData[] = [
         {
           hash: "0x1a2b3c4d5e6f7890abcdef1234567890abcdef12",
@@ -255,11 +170,10 @@ export default function BlockchainPage() {
       
       setTransactions(mockTxs);
     } catch (error: any) {
-      handleError(error, { action: 'fetch_transactions' });
+      console.error("Failed to fetch transactions:", error);
     }
-  }, [networkMetrics.blockNumber, address, handleError]);
+  }, [networkMetrics.blockNumber, address]);
 
-  // Enhanced contract jobs fetching
   const fetchContractJobs = useCallback(async () => {
     if (!provider) return;
     
@@ -278,23 +192,20 @@ export default function BlockchainPage() {
         timeSubmitted: new Date(Number(log.args.timeSubmitted) * 1000),
         txHash: log.transactionHash,
         blockNumber: log.blockNumber
-      })).reverse().slice(0, 10); // Show last 10 jobs
+      })).reverse().slice(0, 10);
 
       setContractJobs(jobs);
     } catch (error: any) {
       console.error("Failed to fetch contract jobs:", error);
-      handleError(error, { action: 'fetch_contract_jobs' });
     }
-  }, [provider, handleError]);
+  }, [provider]);
 
-  // Auto-refresh mechanism
   useEffect(() => {
-    if (provider && isConnected && isCorrectNetwork) {
+    if (provider && isConnected) {
       fetchNetworkStats();
       fetchRecentTransactions();
       fetchContractJobs();
       
-      // Set up auto-refresh every 30 seconds
       const interval = setInterval(() => {
         fetchNetworkStats();
         fetchRecentTransactions();
@@ -302,14 +213,7 @@ export default function BlockchainPage() {
       
       return () => clearInterval(interval);
     }
-  }, [provider, isConnected, isCorrectNetwork, fetchNetworkStats, fetchRecentTransactions, fetchContractJobs]);
-
-  // Initial network check
-  useEffect(() => {
-    if (provider && isConnected) {
-      checkNetwork();
-    }
-  }, [provider, isConnected, checkNetwork]);
+  }, [provider, isConnected, fetchNetworkStats, fetchRecentTransactions, fetchContractJobs]);
 
   const copyToClipboard = (text: string, label: string = "Text") => {
     navigator.clipboard.writeText(text);
@@ -319,15 +223,6 @@ export default function BlockchainPage() {
     });
   };
 
-  const handleErrorRecovery = () => {
-    setEnhancedError(null);
-    setShowErrorRecovery(false);
-    clearError();
-    // Retry the last failed operation
-    fetchNetworkStats();
-  };
-
-  // Loading state for non-connected users
   if (!isConnected) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] p-6">
@@ -345,8 +240,8 @@ export default function BlockchainPage() {
               <CardTitle className="text-3xl font-headline bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Connect Your Wallet
               </CardTitle>
-              <CardDescription className="text-base mt-3">
-                Connect your MetaMask wallet to access blockchain features, monitor network activity, and interact with smart contracts on MegaETH Testnet
+              <CardDescription className="text-base mt-3 text-muted-foreground">
+                Connect your wallet to access blockchain features, monitor network activity, and interact with smart contracts
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -363,11 +258,11 @@ export default function BlockchainPage() {
                 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="text-center">
-                    <div className="font-bold text-primary">9000</div>
-                    <div className="text-muted-foreground">Chain ID</div>
+                    <div className="font-bold text-primary">Ethereum</div>
+                    <div className="text-muted-foreground">Network</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-bold text-green-400">2s</div>
+                    <div className="font-bold text-green-400">12s</div>
                     <div className="text-muted-foreground">Block Time</div>
                   </div>
                 </div>
@@ -392,20 +287,13 @@ export default function BlockchainPage() {
           Blockchain Command Center
         </h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Monitor MegaETH network activity, track transactions, and interact with quantum computing smart contracts
+          Monitor network activity, send transactions, and interact with quantum computing smart contracts
         </p>
         
-        {/* Network Status Indicator */}
         <div className="flex items-center justify-center gap-4 mt-6">
           <div className="flex items-center gap-2">
-            {isCorrectNetwork ? (
-              <Wifi className="h-5 w-5 text-green-400" />
-            ) : (
-              <WifiOff className="h-5 w-5 text-red-400" />
-            )}
-            <span className="text-sm font-medium">
-              {isCorrectNetwork ? "Connected to MegaETH" : "Network Error"}
-            </span>
+            <Wifi className="h-5 w-5 text-green-400" />
+            <span className="text-sm font-medium text-foreground">Connected to Ethereum</span>
           </div>
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
@@ -416,31 +304,6 @@ export default function BlockchainPage() {
         </div>
       </motion.div>
 
-      {/* Error Recovery Display */}
-      {showErrorRecovery && enhancedError && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <BlockchainErrorRecovery 
-            error={enhancedError.userMessage}
-            onRecovery={handleErrorRecovery}
-          />
-        </motion.div>
-      )}
-
-      {/* Enhanced Error Display */}
-      {enhancedError && !showErrorRecovery && (
-        <AdvancedErrorDisplay
-          error={enhancedError}
-          onRetry={async () => {
-            await fetchNetworkStats();
-            setEnhancedError(null);
-          }}
-          onDismiss={() => setEnhancedError(null)}
-        />
-      )}
-
       {/* Refresh Progress */}
       {refreshProgress > 0 && refreshProgress < 100 && (
         <motion.div
@@ -449,7 +312,7 @@ export default function BlockchainPage() {
           exit={{ opacity: 0, height: 0 }}
           className="space-y-2"
         >
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm text-foreground">
             <span>Refreshing blockchain data...</span>
             <span>{refreshProgress}%</span>
           </div>
@@ -510,9 +373,9 @@ export default function BlockchainPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Throughput</p>
-                  <p className="text-3xl font-bold text-green-400">{networkMetrics.tps.toLocaleString()}</p>
-                  <p className="text-xs text-green-300 mt-1">TPS current</p>
+                  <p className="text-sm text-muted-foreground">Gas Price</p>
+                  <p className="text-3xl font-bold text-green-400">{parseFloat(networkMetrics.gasPrice).toFixed(2)}</p>
+                  <p className="text-xs text-green-300 mt-1">Gwei current</p>
                 </div>
                 <div className="p-3 bg-green-500/20 rounded-xl">
                   <Zap className="h-8 w-8 text-green-400 quantum-pulse" />
@@ -531,9 +394,9 @@ export default function BlockchainPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Validators</p>
-                  <p className="text-3xl font-bold text-purple-400">{networkMetrics.validators}</p>
-                  <p className="text-xs text-purple-300 mt-1">Active nodes</p>
+                  <p className="text-sm text-muted-foreground">Balance</p>
+                  <p className="text-3xl font-bold text-purple-400">{balance ? parseFloat(balance).toFixed(4) : '0.0000'}</p>
+                  <p className="text-xs text-purple-300 mt-1">ETH available</p>
                 </div>
                 <div className="p-3 bg-purple-500/20 rounded-xl">
                   <Network className="h-8 w-8 text-purple-400 quantum-pulse" />
@@ -552,8 +415,8 @@ export default function BlockchainPage() {
             Overview
           </TabsTrigger>
           <TabsTrigger value="transactions" className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            Transactions
+            <Send className="h-4 w-4" />
+            Send ETH
           </TabsTrigger>
           <TabsTrigger value="contracts" className="flex items-center gap-2">
             <Code className="h-4 w-4" />
@@ -567,13 +430,10 @@ export default function BlockchainPage() {
 
         <TabsContent value="overview" className="mt-6">
           <div className="grid gap-6">
-            {/* MegaETH Network Status */}
-            <MegaETHNetworkStatus />
-            
             {/* Enhanced Account Overview */}
             <Card className="quantum-card">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-foreground">
                   <div className="flex items-center gap-2">
                     <Shield className="h-5 w-5 text-primary" />
                     Account Overview
@@ -586,14 +446,13 @@ export default function BlockchainPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Account Information */}
                   <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
                     <h3 className="text-lg font-semibold text-primary mb-4">Wallet Information</h3>
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm text-muted-foreground">Address</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <code className="font-mono text-sm bg-muted/50 px-3 py-2 rounded-lg flex-1 truncate">
+                          <code className="font-mono text-sm bg-muted/50 px-3 py-2 rounded-lg flex-1 truncate text-foreground">
                             {address}
                           </code>
                           <Button variant="ghost" size="sm" onClick={() => copyToClipboard(address!, "Address")}>
@@ -620,7 +479,6 @@ export default function BlockchainPage() {
                     </div>
                   </div>
 
-                  {/* Network Performance */}
                   <div className="p-6 rounded-xl bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
                     <h3 className="text-lg font-semibold text-green-200 mb-4">Network Performance</h3>
                     <div className="space-y-4">
@@ -637,15 +495,10 @@ export default function BlockchainPage() {
                         <span className="font-bold text-blue-400">{parseFloat(networkMetrics.gasPrice).toFixed(6)} ETH</span>
                       </div>
                       
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Hash Rate</span>
-                        <span className="font-bold text-purple-400">{networkMetrics.hashRate}</span>
-                      </div>
-                      
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-muted-foreground">Network Load</span>
-                          <span className="font-bold">{networkMetrics.networkLoad}%</span>
+                          <span className="font-bold text-foreground">{networkMetrics.networkLoad}%</span>
                         </div>
                         <Progress value={networkMetrics.networkLoad} className="h-2" />
                       </div>
@@ -658,111 +511,25 @@ export default function BlockchainPage() {
         </TabsContent>
 
         <TabsContent value="transactions" className="mt-6">
-          <Card className="quantum-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                Recent Transactions
-              </CardTitle>
-              <CardDescription>Latest transactions on MegaETH network with enhanced details</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {transactions.length > 0 ? transactions.map((tx, index) => (
-                  <motion.div
-                    key={tx.hash}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="p-4 rounded-lg bg-muted/20 border border-primary/10 hover:bg-muted/30 transition-all duration-300 hover:scale-[1.02]"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2 flex-1">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <code className="text-sm font-mono text-primary bg-primary/10 px-2 py-1 rounded">
-                            {tx.hash.slice(0, 10)}...{tx.hash.slice(-8)}
-                          </code>
-                          <Badge variant="outline" className="text-green-400 border-green-400/50">
-                            <CheckCircle className="mr-1 h-3 w-3" />
-                            {tx.status}
-                          </Badge>
-                          <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                            {tx.type}
-                          </Badge>
-                          <Badge variant="outline" className="text-purple-400 border-purple-400/50">
-                            Block #{tx.blockNumber.toLocaleString()}
-                          </Badge>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
-                          <div>From: {tx.from.slice(0, 8)}...{tx.from.slice(-6)}</div>
-                          <div>To: {tx.to.slice(0, 8)}...{tx.to.slice(-6)}</div>
-                          <div>Value: {tx.value} ETH</div>
-                          <div>Gas: {parseInt(tx.gasUsed).toLocaleString()}</div>
-                        </div>
-                        
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {new Date(tx.timestamp).toLocaleString()}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Zap className="h-3 w-3" />
-                            {((parseInt(tx.gasUsed) * parseFloat(networkMetrics.gasPrice)) / 1e18).toFixed(6)} ETH fee
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(tx.hash, "Transaction Hash")}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" asChild>
-                          <a href={`https://www.megaexplorer.xyz/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )) : (
-                  <div className="text-center py-12">
-                    <Database className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Transactions Found</h3>
-                    <p className="text-muted-foreground">Recent transactions will appear here</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <SendTransactionForm />
         </TabsContent>
 
         <TabsContent value="contracts" className="mt-6">
           <Card className="quantum-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Code className="h-5 w-5 text-primary" />
                 Smart Contract Hub
               </CardTitle>
-              <CardDescription>Interact with quantum computing smart contracts on MegaETH</CardDescription>
+              <CardDescription className="text-muted-foreground">Interact with quantum computing smart contracts</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Enhanced Contract Info */}
               <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-semibold text-primary text-lg">QuantumJobLogger Contract</h4>
-                  <Badge variant="outline" className={isCorrectNetwork ? "text-green-400 border-green-400/50" : "text-red-400 border-red-400/50"}>
-                    {isCorrectNetwork ? (
-                      <>
-                        <CheckCircle className="mr-1 h-3 w-3" />
-                        Verified
-                      </>
-                    ) : (
-                      <>
-                        <AlertTriangle className="mr-1 h-3 w-3" />
-                        Network Error
-                      </>
-                    )}
+                  <Badge variant="outline" className="text-green-400 border-green-400/50">
+                    <CheckCircle className="mr-1 h-3 w-3" />
+                    Verified
                   </Badge>
                 </div>
                 
@@ -782,7 +549,7 @@ export default function BlockchainPage() {
                     
                     <div>
                       <span className="text-muted-foreground">Network:</span>
-                      <div className="font-medium text-blue-400 mt-1">MegaETH Testnet (Chain ID: {MEGAETH_TESTNET_CONFIG.chainId})</div>
+                      <div className="font-medium text-blue-400 mt-1">Ethereum Mainnet</div>
                     </div>
                   </div>
                   
@@ -804,7 +571,7 @@ export default function BlockchainPage() {
                 
                 <div className="flex gap-3 mt-6">
                   <Button variant="outline" asChild>
-                    <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://etherscan.io/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       View on Explorer
                     </a>
@@ -857,7 +624,7 @@ export default function BlockchainPage() {
                             <Copy className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm" asChild>
-                            <a href={`https://www.megaexplorer.xyz/tx/${job.txHash}`} target="_blank" rel="noopener noreferrer">
+                            <a href={`https://etherscan.io/tx/${job.txHash}`} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="h-4 w-4" />
                             </a>
                           </Button>
@@ -882,10 +649,9 @@ export default function BlockchainPage() {
 
         <TabsContent value="analytics" className="mt-6">
           <div className="grid gap-6">
-            {/* Network Analytics */}
             <Card className="quantum-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   Network Analytics
                 </CardTitle>
@@ -897,7 +663,7 @@ export default function BlockchainPage() {
                     <div className="text-sm text-blue-200">Current TPS</div>
                   </div>
                   <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
-                    <div className="text-2xl font-bold text-green-400">2.0s</div>
+                    <div className="text-2xl font-bold text-green-400">12s</div>
                     <div className="text-sm text-green-200">Avg Block Time</div>
                   </div>
                   <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20 text-center">
@@ -912,10 +678,9 @@ export default function BlockchainPage() {
               </CardContent>
             </Card>
 
-            {/* Transaction Analytics */}
             <Card className="quantum-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <BarChart3 className="h-5 w-5 text-primary" />
                   Transaction Analytics
                 </CardTitle>
@@ -926,7 +691,7 @@ export default function BlockchainPage() {
                     <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Activity className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium">Total Transactions</span>
+                        <span className="text-sm font-medium text-foreground">Total Transactions</span>
                       </div>
                       <div className="text-2xl font-bold text-primary">{transactions.length}</div>
                       <div className="text-xs text-muted-foreground">Last 24 hours</div>
@@ -935,7 +700,7 @@ export default function BlockchainPage() {
                     <div className="p-4 rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle className="h-4 w-4 text-green-400" />
-                        <span className="text-sm font-medium">Success Rate</span>
+                        <span className="text-sm font-medium text-foreground">Success Rate</span>
                       </div>
                       <div className="text-2xl font-bold text-green-400">100%</div>
                       <div className="text-xs text-green-300">All transactions successful</div>
@@ -944,7 +709,7 @@ export default function BlockchainPage() {
                     <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20">
                       <div className="flex items-center gap-2 mb-2">
                         <Zap className="h-4 w-4 text-blue-400" />
-                        <span className="text-sm font-medium">Avg Gas Used</span>
+                        <span className="text-sm font-medium text-foreground">Avg Gas Used</span>
                       </div>
                       <div className="text-2xl font-bold text-blue-400">
                         {transactions.length > 0 

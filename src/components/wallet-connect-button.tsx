@@ -22,10 +22,10 @@ import {
   AlertTriangle, 
   Loader2,
   RefreshCw,
-  X
+  X,
+  Zap
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MEGAETH_TESTNET_CONFIG, validateMegaETHNetwork } from "@/lib/megaeth-config";
 
 export default function WalletConnectButton() {
   const { 
@@ -45,7 +45,6 @@ export default function WalletConnectButton() {
   useEffect(() => {
     if (error) {
       setShowError(true);
-      // Show error toast for user feedback
       toast({
         variant: "destructive",
         title: "Wallet Error",
@@ -70,10 +69,9 @@ export default function WalletConnectButton() {
       await connectWallet();
       toast({
         title: "Wallet Connected! 🎉",
-        description: "Successfully connected to blockchain network",
+        description: "Successfully connected to your wallet",
       });
     } catch (error: any) {
-      // Error is already handled in the context
       console.error("Connection failed:", error);
     }
   };
@@ -114,7 +112,7 @@ export default function WalletConnectButton() {
         >
           <Alert className="border-red-500/20 bg-red-500/5">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="pr-8">
+            <AlertDescription className="pr-8 text-foreground">
               {error}
             </AlertDescription>
             <Button
@@ -189,10 +187,10 @@ export default function WalletConnectButton() {
             <div className="flex flex-col space-y-3 p-2">
               <div className="flex items-center gap-2">
                 <Wallet className="h-4 w-4 text-primary" />
-                <span className="font-semibold">Wallet Connected</span>
+                <span className="font-semibold text-foreground">Wallet Connected</span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
                   <CheckCircle className="mr-1 h-3 w-3" />
-                  MegaETH Testnet
+                  Active
                 </Badge>
               </div>
               
@@ -200,11 +198,7 @@ export default function WalletConnectButton() {
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Address</p>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">MegaETH Testnet</span>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <code className="font-mono text-xs flex-1 truncate">{address}</code>
+                    <code className="font-mono text-xs flex-1 truncate text-foreground">{address}</code>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -248,25 +242,25 @@ export default function WalletConnectButton() {
           
           <DropdownMenuItem asChild>
             <a
-              href={`https://www.megaexplorer.xyz/address/${address}`}
+              href={`https://etherscan.io/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-pointer flex items-center gap-2 p-3 hover:bg-primary/10 transition-colors"
+              className="cursor-pointer flex items-center gap-2 p-3 hover:bg-primary/10 transition-colors text-foreground"
             >
               <ExternalLink className="h-4 w-4" />
-              <span>View on MegaETH Explorer</span>
+              <span>View on Explorer</span>
             </a>
           </DropdownMenuItem>
           
           <DropdownMenuItem asChild>
             <a
-              href={MEGAETH_TESTNET_CONFIG.tools.faucetUrl}
+              href="https://faucet.paradigm.xyz/"
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-pointer flex items-center gap-2 p-3 hover:bg-blue-500/10 transition-colors"
+              className="cursor-pointer flex items-center gap-2 p-3 hover:bg-blue-500/10 transition-colors text-foreground"
             >
-              <Wallet className="h-4 w-4" />
-              <span>Get Testnet ETH</span>
+              <Zap className="h-4 w-4" />
+              <span>Get Test ETH</span>
             </a>
           </DropdownMenuItem>
           

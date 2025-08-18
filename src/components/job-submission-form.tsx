@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, MessageSquare, AlertTriangle } from "lucide-react";
+import { Loader2, Terminal, Zap, Clock, DollarSign, Activity, Cpu, Atom, Code, MessageSquare, AlertTriangle, Lightbulb } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Alert, AlertDescription } from "./ui/alert";
@@ -45,7 +45,7 @@ import { blockchainIntegration } from "@/lib/blockchain-integration";
 const formSchema = z.object({
   jobType: z.string().min(1, { message: "Job type cannot be empty." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  submissionType: z.enum(["prompt", "qasm"]),
+  submissionType: z.enum(["prompt", "qasm", "preset"]),
   priority: z.enum(["low", "medium", "high"]),
 });
 
@@ -67,6 +67,160 @@ const priorityConfig = {
   high: { color: "text-red-400 border-red-400/50", label: "Express", desc: "Immediate processing" },
 };
 
+// Pre-existing quantum algorithms for testing
+const presetAlgorithms = [
+  {
+    id: "bell-state",
+    name: "Bell State Creation",
+    description: "Create entangled Bell state using Hadamard and CNOT gates",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[2];
+creg c[2];
+
+h q[0];
+cx q[0],q[1];
+measure q -> c;`,
+    explanation: "Creates quantum entanglement between two qubits. Results should show 50% |00⟩ and 50% |11⟩ states.",
+    difficulty: "Beginner",
+    qubits: 2
+  },
+  {
+    id: "grover-search",
+    name: "Grover's Search Algorithm",
+    description: "Quantum database search algorithm for finding marked items",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[2];
+creg c[2];
+
+// Initialize superposition
+h q[0];
+h q[1];
+
+// Oracle for |11⟩
+cz q[0],q[1];
+
+// Diffusion operator
+h q[0];
+h q[1];
+x q[0];
+x q[1];
+cz q[0],q[1];
+x q[0];
+x q[1];
+h q[0];
+h q[1];
+
+measure q -> c;`,
+    explanation: "Searches an unsorted database quadratically faster than classical algorithms. Amplifies the probability of finding the target state.",
+    difficulty: "Intermediate",
+    qubits: 2
+  },
+  {
+    id: "quantum-teleportation",
+    name: "Quantum Teleportation",
+    description: "Transfer quantum state from one qubit to another using entanglement",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[3];
+creg c[3];
+
+// Prepare state to teleport (|1⟩)
+x q[0];
+
+// Create Bell pair
+h q[1];
+cx q[1],q[2];
+
+// Bell measurement
+cx q[0],q[1];
+h q[0];
+measure q[0] -> c[0];
+measure q[1] -> c[1];
+
+// Conditional operations
+if(c[1]==1) x q[2];
+if(c[0]==1) z q[2];
+
+measure q[2] -> c[2];`,
+    explanation: "Demonstrates quantum teleportation protocol. The state of qubit 0 is transferred to qubit 2 through quantum entanglement.",
+    difficulty: "Advanced",
+    qubits: 3
+  },
+  {
+    id: "superposition",
+    name: "Quantum Superposition",
+    description: "Create equal superposition across multiple qubits",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[3];
+creg c[3];
+
+h q[0];
+h q[1];
+h q[2];
+
+measure q -> c;`,
+    explanation: "Creates equal probability distribution across all possible states. Each qubit is in superposition of |0⟩ and |1⟩.",
+    difficulty: "Beginner",
+    qubits: 3
+  },
+  {
+    id: "quantum-fourier",
+    name: "Quantum Fourier Transform",
+    description: "Quantum version of the discrete Fourier transform",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[3];
+creg c[3];
+
+// Input state preparation
+x q[0];
+
+// QFT implementation
+h q[2];
+cu1(pi/2) q[1],q[2];
+cu1(pi/4) q[0],q[2];
+h q[1];
+cu1(pi/2) q[0],q[1];
+h q[0];
+
+// Swap qubits
+swap q[0],q[2];
+
+measure q -> c;`,
+    explanation: "Quantum Fourier Transform is essential for many quantum algorithms including Shor's algorithm. Shows frequency domain representation.",
+    difficulty: "Advanced",
+    qubits: 3
+  },
+  {
+    id: "random-number",
+    name: "Quantum Random Number Generator",
+    description: "Generate truly random numbers using quantum mechanics",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[4];
+creg c[4];
+
+h q[0];
+h q[1];
+h q[2];
+h q[3];
+
+measure q -> c;`,
+    explanation: "Uses quantum superposition to generate truly random numbers. Each measurement gives a random 4-bit number.",
+    difficulty: "Beginner",
+    qubits: 4
+  }
+];
+
 interface JobSubmissionFormProps {
   onJobLogged: () => void;
 }
@@ -74,6 +228,7 @@ interface JobSubmissionFormProps {
 export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
@@ -82,7 +237,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     defaultValues: {
       jobType: "Google Willow",
       description: "",
-      submissionType: "prompt",
+      submissionType: "preset",
       priority: "medium",
     },
   });
@@ -90,6 +245,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
   const selectedJobType = form.watch("jobType");
   const descriptionValue = form.watch("description");
   const priority = form.watch("priority");
+  const submissionType = form.watch("submissionType");
   
   const { estimatedTime, estimatedCost, qubitCount } = useMemo(() => {
     if (!selectedJobType || !descriptionValue) return { 
@@ -107,7 +263,6 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     const highTimeInSeconds = timeInSeconds * 1.5;
     const totalCost = cost * priorityMultiplier;
 
-    // Estimate qubit usage based on description complexity
     const complexityFactor = Math.min(length / 100, 1);
     const estimatedQubits = Math.ceil(2 + (qubits * 0.1 * complexityFactor));
 
@@ -126,6 +281,15 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       qubitCount: `${Math.max(2, estimatedQubits - 2)} - ${estimatedQubits}`
     };
   }, [selectedJobType, descriptionValue, priority]);
+
+  const handlePresetSelect = (presetId: string) => {
+    const preset = presetAlgorithms.find(p => p.id === presetId);
+    if (preset) {
+      setSelectedPreset(presetId);
+      form.setValue("description", preset.qasm);
+      form.setValue("submissionType", "qasm");
+    }
+  };
 
   const handleLogJob = async (values: z.infer<typeof formSchema>) => {
     if (!signer) {
@@ -187,7 +351,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
         description: "Your job has been securely recorded on the blockchain.",
         action: (
           <Button asChild variant="link" size="sm">
-            <a href={`https://www.megaexplorer.xyz/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
               View Transaction
             </a>
           </Button>
@@ -197,9 +361,10 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
       form.reset({
         jobType: values.jobType,
         description: "",
-        submissionType: values.submissionType,
+        submissionType: "preset",
         priority: "medium",
       });
+      setSelectedPreset(null);
       
       onJobLogged();
       
@@ -238,14 +403,14 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <CardTitle className="font-headline text-3xl flex items-center gap-3">
+              <CardTitle className="font-headline text-3xl flex items-center gap-3 text-foreground">
                 <div className="p-2 bg-primary/20 rounded-lg">
                   <Terminal className="h-7 w-7 text-primary" />
                 </div>
                 Quantum Lab
               </CardTitle>
-              <CardDescription className="text-base mt-2">
-                Submit quantum algorithms to leading providers and log results immutably on the blockchain
+              <CardDescription className="text-base mt-2 text-muted-foreground">
+                Execute quantum algorithms on leading providers and log results immutably on the blockchain
               </CardDescription>
             </motion.div>
           </CardHeader>
@@ -258,7 +423,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                 name="jobType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-base font-medium">
+                    <FormLabel className="flex items-center gap-2 text-base font-medium text-foreground">
                       <Cpu className="h-5 w-5 text-primary" />
                       Quantum Provider
                     </FormLabel>
@@ -273,7 +438,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                           <div className="flex items-center gap-3 py-1">
                             <div className="w-3 h-3 bg-blue-500 rounded-full quantum-pulse"></div>
                             <div>
-                              <div className="font-medium">Google Willow</div>
+                              <div className="font-medium text-foreground">Google Willow</div>
                               <div className="text-xs text-muted-foreground">105 qubits • Error correction</div>
                             </div>
                           </div>
@@ -282,7 +447,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                           <div className="flex items-center gap-3 py-1">
                             <div className="w-3 h-3 bg-indigo-500 rounded-full quantum-pulse"></div>
                             <div>
-                              <div className="font-medium">IBM Condor</div>
+                              <div className="font-medium text-foreground">IBM Condor</div>
                               <div className="text-xs text-muted-foreground">1,121 qubits • Enterprise grade</div>
                             </div>
                           </div>
@@ -291,7 +456,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                           <div className="flex items-center gap-3 py-1">
                             <div className="w-3 h-3 bg-orange-500 rounded-full quantum-pulse"></div>
                             <div>
-                              <div className="font-medium">Amazon Braket</div>
+                              <div className="font-medium text-foreground">Amazon Braket</div>
                               <div className="text-xs text-muted-foreground">256 qubits • Multi-provider</div>
                             </div>
                           </div>
@@ -308,7 +473,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-base font-medium">
+                    <FormLabel className="flex items-center gap-2 text-base font-medium text-foreground">
                       <Activity className="h-5 w-5 text-primary" />
                       Execution Priority
                     </FormLabel>
@@ -325,7 +490,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                               <Badge variant="outline" className={config.color}>
                                 {config.label}
                               </Badge>
-                              <div className="text-sm">{config.desc}</div>
+                              <div className="text-sm text-foreground">{config.desc}</div>
                             </div>
                           </SelectItem>
                         ))}
@@ -339,14 +504,24 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
 
             {/* Job Input Tabs */}
             <Tabs 
-              defaultValue="prompt" 
+              defaultValue="preset" 
               onValueChange={(value) => {
-                form.setValue('submissionType', value as "prompt" | "qasm");
+                form.setValue('submissionType', value as "prompt" | "qasm" | "preset");
                 form.trigger('submissionType');
+                if (value !== "preset") {
+                  setSelectedPreset(null);
+                }
               }}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-2 bg-muted/30 h-12">
+              <TabsList className="grid w-full grid-cols-3 bg-muted/30 h-12">
+                <TabsTrigger 
+                  value="preset" 
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                  Presets
+                </TabsTrigger>
                 <TabsTrigger 
                   value="prompt" 
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
@@ -363,13 +538,86 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                 </TabsTrigger>
               </TabsList>
               
+              <TabsContent value="preset" className="mt-6">
+                <div className="space-y-4">
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Choose a Quantum Algorithm</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select from pre-built quantum algorithms to test and learn
+                    </p>
+                  </div>
+                  
+                  <div className="grid gap-4">
+                    {presetAlgorithms.map((preset) => (
+                      <motion.div
+                        key={preset.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`p-4 rounded-lg border cursor-pointer transition-all duration-300 ${
+                          selectedPreset === preset.id 
+                            ? 'border-primary bg-primary/10' 
+                            : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                        }`}
+                        onClick={() => handlePresetSelect(preset.id)}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-foreground mb-1">{preset.name}</h4>
+                            <p className="text-sm text-muted-foreground mb-2">{preset.description}</p>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <Badge variant="outline" className={
+                              preset.difficulty === 'Beginner' ? 'text-green-400 border-green-400/50' :
+                              preset.difficulty === 'Intermediate' ? 'text-yellow-400 border-yellow-400/50' :
+                              'text-red-400 border-red-400/50'
+                            }>
+                              {preset.difficulty}
+                            </Badge>
+                            <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+                              {preset.qubits} qubits
+                            </Badge>
+                          </div>
+                        </div>
+                        
+                        <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
+                          💡 {preset.explanation}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  {selectedPreset && (
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base font-medium text-foreground">Generated QASM Code</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              className="quantum-input min-h-[150px] font-mono text-sm resize-none" 
+                              readOnly
+                              {...field} 
+                            />
+                          </FormControl>
+                          <div className="text-xs text-muted-foreground mt-2">
+                            ✨ This code will be executed on the selected quantum provider
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+              </TabsContent>
+              
               <TabsContent value="prompt" className="mt-6">
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base font-medium">Quantum Algorithm Description</FormLabel>
+                      <FormLabel className="text-base font-medium text-foreground">Quantum Algorithm Description</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement" 
@@ -392,7 +640,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base font-medium">QASM Circuit Code</FormLabel>
+                      <FormLabel className="text-base font-medium text-foreground">QASM Circuit Code</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder={`OPENQASM 2.0;
@@ -508,7 +756,7 @@ measure q -> c;`}
                 >
                   <Alert className="border-yellow-500/20 bg-yellow-500/5">
                     <Zap className="h-4 w-4 text-yellow-500" />
-                    <AlertDescription className="text-yellow-200/80">
+                    <AlertDescription className="text-foreground">
                       <div className="font-semibold text-yellow-500 mb-1">Wallet Connection Required</div>
                       Connect your wallet to submit quantum jobs to the blockchain.
                     </AlertDescription>
@@ -524,7 +772,7 @@ measure q -> c;`}
                 >
                   <Alert className="border-red-500/20 bg-red-500/5">
                     <AlertTriangle className="h-4 w-4 text-red-500" />
-                    <AlertDescription className="text-red-200/80">
+                    <AlertDescription className="text-foreground">
                       <div className="font-semibold text-red-500 mb-1">Wallet Error</div>
                       {error}
                     </AlertDescription>

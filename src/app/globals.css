@@ -6,58 +6,58 @@
 
 @layer base {
   :root {
-    --background: hsl(225 25% 8%);
-    --foreground: hsl(210 40% 98%);
-    --card: hsl(225 25% 12%);
-    --card-foreground: hsl(210 40% 98%);
-    --popover: hsl(225 25% 12%);
-    --popover-foreground: hsl(210 40% 98%);
-    --primary: hsl(260 80% 65%);
-    --primary-foreground: hsl(260 85% 10%);
-    --secondary: hsl(225 25% 18%);
-    --secondary-foreground: hsl(210 40% 98%);
-    --muted: hsl(225 25% 18%);
-    --muted-foreground: hsl(215 20% 65%);
-    --accent: hsl(225 25% 20%);
-    --accent-foreground: hsl(210 40% 98%);
-    --destructive: hsl(0 62.8% 30.6%);
-    --destructive-foreground: hsl(210 40% 98%);
-    --border: hsl(225 25% 24%);
-    --input: hsl(225 25% 24%);
-    --ring: hsl(260 80% 65%);
-    --radius: 0.75rem;
-    --chart-1: hsl(260 80% 65%);
-    --chart-2: hsl(300 70% 60%);
-    --chart-3: hsl(200 80% 55%);
-    --chart-4: hsl(340 75% 55%);
-    --chart-5: hsl(180 70% 50%);
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
-  .light {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(222.2 84% 4.9%);
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(222.2 84% 4.9%);
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(222.2 84% 4.9%);
-    --primary: hsl(260 80% 60%);
-    --primary-foreground: hsl(210 40% 98%);
-    --secondary: hsl(210 40% 98%);
-    --secondary-foreground: hsl(222.2 84% 4.9%);
-    --muted: hsl(210 40% 98%);
-    --muted-foreground: hsl(215.4 16.3% 46.9%);
-    --accent: hsl(210 40% 98%);
-    --accent-foreground: hsl(222.2 84% 4.9%);
-    --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(210 40% 98%);
-    --border: hsl(214.3 31.8% 91.4%);
-    --input: hsl(214.3 31.8% 91.4%);
-    --ring: hsl(260 80% 60%);
-    --chart-1: hsl(12 76% 61%);
-    --chart-2: hsl(173 58% 39%);
-    --chart-3: hsl(197 37% 24%);
-    --chart-4: hsl(43 74% 66%);
-    --chart-5: hsl(27 87% 67%);
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -71,6 +71,82 @@
     min-height: 100vh;
     overflow-x: hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+  }
+
+  /* Enhanced font visibility for all modes */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
+    font-weight: 600;
+    line-height: 1.2;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  p, span, div, label {
+    @apply text-foreground;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Ensure muted text is always visible */
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground)) !important;
+    opacity: 1 !important;
+  }
+
+  /* Light mode specific visibility */
+  .light .text-muted-foreground {
+    color: hsl(215.4 16.3% 46.9%) !important;
+  }
+
+  .light h1, .light h2, .light h3, .light h4, .light h5, .light h6 {
+    color: hsl(222.2 84% 4.9%) !important;
+  }
+
+  .light p, .light span, .light div, .light label {
+    color: hsl(222.2 84% 4.9%) !important;
+  }
+
+  /* Dark mode specific visibility */
+  .dark .text-muted-foreground {
+    color: hsl(215 20.2% 65.1%) !important;
+  }
+
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: hsl(210 40% 98%) !important;
+  }
+
+  .dark p, .dark span, .dark div, .dark label {
+    color: hsl(210 40% 98%) !important;
+  }
+
+  /* Button text visibility */
+  button {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .light button {
+    color: hsl(222.2 84% 4.9%) !important;
+  }
+
+  .dark button {
+    color: hsl(210 40% 98%) !important;
+  }
+
+  /* Input and form element visibility */
+  input, textarea, select {
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--background)) !important;
+  }
+
+  /* Card content visibility */
+  .card {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+  }
+
+  /* Badge visibility */
+  .badge {
+    color: hsl(var(--foreground)) !important;
   }
 
   /* Scrollbar styling */
@@ -83,12 +159,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #3b82f6, #3b82f6aa);
+    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary) / 0.7));
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #2563eb, #2563ebaa);
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.6));
   }
 
   /* Performance optimizations */
@@ -107,37 +183,42 @@
       transition-duration: 0.01ms !important;
     }
   }
-  /* Quantum-specific animations */
+
+  /* Enhanced quantum-specific animations */
   .quantum-pulse {
-    animation: quantum-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: quantum-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .quantum-glow {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
   }
 
   .quantum-card {
-    @apply border-primary/30 bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-md shadow-lg;
-    transition: all 0.2s ease;
+    @apply border-border bg-card text-card-foreground shadow-lg;
+    transition: all 0.3s ease;
     will-change: transform, box-shadow;
+    backdrop-filter: blur(8px);
+    color: hsl(var(--card-foreground)) !important;
   }
 
   .quantum-card:hover {
-    @apply border-primary/50 shadow-xl shadow-primary/20 quantum-glow;
+    @apply shadow-xl;
     transform: translateY(-2px);
+    box-shadow: 0 10px 25px hsl(var(--primary) / 0.15);
   }
 
   .quantum-button {
-    @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium shadow-lg hover:shadow-xl;
-    transition: all 0.2s ease;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-lg hover:shadow-xl;
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     will-change: transform, box-shadow;
+    color: hsl(var(--primary-foreground)) !important;
   }
 
   .quantum-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px hsl(var(--primary) / 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px hsl(var(--primary) / 0.3);
   }
 
   .quantum-button:active {
@@ -145,9 +226,11 @@
   }
 
   .quantum-input {
-    @apply border-primary/30 focus:border-primary/60 bg-background/60 backdrop-blur-md shadow-sm;
-    transition: all 0.2s ease;
+    @apply border-border focus:border-primary bg-background text-foreground shadow-sm;
+    transition: all 0.3s ease;
     will-change: transform, box-shadow;
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--background)) !important;
   }
 
   .quantum-input:focus {
@@ -156,7 +239,22 @@
   }
 
   .neon-text {
-    text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+    text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary));
+  }
+
+  /* Enhanced visibility for code blocks */
+  code {
+    @apply bg-muted text-foreground px-2 py-1 rounded font-mono text-sm;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--muted)) !important;
+  }
+
+  pre {
+    @apply bg-muted text-foreground p-4 rounded-lg border;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--muted)) !important;
   }
 
   @keyframes quantum-pulse {
@@ -165,8 +263,41 @@
       transform: scale(1);
     }
     50% {
-      opacity: 0.7;
+      opacity: 0.8;
       transform: scale(1.05);
     }
+  }
+
+  /* Ensure all text elements are visible */
+  .light * {
+    color: hsl(222.2 84% 4.9%);
+  }
+
+  .dark * {
+    color: hsl(210 40% 98%);
+  }
+
+  /* Override for specific elements that need different colors */
+  .text-primary {
+    color: hsl(var(--primary)) !important;
+  }
+
+  .text-secondary {
+    color: hsl(var(--secondary-foreground)) !important;
+  }
+
+  .text-destructive {
+    color: hsl(var(--destructive)) !important;
+  }
+
+  /* Ensure dropdown and modal content is visible */
+  [data-radix-popper-content-wrapper] {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Toast visibility */
+  [data-sonner-toast] {
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--background)) !important;
   }
 }

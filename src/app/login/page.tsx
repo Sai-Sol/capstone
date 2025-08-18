@@ -58,7 +58,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (mounted && user) {
       setIsRedirecting(true);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     }
   }, [mounted, user, router]);
 
@@ -69,7 +69,6 @@ export default function LoginPage() {
     setLoginError(null);
     
     try {
-      // Enhanced validation and error handling
       if (!values.email || !values.password) {
         throw new Error("Please enter both email and password");
       }
@@ -82,7 +81,6 @@ export default function LoginPage() {
           title: "Welcome! 🚀",
           description: `Successfully logged in as ${authenticatedUser.name || authenticatedUser.email}`,
         });
-        // Use replace to prevent back navigation to login
         router.replace("/dashboard");
       } else {
         setLoginError("Invalid email or password. Please check your credentials and try again.");
@@ -93,7 +91,6 @@ export default function LoginPage() {
       const errorMessage = error.message || "Login failed. Please check your connection and try again.";
       setLoginError(errorMessage);
       
-      // Reset form on error
       form.setValue("password", "");
       form.setFocus("email");
     } finally {
@@ -119,7 +116,6 @@ export default function LoginPage() {
     );
   }
 
-  // Redirect if user is already logged in
   if (user) {
     return null;
   }
@@ -178,7 +174,6 @@ export default function LoginPage() {
               Secure blockchain-based quantum computing platform
             </CardDescription>
             
-            {/* Feature highlights */}
             <div className="flex justify-center gap-4 mt-6">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Zap className="h-4 w-4 text-blue-500" />
@@ -192,7 +187,6 @@ export default function LoginPage() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {/* Error Display */}
             {loginError && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -200,7 +194,7 @@ export default function LoginPage() {
               >
                 <Alert className="border-red-500/20 bg-red-500/5">
                   <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription className="text-red-200">
+                  <AlertDescription className="text-foreground">
                     {loginError}
                   </AlertDescription>
                 </Alert>
@@ -209,7 +203,6 @@ export default function LoginPage() {
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                {/* Demo Credentials Helper */}
                 <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/5 to-blue-600/10 border border-blue-500/20">
                   <div className="flex items-start gap-3">
                     <Shield className="h-5 w-5 text-blue-400 mt-0.5" />
@@ -225,7 +218,7 @@ export default function LoginPage() {
                           disabled={isLoading}
                         >
                           <div>
-                            <div className="font-medium">Admin Account</div>
+                            <div className="font-medium text-foreground">Admin Account</div>
                             <div className="text-blue-200/60">admin@example.com • Full access</div>
                           </div>
                         </Button>
@@ -238,7 +231,7 @@ export default function LoginPage() {
                           disabled={isLoading}
                         >
                           <div>
-                            <div className="font-medium">User Account</div>
+                            <div className="font-medium text-foreground">User Account</div>
                             <div className="text-blue-200/60">p1@example.com • Standard access</div>
                           </div>
                         </Button>
@@ -252,11 +245,11 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Email Address</FormLabel>
+                      <FormLabel className="text-sm font-medium text-foreground">Email Address</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="Enter your email address" 
-                          className="h-12 border-blue-500/20 focus:border-blue-500/50"
+                          className="h-12 border-blue-500/20 focus:border-blue-500/50 text-foreground"
                           disabled={isLoading}
                           {...field} 
                         />
@@ -270,12 +263,12 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Password</FormLabel>
+                      <FormLabel className="text-sm font-medium text-foreground">Password</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
                           placeholder="••••••••••••" 
-                          className="h-12 border-blue-500/20 focus:border-blue-500/50"
+                          className="h-12 border-blue-500/20 focus:border-blue-500/50 text-foreground"
                           disabled={isLoading}
                           {...field} 
                         />
@@ -305,7 +298,6 @@ export default function LoginPage() {
               </form>
             </Form>
 
-            {/* Registration Link */}
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{" "}
@@ -318,7 +310,6 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Security Notice */}
             <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-green-400 mt-0.5" />

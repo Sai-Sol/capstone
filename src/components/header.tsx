@@ -67,7 +67,7 @@ export default function Header() {
             <Link key={item.href} href={item.href}>
               <Button 
                 variant={pathname === item.href ? "secondary" : "ghost"} 
-                className={`transition-all duration-300 ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : ''}`}
+                className={`transition-all duration-300 text-foreground ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : ''}`}
               >
                 <item.icon className="mr-2 h-4 w-4" />
                 {item.label}
@@ -106,7 +106,7 @@ export default function Header() {
               <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-sm border-primary/20">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
+                    <p className="text-sm font-medium leading-none text-foreground">
                       {user?.name || "User"}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
@@ -114,7 +114,7 @@ export default function Header() {
                     </p>
                     <div className="flex items-center gap-2 mt-2">
                       <div className={`w-2 h-2 rounded-full ${user?.role === 'admin' ? 'bg-yellow-500' : 'bg-green-500'}`} />
-                      <span className="text-xs font-medium capitalize">{user?.role || 'user'}</span>
+                      <span className="text-xs font-medium capitalize text-foreground">{user?.role || 'user'}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
@@ -143,7 +143,7 @@ export default function Header() {
                 <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
                   <Button 
                     variant={pathname === item.href ? "secondary" : "ghost"} 
-                    className={`w-full justify-start transition-all duration-300 ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : ''}`}
+                    className={`w-full justify-start transition-all duration-300 text-foreground ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : ''}`}
                   >
                     <item.icon className="mr-3 h-5 w-5" />
                     {item.label}

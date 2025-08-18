@@ -100,7 +100,7 @@ export default function DashboardHomePage() {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="mb-8"
       >
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-foreground">
           <Zap className="h-7 w-7 text-primary" />
           Quick Actions
         </h2>
@@ -111,7 +111,7 @@ export default function DashboardHomePage() {
                 <div className="p-3 bg-green-500/20 rounded-xl w-fit mx-auto mb-4">
                   <Atom className="h-8 w-8 text-green-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Submit Job</h3>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">Submit Job</h3>
                 <p className="text-muted-foreground text-sm">
                   Create and submit quantum computing jobs
                 </p>
@@ -125,9 +125,9 @@ export default function DashboardHomePage() {
                 <div className="p-3 bg-purple-500/20 rounded-xl w-fit mx-auto mb-4">
                   <Globe className="h-8 w-8 text-purple-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Blockchain Hub</h3>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">Blockchain Hub</h3>
                 <p className="text-muted-foreground text-sm">
-                  Monitor network and view transactions
+                  Monitor network and send transactions
                 </p>
               </CardContent>
             </Card>
@@ -139,7 +139,7 @@ export default function DashboardHomePage() {
                 <div className="p-3 bg-blue-500/20 rounded-xl w-fit mx-auto mb-4">
                   <Activity className="h-8 w-8 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Job History</h3>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">Job History</h3>
                 <p className="text-muted-foreground text-sm">
                   View your quantum job history
                 </p>
@@ -175,7 +175,7 @@ export default function DashboardHomePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        <h2 className="text-2xl font-bold font-headline mb-6 flex items-center gap-3">
+        <h2 className="text-2xl font-bold font-headline mb-6 flex items-center gap-3 text-foreground">
           <Cpu className="h-7 w-7 text-primary" />
           Quantum Providers
         </h2>
@@ -189,7 +189,7 @@ export default function DashboardHomePage() {
             >
               <Card className="hover:scale-105 transition-all duration-300 border-primary/20">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center justify-between">
+                  <CardTitle className="flex items-center justify-between text-foreground">
                     {provider.name}
                     <div className={`w-3 h-3 rounded-full ${provider.status === 'online' ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
                   </CardTitle>
@@ -223,7 +223,7 @@ export default function DashboardHomePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
       >
-        <h2 className="text-2xl font-bold font-headline mb-6 flex items-center gap-3">
+        <h2 className="text-2xl font-bold font-headline mb-6 flex items-center gap-3 text-foreground">
           <TrendingUp className="h-7 w-7 text-primary" />
           System Metrics
         </h2>
@@ -259,7 +259,7 @@ export default function DashboardHomePage() {
       >
         <Card className="border-primary/20">
           <CardHeader>
-            <CardTitle className="text-2xl font-headline flex items-center gap-3">
+            <CardTitle className="text-2xl font-headline flex items-center gap-3 text-foreground">
               <Shield className="h-7 w-7 text-primary" />
               Blockchain Security Architecture
             </CardTitle>
@@ -294,7 +294,7 @@ export default function DashboardHomePage() {
                   <h3 className="font-semibold text-green-100">2. Blockchain Logging</h3>
                 </div>
                 <p className="text-sm text-green-200/80">
-                  Results are immutably logged on MegaETH blockchain, ensuring tamper-proof verification.
+                  Results are immutably logged on Ethereum blockchain, ensuring tamper-proof verification.
                 </p>
               </motion.div>
               
@@ -315,7 +315,6 @@ export default function DashboardHomePage() {
               </motion.div>
             </div>
 
-            {/* Key Benefits */}
             <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
               <h4 className="font-semibold text-primary mb-4 flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
@@ -324,19 +323,19 @@ export default function DashboardHomePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>Immutable quantum computation logging</span>
+                  <span className="text-foreground">Immutable quantum computation logging</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>Tamper-proof result verification</span>
+                  <span className="text-foreground">Tamper-proof result verification</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>Multi-provider quantum access</span>
+                  <span className="text-foreground">Multi-provider quantum access</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>Secure blockchain integration</span>
+                  <span className="text-foreground">Secure blockchain integration</span>
                 </div>
               </div>
             </div>
