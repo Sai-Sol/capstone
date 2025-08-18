@@ -18,3 +18,4 @@ export const MEGAETH_TESTNET = {
   },
   rpcUrls: ["https://testnet.megaeth.io"],
   blockExplorerUrls: ["https://www.megaexplorer.xyz/"],
+};
