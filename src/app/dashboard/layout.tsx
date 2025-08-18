@@ -23,25 +23,42 @@ export default function DashboardLayout({
   }, []);
 
   React.useEffect(() => {
-    if (mounted && !loading && !user && !redirecting) {
+    if (mounted && !loading && !user) {
+      console.log("No user found, redirecting to login");
       setRedirecting(true);
-      router.push("/login");
+      router.replace("/login");
     }
-  }, [user, loading, router, mounted, redirecting]);
+  }, [user, loading, router, mounted]);
 
-  // Add timeout for loading state
+  // Enhanced timeout for loading state with better error handling
   React.useEffect(() => {
     if (loading) {
       const timeout = setTimeout(() => {
-        if (!user && mounted) {
+        if (!user && mounted && !redirecting) {
+          console.log("Loading timeout reached, redirecting to login");
           setRedirecting(true);
-          router.push("/login");
+          router.replace("/login");
         }
-      }, 5000);
+      }, 3000); // Reduced timeout for better UX
 
       return () => clearTimeout(timeout);
     }
-  }, [loading, user, mounted, router]);
+  }, [loading, user, mounted, router, redirecting]);
+
+  // Additional safety check for authentication
+  React.useEffect(() => {
+    if (mounted && !loading && !user) {
+      const authCheck = setTimeout(() => {
+        if (!user && !redirecting) {
+          console.log("Auth check failed, forcing redirect");
+          setRedirecting(true);
+          router.replace("/login");
+        }
+      }, 1000);
+
+      return () => clearTimeout(authCheck);
+    }
+  }, [mounted, loading, user, redirecting, router]);
   if (!mounted || loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">

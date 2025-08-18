@@ -18,6 +18,7 @@ export default function Home() {
 
   const handleRedirect = useCallback((path: string) => {
     if (redirecting) return;
+    console.log(`Redirecting to: ${path}`);
     setRedirecting(true);
     router.replace(path);
   }, [router, redirecting]);
@@ -25,23 +26,28 @@ export default function Home() {
   useEffect(() => {
     if (mounted && !loading && !redirecting) {
       if (user) {
+        console.log("User authenticated, redirecting to dashboard");
         handleRedirect("/dashboard");
       } else {
+        console.log("No user found, redirecting to login");
         handleRedirect("/login");
       }
     }
   }, [mounted, loading, user, handleRedirect, redirecting]);
 
-  // Add timeout to prevent infinite loading
+  // Enhanced timeout with better error handling
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!user && !loading && mounted) {
-        handleRedirect("/login");
-      }
-    }, 3000);
+    if (mounted) {
+      const timeout = setTimeout(() => {
+        if (!user && !loading && !redirecting) {
+          console.log("Timeout reached, forcing redirect to login");
+          handleRedirect("/login");
+        }
+      }, 2000); // Reduced timeout for better UX
 
-    return () => clearTimeout(timeout);
-  }, [user, loading, mounted, handleRedirect]);
+      return () => clearTimeout(timeout);
+    }
+  }, [user, loading, mounted, handleRedirect, redirecting]);
   if (!mounted || loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">

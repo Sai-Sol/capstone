@@ -69,8 +69,10 @@ export default function LoginPage() {
     setLoginError(null);
     
     try {
-      // Add small delay to prevent rapid submissions
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Enhanced validation and error handling
+      if (!values.email || !values.password) {
+        throw new Error("Please enter both email and password");
+      }
       
       const authenticatedUser = await login(values);
       
@@ -80,15 +82,20 @@ export default function LoginPage() {
           title: "Welcome! 🚀",
           description: `Successfully logged in as ${authenticatedUser.name || authenticatedUser.email}`,
         });
-        // Use push instead of replace for better navigation
-        router.push("/dashboard");
+        // Use replace to prevent back navigation to login
+        router.replace("/dashboard");
       } else {
         setLoginError("Invalid email or password. Please check your credentials and try again.");
         form.setFocus("email");
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      setLoginError(error.message || "Login failed. Please check your connection and try again.");
+      const errorMessage = error.message || "Login failed. Please check your connection and try again.";
+      setLoginError(errorMessage);
+      
+      // Reset form on error
+      form.setValue("password", "");
+      form.setFocus("email");
     } finally {
       setIsLoading(false);
     }

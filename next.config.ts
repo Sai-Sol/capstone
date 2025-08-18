@@ -41,7 +41,6 @@ const nextConfig: NextConfig = {
   },
   env: {
     SERVICE_ACCOUNT_PRIVATE_KEY: process.env.SERVICE_ACCOUNT_PRIVATE_KEY,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     MEGAETH_RPC_URL: process.env.MEGAETH_RPC_URL,
     MEGAETH_EXPLORER_URL: process.env.MEGAETH_EXPLORER_URL,
   },

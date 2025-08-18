@@ -44,6 +44,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = useCallback(async (credentials: { email: string; password: string }): Promise<User | null> => {
     try {
+      // Enhanced validation
+      if (!credentials.email || !credentials.password) {
+        throw new Error("Email and password are required");
+      }
+
       const storedUsers = localStorage.getItem("quantum-users-db");
       const users = storedUsers ? JSON.parse(storedUsers) : HARDCODED_USERS;
       
@@ -58,10 +63,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           role: foundUser.role,
           country: foundUser.country
         };
+        
+        console.log("User authenticated successfully:", userToStore.email);
         localStorage.setItem("quantum-user", JSON.stringify(userToStore));
         setUser(userToStore);
         return userToStore;
       }
+      
+      console.log("Authentication failed for:", credentials.email);
       return null;
     } catch (error) {
       console.error("Login error:", error);
