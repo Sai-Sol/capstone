@@ -28,6 +28,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import WalletSelectionModal from "./wallet-selection-modal";
 import { WalletProvider as WalletProviderType, getWalletById } from "@/lib/wallet-providers";
+import TokenLinkingSuccess from "./token-linking-success";
 
 export default function WalletConnectButton() {
   const { 
@@ -46,6 +47,7 @@ export default function WalletConnectButton() {
   const [showError, setShowError] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [showTokenSuccess, setShowTokenSuccess] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -77,9 +79,13 @@ export default function WalletConnectButton() {
       clearError();
       setSelectedWallet(wallet.id);
       await connectWallet(wallet);
+      
+      // Show token linking success
+      setShowTokenSuccess(true);
+      
       toast({
         title: `${wallet.name} Connected! 🎉`,
-        description: "Successfully connected to MegaETH Testnet",
+        description: "Successfully linked MegaETH tokens",
       });
       setShowWalletModal(false);
     } catch (error: any) {
@@ -91,9 +97,10 @@ export default function WalletConnectButton() {
 
   const handleDisconnect = () => {
     disconnectWallet();
+    setShowTokenSuccess(false);
     toast({
       title: "Wallet Disconnected",
-      description: "Your wallet has been disconnected from MegaETH",
+      description: "Your MegaETH tokens have been unlinked",
     });
   };
 
@@ -102,13 +109,13 @@ export default function WalletConnectButton() {
       await refreshBalance();
       toast({
         title: "Balance Updated",
-        description: "MegaETH balance has been refreshed",
+        description: "MegaETH token balance has been refreshed",
       });
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Refresh Failed",
-        description: "Failed to refresh MegaETH balance",
+        description: "Failed to refresh MegaETH token balance",
       });
     }
   };
@@ -226,7 +233,7 @@ export default function WalletConnectButton() {
                 </span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
                   <CheckCircle className="mr-1 h-3 w-3" />
-                  MegaETH
+                  MegaETH Tokens
                 </Badge>
               </div>
               
@@ -249,7 +256,7 @@ export default function WalletConnectButton() {
                 {balance && (
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs text-muted-foreground">MegaETH Balance</p>
+                      <p className="text-xs text-muted-foreground">MegaETH Token Balance</p>
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -262,10 +269,10 @@ export default function WalletConnectButton() {
                     </div>
                     <div className="p-2 bg-green-500/10 rounded-lg border border-green-500/20">
                       <p className="font-mono text-sm font-semibold text-green-400">
-                        {parseFloat(balance).toFixed(4)} ETH
+                        {parseFloat(balance).toFixed(4)} MegaETH
                       </p>
                       <p className="text-xs text-green-300/80">
-                        MegaETH Testnet • Ultra-fast blockchain
+                        MegaETH Tokens • Ultra-fast blockchain
                       </p>
                     </div>
                   </div>
@@ -290,13 +297,13 @@ export default function WalletConnectButton() {
           
           <DropdownMenuItem asChild>
             <a
-              href="https://faucet.megaeth.io"
+              href="https://testnet.megaeth.com/#2"
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer flex items-center gap-2 p-3 hover:bg-blue-500/10 transition-colors text-foreground"
             >
               <Zap className="h-4 w-4" />
-              <span>Get MegaETH Testnet Tokens</span>
+              <span>Get MegaETH Tokens</span>
             </a>
           </DropdownMenuItem>
           
@@ -307,10 +314,20 @@ export default function WalletConnectButton() {
             className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-red-500/10 p-3 transition-colors"
           >
             <Wallet className="mr-2 h-4 w-4" />
-            <span>Disconnect Wallet</span>
+            <span>Unlink MegaETH Tokens</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      {/* Token Linking Success Modal */}
+      {showTokenSuccess && address && (
+        <TokenLinkingSuccess
+          address={address}
+          onClose={() => setShowTokenSuccess(false)}
+          autoRedirect={true}
+        />
+      )}
+      
       <ErrorAlert />
     </>
   );

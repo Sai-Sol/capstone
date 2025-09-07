@@ -178,7 +178,7 @@ export default function RegisterPage() {
               🚀 Join QuantumChain
             </CardTitle>
             <CardDescription className="text-base mt-2 text-muted-foreground">
-              Create your account and start exploring the quantum universe on MegaETH!
+              Create your account and start exploring the quantum universe with MegaETH tokens!
             </CardDescription>
           </CardHeader>
           

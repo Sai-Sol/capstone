@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import RealTimeNotifications from "@/components/real-time-notifications";
 import EnhancedErrorBoundary from "@/components/enhanced-error-boundary";
 import PerformanceOptimizer from "@/components/performance-optimizer";
+import EthereumProviderFix from "@/components/ethereum-provider-fix";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({
           <AuthProvider>
             <WalletProvider>
               <EnhancedErrorBoundary>
+                <EthereumProviderFix />
                 <PerformanceOptimizer />
                 {children}
                 <Toaster />

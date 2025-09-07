@@ -394,7 +394,7 @@ export default function BlockchainPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">Balance</p>
                   <p className="text-3xl font-bold text-purple-400">{balance ? parseFloat(balance).toFixed(4) : '0.0000'}</p>
-                  <p className="text-xs text-purple-300 mt-1">ETH available</p>
+                  <p className="text-xs text-purple-300 mt-1">MegaETH available</p>
                 </div>
                 <div className="p-3 bg-purple-500/20 rounded-xl">
                   <Network className="h-8 w-8 text-purple-400 quantum-pulse" />
@@ -463,7 +463,7 @@ export default function BlockchainPage() {
                         <p className="text-sm text-muted-foreground">Balance</p>
                         <div className="flex items-center gap-3 mt-1">
                           <p className="text-3xl font-bold text-green-400">
-                            {balance ? parseFloat(balance).toFixed(6) : '0.000000'} ETH
+                            {balance ? parseFloat(balance).toFixed(6) : '0.000000'} MegaETH
                           </p>
                           <Badge variant="outline" className="text-green-400 border-green-400/50">
                             <CheckCircle className="mr-1 h-3 w-3" />
@@ -471,7 +471,7 @@ export default function BlockchainPage() {
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
-                          ≈ ${balance ? (parseFloat(balance) * 3400).toFixed(2) : '0.00'} USD
+                          ≈ ${balance ? (parseFloat(balance) * 3400).toFixed(2) : '0.00'} USD (MegaETH)
                         </p>
                       </div>
                     </div>
@@ -799,7 +799,7 @@ export default function BlockchainPage() {
                   </div>
                   <div>
                     <span className="text-muted-foreground">Symbol:</span>
-                    <div className="font-mono font-bold text-blue-400">ETH (MegaETH)</div>
+                    <div className="font-mono font-bold text-blue-400">MegaETH</div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Block Time:</span>

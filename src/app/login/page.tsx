@@ -316,7 +316,7 @@ export default function LoginPage() {
                 <div>
                   <p className="text-xs font-medium text-green-400 mb-1">🛡️ Enterprise Security</p>
                   <p className="text-xs text-green-200/80">
-                    Your quantum computations are protected with military-grade encryption and permanent MegaETH blockchain verification.
+                    Your quantum computations are protected with military-grade encryption and permanent MegaETH token verification.
                   </p>
                 </div>
               </div>

@@ -96,10 +96,10 @@ export default function WalletSelectionModal({
             <div className="p-2 bg-primary/20 rounded-lg">
               <Wallet className="h-6 w-6 text-primary" />
             </div>
-            Connect to MegaETH Testnet
+            Link MegaETH Tokens
           </DialogTitle>
           <DialogDescription className="text-base">
-            Choose your preferred wallet to connect to the MegaETH quantum computing platform
+            Choose your preferred wallet to link MegaETH tokens for quantum computing
           </DialogDescription>
         </DialogHeader>
 
@@ -108,7 +108,7 @@ export default function WalletSelectionModal({
           <div className="p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
             <div className="flex items-center gap-3 mb-3">
               <Globe className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold text-primary">🚀 MegaETH Testnet Network</h3>
+              <h3 className="font-semibold text-primary">🚀 MegaETH Token Network</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div>
@@ -243,7 +243,7 @@ export default function WalletSelectionModal({
                 </p>
                 <div className="flex items-center gap-2 text-xs text-yellow-300/60">
                   <Shield className="h-3 w-3" />
-                  <span>All wallets are secure and support MegaETH Testnet</span>
+                  <div className="font-mono font-bold text-purple-400">Minimal MegaETH</div>
                 </div>
               </AlertDescription>
             </Alert>
@@ -300,7 +300,7 @@ export default function WalletSelectionModal({
                         </div>
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span>Check your MegaETH balance</span>
+                          <span>Check your MegaETH token balance</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-3 w-3 text-green-400" />
@@ -308,7 +308,7 @@ export default function WalletSelectionModal({
                         </div>
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span>Interact with quantum smart contracts</span>
+                          <span>Use MegaETH tokens for quantum computing</span>
                         </div>
                       </div>
                     </div>
@@ -319,7 +319,7 @@ export default function WalletSelectionModal({
                         <span className="text-sm font-medium text-blue-200">🔒 Privacy & Security</span>
                       </div>
                       <p className="text-xs text-blue-200/80">
-                        QuantumChain will never access your private keys or move funds without your explicit approval.
+                        QuantumChain will never access your private keys or move MegaETH tokens without your explicit approval.
                       </p>
                     </div>
 

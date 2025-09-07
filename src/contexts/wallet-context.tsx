@@ -35,6 +35,39 @@ declare global {
   }
 }
 
+// Enhanced ethereum property handling to prevent conflicts
+const getEthereumProvider = () => {
+  if (typeof window === 'undefined') return null;
+  
+  // Handle multiple wallet extensions gracefully
+  try {
+    // Check for MetaMask specifically
+    if (window.ethereum?.isMetaMask) {
+      return window.ethereum;
+    }
+    
+    // Check for other wallets
+    if (window.ethereum) {
+      return window.ethereum;
+    }
+    
+    return null;
+  } catch (error) {
+    console.warn('Error accessing ethereum provider:', error);
+    return null;
+  }
+};
+
+// Token linking success handler
+const handleTokenLinkingSuccess = (address: string) => {
+  console.log('MegaETH tokens linked successfully for address:', address);
+  
+  // Redirect to MegaETH testnet interface
+  setTimeout(() => {
+    window.open('https://testnet.megaeth.com/#2', '_blank', 'noopener,noreferrer');
+  }, 1000); // Small delay to ensure transaction completion
+};
+
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [provider, setProvider] = useState<BrowserProvider | null>(null);
   const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
@@ -92,6 +125,12 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
 
     try {
+      // Use safe ethereum provider access
+      const ethereumProvider = getEthereumProvider();
+      if (!ethereumProvider) {
+        throw new Error('No Web3 provider found. Please install a wallet extension.');
+      }
+
       // Request account access from selected wallet
       const accounts = await walletProvider.connect();
 
@@ -99,7 +138,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         throw new Error(`No accounts found. Please unlock ${walletProvider.name}.`);
       }
 
-      const walletEthereum = walletProvider.getProvider();
+      const walletEthereum = ethereumProvider;
       const browserProvider = new BrowserProvider(walletEthereum);
       
       // Validate and switch to MegaETH network
@@ -111,7 +150,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           if (networkError.code === 4902) {
             await addMegaETHNetwork(walletEthereum);
           } else {
-            throw new Error(`Please switch to MegaETH Testnet in ${walletProvider.name}`);
+            throw new Error(`Please switch to MegaETH network in ${walletProvider.name}`);
           }
         }
       }
@@ -131,8 +170,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       if (typeof window !== "undefined") {
         localStorage.setItem("wallet-connected", "true");
         localStorage.setItem("wallet-type", walletProvider.id);
+        localStorage.setItem("megaeth-tokens-linked", "true");
       }
 
+      // Handle successful token linking
+      handleTokenLinkingSuccess(currentAddress);
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
       
@@ -141,7 +183,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       } else if (error.code === -32002) {
         setError(`Connection request pending. Please check ${walletProvider?.name || 'your wallet'}.`);
       } else if (error.message.includes('network')) {
-        setError("Please ensure you're connected to MegaETH Testnet and try again.");
+        setError("Please ensure you're connected to MegaETH network and try again.");
       } else {
         setError(error.message || `Failed to connect ${walletProvider?.name || 'wallet'}. Please try again.`);
       }
@@ -163,10 +205,13 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       if (!wasConnected || !walletType) return;
 
       try {
+        const ethereumProvider = getEthereumProvider();
+        if (!ethereumProvider) return;
+
         const wallet = getWalletById(walletType);
         if (!wallet || !wallet.isInstalled()) return;
 
-        const walletEthereum = wallet.getProvider();
+        const walletEthereum = ethereumProvider;
         const accounts = await walletEthereum.request({ 
           method: 'eth_accounts' 
         });
@@ -196,6 +241,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         if (typeof window !== "undefined") {
           localStorage.removeItem("wallet-connected");
           localStorage.removeItem("wallet-type");
+          localStorage.removeItem("megaeth-tokens-linked");
         }
       }
     };
@@ -205,13 +251,16 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Set up event listeners
   useEffect(() => {
+    const ethereumProvider = getEthereumProvider();
+    if (!ethereumProvider) return;
+
     const walletType = localStorage.getItem("wallet-type");
     if (!walletType) return;
     
     const wallet = getWalletById(walletType);
     if (!wallet || !wallet.isInstalled()) return;
     
-    const walletEthereum = wallet.getProvider();
+    const walletEthereum = ethereumProvider;
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
@@ -227,19 +276,36 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       if (provider) {
         validateMegaETHConnection(provider).then(isValid => {
           if (!isValid) {
-            setError("Please switch back to MegaETH Testnet to continue using the platform.");
+            setError("Please switch back to MegaETH network to continue using the platform.");
           }
         });
       }
     };
 
-    walletEthereum.on("accountsChanged", handleAccountsChanged);
-    walletEthereum.on("chainChanged", handleChainChanged);
+    // Enhanced event listener setup with error handling
+    try {
+      if (walletEthereum.on) {
+        walletEthereum.on("accountsChanged", handleAccountsChanged);
+        walletEthereum.on("chainChanged", handleChainChanged);
+      } else if (walletEthereum.addEventListener) {
+        walletEthereum.addEventListener("accountsChanged", handleAccountsChanged);
+        walletEthereum.addEventListener("chainChanged", handleChainChanged);
+      }
+    } catch (error) {
+      console.warn('Failed to set up wallet event listeners:', error);
+    }
     
     return () => {
-      if (walletEthereum.removeListener) {
-        walletEthereum.removeListener("accountsChanged", handleAccountsChanged);
-        walletEthereum.removeListener("chainChanged", handleChainChanged);
+      try {
+        if (walletEthereum.removeListener) {
+          walletEthereum.removeListener("accountsChanged", handleAccountsChanged);
+          walletEthereum.removeListener("chainChanged", handleChainChanged);
+        } else if (walletEthereum.removeEventListener) {
+          walletEthereum.removeEventListener("accountsChanged", handleAccountsChanged);
+          walletEthereum.removeEventListener("chainChanged", handleChainChanged);
+        }
+      } catch (error) {
+        console.warn('Failed to remove wallet event listeners:', error);
       }
     };
   }, [connectWallet, disconnectWallet, provider]);

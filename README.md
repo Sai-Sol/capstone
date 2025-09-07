@@ -33,11 +33,11 @@ A revolutionary blockchain-based quantum computing platform that ensures tamper-
 
 ### MetaMask Setup
 
-Configure MegaETH testnet in MetaMask:
-- **Network Name**: MegaETH Testnet
+Configure MegaETH network in MetaMask:
+- **Network Name**: MegaETH Network
 - **RPC URL**: https://testnet.megaeth.io
 - **Chain ID**: 9000
-- **Currency Symbol**: ETH
+- **Currency Symbol**: MegaETH
 - **Block Explorer**: https://www.megaexplorer.xyz
 
 ## 🔐 Demo Accounts
@@ -54,19 +54,19 @@ Configure MegaETH testnet in MetaMask:
 - **Animations**: Framer Motion
 
 ### Blockchain Integration
-- **Network**: MegaETH Testnet (Chain ID: 9000)
+- **Network**: MegaETH Network (Chain ID: 9000)
 - **Smart Contract**: QuantumJobLogger at `0xd1471126F18d76be253625CcA75e16a0F1C5B3e2`
-- **Wallet**: MetaMask integration with ethers.js
+- **Token Support**: MegaETH tokens with automatic network switching
 
 ### Key Components
 - **Quantum Lab**: Algorithm execution environment
-- **Blockchain Explorer**: Real-time network monitoring
+- **MegaETH Token Explorer**: Real-time network monitoring
 - **Job History**: Comprehensive job tracking and verification
-
+- **Token Management**: Advanced MegaETH token management
 ## 📊 Smart Contract
 
 **Contract Address**: `0xd1471126F18d76be253625CcA75e16a0F1C5B3e2`
-**Network**: MegaETH Testnet
+- **Network**: MegaETH Network
 **Explorer**: [View on MegaExplorer](https://www.megaexplorer.xyz/address/0xd1471126F18d76be253625CcA75e16a0F1C5B3e2)
 
 ### Functions
@@ -88,10 +88,10 @@ Configure MegaETH testnet in MetaMask:
 
 ## 📱 Usage
 
-1. **Connect Wallet**: Use MetaMask to connect to MegaETH testnet
+1. **Link MegaETH Tokens**: Choose from MetaMask, OKX, or Rabby to link MegaETH tokens
 2. **Submit Jobs**: Create quantum algorithms in the Quantum Lab
 3. **Monitor Execution**: View real-time results and blockchain verification
-4. **Explore Network**: Use blockchain explorer for network insights
+- **Explore Network**: Use MegaETH token explorer for network insights
 
 ## 🛠️ Development
 
@@ -105,10 +105,10 @@ Configure MegaETH testnet in MetaMask:
 ### Testing
 - `npm test`: Run test suite
 - Jest configuration with comprehensive API and component tests
+- Multi-wallet token integration tests
+- MegaETH token validation tests
 
-## 🌐 Deployment
-
-The application is configured for deployment on Firebase App Hosting with automatic builds and MegaETH testnet integration.
+The application is configured for deployment on Firebase App Hosting with automatic builds and MegaETH token integration.
 
 ## 📄 License
 
@@ -116,4 +116,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Built for secure quantum computing on the blockchain** 🚀
+**Built for secure quantum computing with ultra-fast MegaETH tokens** 🚀

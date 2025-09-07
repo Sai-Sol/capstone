@@ -82,7 +82,7 @@ export default function MegaETHNetworkStatus() {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Network className="h-5 w-5 text-primary" />
-            MegaETH Testnet Status
+            MegaETH Network Status
           </div>
           <Button variant="ghost" size="sm" onClick={fetchNetworkStatus} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -174,7 +174,7 @@ export default function MegaETHNetworkStatus() {
           <Button variant="outline" size="sm" asChild className="flex-1">
             <a href={MEGAETH_TESTNET_CONFIG.tools.faucetUrl} target="_blank" rel="noopener noreferrer">
               <Zap className="mr-2 h-4 w-4" />
-              Get Testnet ETH
+              Get MegaETH Tokens
             </a>
           </Button>
           <Button variant="outline" size="sm" asChild className="flex-1">
@@ -190,7 +190,7 @@ export default function MegaETHNetworkStatus() {
           <Alert className="border-red-500/20 bg-red-500/5">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-red-200/80">
-              MegaETH Testnet appears to be offline. Please check your connection or try again later.
+              MegaETH network appears to be offline. Please check your connection or try again later.
             </AlertDescription>
           </Alert>
         )}

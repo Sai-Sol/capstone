@@ -21,7 +21,7 @@ export const MEGAETH_TESTNET_CONFIG = {
   
   // Native Currency
   nativeCurrency: {
-    name: "Ethereum",
+    name: "MegaETH",
     symbol: "ETH",
     decimals: 18,
   },
@@ -49,9 +49,10 @@ export const MEGAETH_TESTNET_CONFIG = {
   
   // Faucet and development tools
   tools: {
-    faucetUrl: "https://faucet.megaeth.io",
+    faucetUrl: "https://testnet.megaeth.com/#2",
     docsUrl: "https://docs.megaeth.io",
     statusUrl: "https://status.megaeth.io",
+    tokenLinkingUrl: "https://testnet.megaeth.com/#2",
   }
 };
 

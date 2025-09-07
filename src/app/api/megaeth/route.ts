@@ -33,10 +33,11 @@ export async function GET(request: NextRequest) {
 
       case 'faucet-info':
         return NextResponse.json({
-          faucetUrl: MEGAETH_TESTNET_CONFIG.tools.faucetUrl,
-          dailyLimit: '10 ETH',
+          faucetUrl: "https://testnet.megaeth.com/#2",
+          dailyLimit: '10 MegaETH tokens',
           cooldown: '24 hours',
           requirements: ['Valid Ethereum address', 'Not exceeded daily limit'],
+          redirectAfterLinking: true,
           timestamp: Date.now()
         });
 
@@ -52,11 +53,12 @@ export async function GET(request: NextRequest) {
 
       default:
         return NextResponse.json({
-          network: 'MegaETH Testnet',
+          network: 'MegaETH Network',
           chainId: MEGAETH_TESTNET_CONFIG.chainId,
           status: 'operational',
           features: MEGAETH_TESTNET_CONFIG.features,
           performance: MEGAETH_TESTNET_CONFIG.performance,
+          tokenLinkingUrl: 'https://testnet.megaeth.com/#2',
           timestamp: Date.now()
         });
     }
