@@ -22,9 +22,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "QuantumChain - Blockchain Quantum Computing",
-  description: "Secure quantum computing platform with blockchain verification",
-  keywords: "quantum computing, blockchain, MegaETH, smart contracts",
+  title: "QuantumChain - MegaETH Quantum Computing",
+  description: "Secure quantum computing platform with ultra-fast MegaETH blockchain verification",
+  keywords: "quantum computing, MegaETH, blockchain, smart contracts, multi-wallet",
   authors: [{ name: "QuantumChain Team" }],
   viewport: "width=device-width, initial-scale=1",
 };

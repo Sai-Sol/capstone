@@ -291,7 +291,7 @@ export default function BlockchainPage() {
         <div className="flex items-center justify-center gap-4 mt-6">
           <div className="flex items-center gap-2">
             <Wifi className="h-5 w-5 text-green-400" />
-            <span className="text-sm font-medium text-foreground">Connected to Ethereum</span>
+            <span className="text-sm font-medium text-foreground">Connected to MegaETH</span>
           </div>
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
@@ -544,7 +544,7 @@ export default function BlockchainPage() {
                     
                     <div>
                       <span className="text-muted-foreground">Network:</span>
-                      <div className="font-medium text-blue-400 mt-1">Ethereum Mainnet</div>
+                      <div className="font-medium text-blue-400 mt-1">MegaETH Testnet</div>
                     </div>
                   </div>
                   
@@ -795,11 +795,11 @@ export default function BlockchainPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                   <div>
                     <span className="text-muted-foreground">Chain ID:</span>
-                    <div className="font-mono font-bold text-blue-400">9000</div>
+                    <div className="font-mono font-bold text-blue-400">9000 (MegaETH)</div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Symbol:</span>
-                    <div className="font-mono font-bold text-blue-400">ETH</div>
+                    <div className="font-mono font-bold text-blue-400">ETH (MegaETH)</div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Block Time:</span>

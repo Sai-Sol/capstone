@@ -761,7 +761,7 @@ measure q -> c;
                     <Zap className="h-4 w-4 text-yellow-500" />
                     <AlertDescription className="text-foreground">
                       <div className="font-semibold text-yellow-500 mb-1">🔐 Wallet Connection Required</div>
-                      Connect your MetaMask wallet to submit quantum jobs and record results on the MegaETH blockchain for permanent verification.
+                      Connect your wallet to submit quantum jobs and record results on the ultra-fast MegaETH blockchain for permanent verification.
                     </AlertDescription>
                   </Alert>
                 </motion.div>

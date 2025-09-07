@@ -26,6 +26,8 @@ import {
   Zap
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import WalletSelectionModal from "./wallet-selection-modal";
+import { WalletProvider as WalletProviderType, getWalletById } from "@/lib/wallet-providers";
 
 export default function WalletConnectButton() {
   const { 
@@ -37,10 +39,13 @@ export default function WalletConnectButton() {
     connectWallet, 
     disconnectWallet,
     refreshBalance,
-    clearError
+    clearError,
+    connectedWalletType
   } = useWallet();
   const { toast } = useToast();
   const [showError, setShowError] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 
   useEffect(() => {
     if (error) {
@@ -63,16 +68,24 @@ export default function WalletConnectButton() {
     }
   };
 
-  const handleConnect = async () => {
+  const handleConnect = () => {
+    setShowWalletModal(true);
+  };
+
+  const handleWalletSelect = async (wallet: WalletProviderType) => {
     try {
       clearError();
-      await connectWallet();
+      setSelectedWallet(wallet.id);
+      await connectWallet(wallet);
       toast({
-        title: "Wallet Connected! 🎉",
-        description: "Successfully connected to your wallet",
+        title: `${wallet.name} Connected! 🎉`,
+        description: "Successfully connected to MegaETH Testnet",
       });
+      setShowWalletModal(false);
     } catch (error: any) {
       console.error("Connection failed:", error);
+    } finally {
+      setSelectedWallet(null);
     }
   };
 
@@ -80,7 +93,7 @@ export default function WalletConnectButton() {
     disconnectWallet();
     toast({
       title: "Wallet Disconnected",
-      description: "Your wallet has been disconnected",
+      description: "Your wallet has been disconnected from MegaETH",
     });
   };
 
@@ -89,17 +102,23 @@ export default function WalletConnectButton() {
       await refreshBalance();
       toast({
         title: "Balance Updated",
-        description: "Wallet balance has been refreshed",
+        description: "MegaETH balance has been refreshed",
       });
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Refresh Failed",
-        description: "Failed to refresh wallet balance",
+        description: "Failed to refresh MegaETH balance",
       });
     }
   };
 
+  const getConnectedWalletInfo = () => {
+    if (!connectedWalletType) return null;
+    return getWalletById(connectedWalletType);
+  };
+
+  const connectedWallet = getConnectedWalletInfo();
   // Error Alert Component
   const ErrorAlert = () => (
     <AnimatePresence>
@@ -152,6 +171,15 @@ export default function WalletConnectButton() {
             </>
           )}
         </Button>
+        
+        <WalletSelectionModal
+          isOpen={showWalletModal}
+          onClose={() => setShowWalletModal(false)}
+          onWalletSelect={handleWalletSelect}
+          isConnecting={isConnecting}
+          selectedWallet={selectedWallet}
+        />
+        
         <ErrorAlert />
       </>
     );
@@ -171,6 +199,9 @@ export default function WalletConnectButton() {
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
+              {connectedWallet && (
+                <span className="text-lg">{connectedWallet.icon}</span>
+              )}
               <Wallet className="h-4 w-4" />
               <span className="font-mono text-sm">
                 {address?.slice(0, 6)}...{address?.slice(-4)}
@@ -186,11 +217,16 @@ export default function WalletConnectButton() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-3 p-2">
               <div className="flex items-center gap-2">
+                {connectedWallet && (
+                  <span className="text-lg">{connectedWallet.icon}</span>
+                )}
                 <Wallet className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-foreground">Wallet Connected</span>
+                <span className="font-semibold text-foreground">
+                  {connectedWallet?.name || 'Wallet'} Connected
+                </span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
                   <CheckCircle className="mr-1 h-3 w-3" />
-                  Active
+                  MegaETH
                 </Badge>
               </div>
               
@@ -213,7 +249,7 @@ export default function WalletConnectButton() {
                 {balance && (
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs text-muted-foreground">Balance</p>
+                      <p className="text-xs text-muted-foreground">MegaETH Balance</p>
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -229,7 +265,7 @@ export default function WalletConnectButton() {
                         {parseFloat(balance).toFixed(4)} ETH
                       </p>
                       <p className="text-xs text-green-300/80">
-                        ≈ ${(parseFloat(balance) * 3400).toFixed(2)} USD
+                        MegaETH Testnet • Ultra-fast blockchain
                       </p>
                     </div>
                   </div>
@@ -248,7 +284,7 @@ export default function WalletConnectButton() {
               className="cursor-pointer flex items-center gap-2 p-3 hover:bg-primary/10 transition-colors text-foreground"
             >
               <ExternalLink className="h-4 w-4" />
-              <span>View on Explorer</span>
+              <span>View on MegaExplorer</span>
             </a>
           </DropdownMenuItem>
           
@@ -260,7 +296,7 @@ export default function WalletConnectButton() {
               className="cursor-pointer flex items-center gap-2 p-3 hover:bg-blue-500/10 transition-colors text-foreground"
             >
               <Zap className="h-4 w-4" />
-              <span>Get Test ETH</span>
+              <span>Get MegaETH Testnet Tokens</span>
             </a>
           </DropdownMenuItem>
           

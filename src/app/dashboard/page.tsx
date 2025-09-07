@@ -294,7 +294,7 @@ export default function DashboardHomePage() {
                   <h3 className="font-semibold text-green-100">🔐 2. Blockchain Security</h3>
                 </div>
                 <p className="text-sm text-green-200/80">
-                  Every quantum computation is permanently recorded on the MegaETH blockchain - no one can fake or alter your results!
+                  Every quantum computation is permanently recorded on the ultra-fast MegaETH blockchain - no one can fake or alter your results!
                 </p>
               </motion.div>
               
@@ -310,7 +310,7 @@ export default function DashboardHomePage() {
                   <h3 className="font-semibold text-purple-100">✅ 3. Instant Verification</h3>
                 </div>
                 <p className="text-sm text-purple-200/80">
-                  Anyone can verify your quantum results using the blockchain - perfect for research, patents, and proving quantum advantage!
+                  Anyone can verify your quantum results using the MegaETH blockchain - perfect for research, patents, and proving quantum advantage!
                 </p>
               </motion.div>
             </div>
@@ -331,7 +331,7 @@ export default function DashboardHomePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span className="text-foreground">⚡ Lightning-fast MegaETH blockchain</span>
+                  <span className="text-foreground">⚡ Ultra-fast MegaETH blockchain (100k+ TPS)</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full" />

@@ -2,6 +2,14 @@
 
 import React, { createContext, useState, useCallback, useEffect } from "react";
 import { BrowserProvider, JsonRpcSigner, formatEther } from "ethers";
+import { 
+  WalletProvider as WalletProviderType, 
+  getWalletById, 
+  MEGAETH_NETWORK_CONFIG,
+  addMegaETHNetwork,
+  switchToMegaETH,
+  validateMegaETHConnection
+} from "@/lib/wallet-providers";
 
 interface WalletContextType {
   provider: BrowserProvider | null;
@@ -11,10 +19,11 @@ interface WalletContextType {
   isConnected: boolean;
   isConnecting: boolean;
   error: string | null;
-  connectWallet: () => Promise<void>;
+  connectWallet: (walletProvider?: WalletProviderType) => Promise<void>;
   disconnectWallet: () => void;
   refreshBalance: () => Promise<void>;
   clearError: () => void;
+  connectedWalletType: string | null;
 }
 
 export const WalletContext = createContext<WalletContextType | null>(null);
@@ -22,6 +31,7 @@ export const WalletContext = createContext<WalletContextType | null>(null);
 declare global {
   interface Window {
     ethereum?: any;
+    okxwallet?: any;
   }
 }
 
@@ -32,6 +42,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [balance, setBalance] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [connectedWalletType, setConnectedWalletType] = useState<string | null>(null);
 
   const isConnected = !!address && !!provider && !!signer;
 
@@ -45,9 +56,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setAddress(null);
     setBalance(null);
     setError(null);
+    setConnectedWalletType(null);
     
     if (typeof window !== "undefined") {
       localStorage.removeItem("wallet-connected");
+      localStorage.removeItem("wallet-type");
     }
   }, []);
 
@@ -59,14 +72,19 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         setBalance(formattedBalance);
       } catch (error: any) {
         console.error("Error refreshing balance:", error);
-        setError("Failed to refresh balance. Please try again.");
+        setError("Failed to refresh MegaETH balance. Please try again.");
       }
     }
   }, [provider, address]);
 
-  const connectWallet = useCallback(async () => {
-    if (!window.ethereum) {
-      setError("MetaMask is not installed. Please install MetaMask to continue.");
+  const connectWallet = useCallback(async (walletProvider?: WalletProviderType) => {
+    if (!walletProvider) {
+      setError("Please select a wallet to connect.");
+      return;
+    }
+
+    if (!walletProvider.isInstalled()) {
+      setError(`${walletProvider.name} is not installed. Please install it first.`);
       return;
     }
 
@@ -74,16 +92,30 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
 
     try {
-      // Request account access
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
+      // Request account access from selected wallet
+      const accounts = await walletProvider.connect();
 
       if (!accounts || accounts.length === 0) {
-        throw new Error("No accounts found. Please unlock MetaMask.");
+        throw new Error(`No accounts found. Please unlock ${walletProvider.name}.`);
       }
 
-      const browserProvider = new BrowserProvider(window.ethereum);
+      const walletEthereum = walletProvider.getProvider();
+      const browserProvider = new BrowserProvider(walletEthereum);
+      
+      // Validate and switch to MegaETH network
+      const isOnMegaETH = await validateMegaETHConnection(browserProvider);
+      if (!isOnMegaETH) {
+        try {
+          await switchToMegaETH(walletEthereum);
+        } catch (networkError: any) {
+          if (networkError.code === 4902) {
+            await addMegaETHNetwork(walletEthereum);
+          } else {
+            throw new Error(`Please switch to MegaETH Testnet in ${walletProvider.name}`);
+          }
+        }
+      }
+      
       const currentSigner = await browserProvider.getSigner();
       const currentAddress = await currentSigner.getAddress();
       const currentBalance = await browserProvider.getBalance(currentAddress);
@@ -93,21 +125,25 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       setSigner(currentSigner);
       setAddress(currentAddress);
       setBalance(formattedBalance);
+      setConnectedWalletType(walletProvider.id);
 
       // Store connection state
       if (typeof window !== "undefined") {
         localStorage.setItem("wallet-connected", "true");
+        localStorage.setItem("wallet-type", walletProvider.id);
       }
 
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
       
       if (error.code === 4001) {
-        setError("Connection cancelled. Please approve the connection to continue.");
+        setError(`Connection cancelled. Please approve the connection in ${walletProvider?.name || 'your wallet'}.`);
       } else if (error.code === -32002) {
-        setError("Connection request pending. Please check MetaMask.");
+        setError(`Connection request pending. Please check ${walletProvider?.name || 'your wallet'}.`);
+      } else if (error.message.includes('network')) {
+        setError("Please ensure you're connected to MegaETH Testnet and try again.");
       } else {
-        setError(error.message || "Failed to connect wallet. Please try again.");
+        setError(error.message || `Failed to connect ${walletProvider?.name || 'wallet'}. Please try again.`);
       }
       
       disconnectWallet();
@@ -119,34 +155,47 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   // Initialize wallet on mount
   useEffect(() => {
     const initializeWallet = async () => {
-      if (!window.ethereum) return;
+      const wasConnected = typeof window !== "undefined" && 
+        localStorage.getItem("wallet-connected") === "true";
+      const walletType = typeof window !== "undefined" && 
+        localStorage.getItem("wallet-type");
+
+      if (!wasConnected || !walletType) return;
 
       try {
-        const wasConnected = typeof window !== "undefined" && 
-          localStorage.getItem("wallet-connected") === "true";
-        
-        if (wasConnected) {
-          const accounts = await window.ethereum.request({ 
-            method: 'eth_accounts' 
-          });
-          
-          if (accounts && accounts.length > 0) {
-            const browserProvider = new BrowserProvider(window.ethereum);
-            const currentSigner = await browserProvider.getSigner();
-            const currentAddress = await currentSigner.getAddress();
-            const currentBalance = await browserProvider.getBalance(currentAddress);
-            const formattedBalance = formatEther(currentBalance);
+        const wallet = getWalletById(walletType);
+        if (!wallet || !wallet.isInstalled()) return;
 
-            setProvider(browserProvider);
-            setSigner(currentSigner);
-            setAddress(currentAddress);
-            setBalance(formattedBalance);
+        const walletEthereum = wallet.getProvider();
+        const accounts = await walletEthereum.request({ 
+          method: 'eth_accounts' 
+        });
+        
+        if (accounts && accounts.length > 0) {
+          const browserProvider = new BrowserProvider(walletEthereum);
+          
+          // Ensure we're on MegaETH network
+          const isOnMegaETH = await validateMegaETHConnection(browserProvider);
+          if (!isOnMegaETH) {
+            await switchToMegaETH(walletEthereum);
           }
+          
+          const currentSigner = await browserProvider.getSigner();
+          const currentAddress = await currentSigner.getAddress();
+          const currentBalance = await browserProvider.getBalance(currentAddress);
+          const formattedBalance = formatEther(currentBalance);
+
+          setProvider(browserProvider);
+          setSigner(currentSigner);
+          setAddress(currentAddress);
+          setBalance(formattedBalance);
+          setConnectedWalletType(walletType);
         }
       } catch (error) {
         console.error("Failed to initialize wallet:", error);
         if (typeof window !== "undefined") {
           localStorage.removeItem("wallet-connected");
+          localStorage.removeItem("wallet-type");
         }
       }
     };
@@ -156,32 +205,44 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Set up event listeners
   useEffect(() => {
-    if (!window.ethereum) return;
+    const walletType = localStorage.getItem("wallet-type");
+    if (!walletType) return;
+    
+    const wallet = getWalletById(walletType);
+    if (!wallet || !wallet.isInstalled()) return;
+    
+    const walletEthereum = wallet.getProvider();
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
         disconnectWallet();
       } else {
         // Reconnect with new account
-        connectWallet();
+        connectWallet(wallet);
       }
     };
 
     const handleChainChanged = () => {
-      // Refresh the page when chain changes
-      window.location.reload();
-    };
-
-    window.ethereum.on("accountsChanged", handleAccountsChanged);
-    window.ethereum.on("chainChanged", handleChainChanged);
-    
-    return () => {
-      if (window.ethereum.removeListener) {
-        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
-        window.ethereum.removeListener("chainChanged", handleChainChanged);
+      // Check if still on MegaETH, if not, prompt to switch back
+      if (provider) {
+        validateMegaETHConnection(provider).then(isValid => {
+          if (!isValid) {
+            setError("Please switch back to MegaETH Testnet to continue using the platform.");
+          }
+        });
       }
     };
-  }, [connectWallet, disconnectWallet]);
+
+    walletEthereum.on("accountsChanged", handleAccountsChanged);
+    walletEthereum.on("chainChanged", handleChainChanged);
+    
+    return () => {
+      if (walletEthereum.removeListener) {
+        walletEthereum.removeListener("accountsChanged", handleAccountsChanged);
+        walletEthereum.removeListener("chainChanged", handleChainChanged);
+      }
+    };
+  }, [connectWallet, disconnectWallet, provider]);
 
   return (
     <WalletContext.Provider
@@ -196,7 +257,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         connectWallet, 
         disconnectWallet, 
         refreshBalance,
-        clearError
+        clearError,
+        connectedWalletType
       }}
     >
       {children}

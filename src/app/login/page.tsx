@@ -171,7 +171,7 @@ export default function LoginPage() {
               QuantumChain
             </CardTitle>
             <CardDescription className="text-base mt-3 text-muted-foreground">
-              Secure blockchain-based quantum computing platform
+              Secure MegaETH-based quantum computing platform
             </CardDescription>
             
             <div className="flex justify-center gap-4 mt-6">
@@ -181,7 +181,7 @@ export default function LoginPage() {
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Shield className="h-4 w-4 text-green-500" />
-                <span>Blockchain Security</span>
+                <span>MegaETH Security</span>
               </div>
             </div>
           </CardHeader>
@@ -316,7 +316,7 @@ export default function LoginPage() {
                 <div>
                   <p className="text-xs font-medium text-green-400 mb-1">🛡️ Enterprise Security</p>
                   <p className="text-xs text-green-200/80">
-                    Your quantum computations are protected with military-grade encryption and permanent blockchain verification.
+                    Your quantum computations are protected with military-grade encryption and permanent MegaETH blockchain verification.
                   </p>
                 </div>
               </div>

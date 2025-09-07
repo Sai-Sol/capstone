@@ -168,7 +168,7 @@ export default function RegisterPage() {
             >
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-                <div className="relative bg-gradient-to-br from-primary via-purple-500 to-pink-500 p-4 rounded-2xl shadow-2xl">
+                    Your quantum computations are protected with military-grade encryption and permanent MegaETH blockchain verification.
                   <UserPlus className="h-10 w-10 text-white quantum-pulse" />
                 </div>
               </div>
@@ -178,7 +178,7 @@ export default function RegisterPage() {
               🚀 Join QuantumChain
             </CardTitle>
             <CardDescription className="text-base mt-2 text-muted-foreground">
-              Create your account and start exploring the quantum universe!
+              Create your account and start exploring the quantum universe on MegaETH!
             </CardDescription>
           </CardHeader>
           

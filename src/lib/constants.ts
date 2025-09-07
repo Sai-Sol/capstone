@@ -12,7 +12,7 @@ export const MEGAETH_TESTNET = {
   chainId: "0x2328", // 9000
   chainName: "MegaETH Testnet",
   nativeCurrency: {
-    name: "ETH",
+    name: "MegaETH",
     symbol: "ETH",
     decimals: 18,
   },
