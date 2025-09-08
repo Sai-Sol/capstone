@@ -17,7 +17,10 @@ import {
   BarChart3,
   Download,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  Target,
+  Cpu,
+  Database
 } from "lucide-react";
 
 interface QuantumResult {
@@ -114,236 +117,272 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="w-full max-w-4xl max-h-[90vh] overflow-auto"
+          className="w-full max-w-5xl max-h-[90vh] overflow-auto"
         >
-          <Card className="quantum-card shadow-2xl">
-            <CardHeader className="pb-4">
+          <Card className="quantum-card shadow-2xl border-primary/30">
+            <CardHeader className="pb-4 bg-gradient-to-r from-primary/10 to-purple-500/10">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl font-headline flex items-center gap-3">
-                  <div className="p-2 bg-primary/20 rounded-lg">
-                    <Atom className="h-6 w-6 text-primary quantum-pulse" />
+                <CardTitle className="text-3xl font-headline flex items-center gap-3">
+                  <div className="p-3 bg-primary/20 rounded-xl">
+                    <Atom className="h-8 w-8 text-primary quantum-pulse" />
                   </div>
-                  Quantum Execution Results
+                  <div>
+                    <div className="text-primary">Quantum Execution Results</div>
+                    <div className="text-sm text-muted-foreground font-normal mt-1">
+                      Real quantum computing results from {result?.results?.provider || 'quantum hardware'}
+                    </div>
+                  </div>
                 </CardTitle>
-                <Button variant="ghost" onClick={onClose}>
+                <Button variant="ghost" onClick={onClose} className="text-muted-foreground hover:text-foreground">
                   ✕
                 </Button>
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8 p-8">
               {isLoading && !result && (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground">Loading quantum results...</p>
+                <div className="text-center py-12">
+                  <div className="relative mx-auto w-16 h-16 mb-6">
+                    <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <Atom className="absolute inset-2 text-primary quantum-pulse" />
+                  </div>
+                  <p className="text-lg text-muted-foreground">Loading quantum results...</p>
                 </div>
               )}
 
               {error && (
-                <Alert className="border-red-500/20 bg-red-500/5">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription className="text-red-200/80">
+                <Alert className="border-red-500/30 bg-red-500/10">
+                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                  <AlertDescription className="text-red-200">
+                    <div className="font-semibold mb-1">Error Loading Results</div>
                     {error}
                   </AlertDescription>
                 </Alert>
               )}
 
               {result && (
-                <div className="space-y-6">
-                  {/* Job Status */}
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        result.status === 'completed' ? 'bg-green-400' :
+                <div className="space-y-8">
+                  {/* Job Status Header */}
+                  <div className="flex items-center justify-between p-6 rounded-xl bg-gradient-to-r from-primary/5 to-purple-500/5 border border-primary/20">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-4 h-4 rounded-full ${
+                        result.status === 'completed' ? 'bg-green-400 animate-pulse' :
                         result.status === 'failed' ? 'bg-red-400' :
-                        'bg-yellow-400'
-                      } animate-pulse`} />
+                        'bg-yellow-400 animate-pulse'
+                      }`} />
                       <div>
-                        <h3 className="font-semibold text-primary">Job {result.jobId}</h3>
+                        <h3 className="text-xl font-semibold text-primary">Job {result.jobId}</h3>
                         <p className="text-sm text-muted-foreground">
-                          Status: <span className="capitalize font-medium">{result.status}</span>
+                          Status: <span className="capitalize font-medium text-foreground">{result.status}</span>
                         </p>
                       </div>
                     </div>
                     {result.status === "running" && (
-                      <Button variant="ghost" size="sm" onClick={() => fetchJobStatus(jobId)}>
+                      <Button variant="outline" size="sm" onClick={() => fetchJobStatus(jobId)}>
                         <RefreshCw className="h-4 w-4 mr-2" />
-                        Refresh
+                        Refresh Status
                       </Button>
                     )}
                   </div>
 
-                  {/* Progress Bar */}
+                  {/* Execution Progress */}
                   {result.status === "running" && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Quantum Execution Progress</span>
-                        <span>{Math.round(result.progress)}%</span>
-                      </div>
-                      <Progress value={result.progress} className="h-3" />
-                      <p className="text-xs text-muted-foreground">
-                        Executing quantum algorithm on quantum processor...
-                      </p>
-                    </div>
+                    <Card className="border-blue-500/30 bg-blue-500/5">
+                      <CardContent className="p-6">
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-medium">Quantum Execution Progress</span>
+                            <span className="text-2xl font-bold text-blue-400">{Math.round(result.progress)}%</span>
+                          </div>
+                          <Progress value={result.progress} className="h-4" />
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Cpu className="h-4 w-4" />
+                            <span>Executing quantum algorithm on {result.results?.provider || 'quantum processor'}...</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
 
-                  {/* Execution Results */}
+                  {/* Quantum Results */}
                   {result.status === "completed" && result.results && (
-                    <div className="space-y-6">
-                      {/* Algorithm Info */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Atom className="h-5 w-5 text-blue-400" />
-                            <span className="text-sm font-medium text-blue-200">🧬 Algorithm Type</span>
-                          </div>
-                          <p className="text-lg font-bold text-blue-100">{result.results.algorithm}</p>
-                          <p className="text-xs text-blue-200/60 mt-1">Quantum circuit executed</p>
-                        </div>
-                        
-                        <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Clock className="h-5 w-5 text-green-400" />
-                            <span className="text-sm font-medium text-green-200">⏱️ Execution Time</span>
-                          </div>
-                          <p className="text-lg font-bold text-green-100">{result.results.executionTime}</p>
-                          <p className="text-xs text-green-200/60 mt-1">On quantum hardware</p>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Activity className="h-5 w-5 text-purple-400" />
-                            <span className="text-sm font-medium text-purple-200">🎯 Accuracy (Fidelity)</span>
-                          </div>
-                          <p className="text-lg font-bold text-purple-100">{result.results.fidelity}</p>
-                          <p className="text-xs text-purple-200/60 mt-1">Quantum state accuracy</p>
-                        </div>
-                      </div>
-
-                      {/* Quantum Measurements */}
-                      <Card className="border-primary/20">
+                    <div className="space-y-8">
+                      {/* Algorithm Summary */}
+                      <Card className="border-green-500/30 bg-green-500/5">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <BarChart3 className="h-5 w-5 text-primary" />
-                            📊 Quantum Measurement Results
+                          <CardTitle className="flex items-center gap-2 text-green-400">
+                            <CheckCircle className="h-6 w-6" />
+                            Execution Successful
                           </CardTitle>
-                          <CardDescription className="text-muted-foreground">
-                            Each measurement collapses the quantum superposition into a classical state
+                          <CardDescription className="text-green-200/80">
+                            Your quantum algorithm executed successfully on real quantum hardware
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-4">
-                            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                              <p className="text-sm text-blue-200">
-                                <strong>📈 Understanding Results:</strong> These bars show how often each quantum state was measured. 
-                                In quantum computing, we run the same circuit many times (shots) to see the probability distribution.
-                              </p>
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="text-center p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                              <Atom className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                              <div className="text-sm text-blue-200 mb-1">Algorithm</div>
+                              <div className="text-lg font-bold text-blue-100">{result.results.algorithm}</div>
                             </div>
                             
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                              {Object.entries(result.results.measurements).map(([state, count]) => {
-                                const percentage = (count / result.results!.shots * 100).toFixed(1);
-                                return (
-                                  <motion.div
-                                    key={state}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="p-3 rounded-lg bg-muted/20 border border-primary/10"
-                                  >
-                                    <div className="text-center">
-                                      <div className="font-mono text-lg font-bold text-primary">|{state}⟩</div>
-                                      <div className="text-sm text-muted-foreground">{count} times</div>
-                                      <div className="text-xs font-medium text-green-400">{percentage}%</div>
-                                      <div className="text-xs text-muted-foreground/60">probability</div>
-                                    </div>
-                                  </motion.div>
-                                );
-                              })}
+                            <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                              <Clock className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                              <div className="text-sm text-green-200 mb-1">Execution Time</div>
+                              <div className="text-lg font-bold text-green-100">{result.results.executionTime}</div>
                             </div>
 
-                            {/* Visual Bar Chart */}
-                            <div className="space-y-2">
-                              {Object.entries(result.results.measurements).map(([state, count]) => {
-                                const percentage = (count / result.results!.shots * 100);
-                                return (
-                                  <div key={state} className="space-y-1">
-                                    <div className="flex justify-between text-sm">
-                                      <span className="font-mono">|{state}⟩ state</span>
-                                      <span className="font-semibold">{percentage.toFixed(1)}% ({count} measurements)</span>
-                                    </div>
-                                    <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
-                                      <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${percentage}%` }}
-                                        transition={{ duration: 1, delay: 0.5 }}
-                                        className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
-                                      />
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                            <div className="text-center p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                              <Target className="h-8 w-8 text-purple-400 mx-auto mb-2" />
+                              <div className="text-sm text-purple-200 mb-1">Fidelity</div>
+                              <div className="text-lg font-bold text-purple-100">{result.results.fidelity}</div>
+                            </div>
+
+                            <div className="text-center p-4 rounded-lg bg-pink-500/10 border border-pink-500/20">
+                              <Database className="h-8 w-8 text-pink-400 mx-auto mb-2" />
+                              <div className="text-sm text-pink-200 mb-1">Measurements</div>
+                              <div className="text-lg font-bold text-pink-100">{result.results.shots.toLocaleString()}</div>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
 
-                      {/* Technical Details */}
-                      <Card className="border-primary/20">
+                      {/* Quantum Measurements Visualization */}
+                      <Card className="border-primary/30">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <Zap className="h-5 w-5 text-primary" />
-                            🔧 Technical Execution Details
+                          <CardTitle className="flex items-center gap-2 text-primary">
+                            <BarChart3 className="h-6 w-6" />
+                            Quantum Measurement Results
                           </CardTitle>
                           <CardDescription className="text-muted-foreground">
-                            Performance metrics from the quantum processor
+                            Probability distribution of quantum states after measurement collapse
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                          {/* Explanation */}
+                          <Alert className="border-blue-500/30 bg-blue-500/5">
+                            <Activity className="h-4 w-4" />
+                            <AlertDescription className="text-blue-200">
+                              <strong>Understanding Your Results:</strong> Each bar shows how often a quantum state was measured. 
+                              In quantum computing, we run the circuit multiple times to see the probability distribution of outcomes.
+                            </AlertDescription>
+                          </Alert>
+                          
+                          {/* State Distribution Cards */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {Object.entries(result.results.measurements).map(([state, count]) => {
+                              const percentage = (count / result.results!.shots * 100);
+                              return (
+                                <motion.div
+                                  key={state}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 text-center"
+                                >
+                                  <div className="text-2xl font-mono font-bold text-primary mb-2">|{state}⟩</div>
+                                  <div className="text-sm text-muted-foreground mb-1">{count} times</div>
+                                  <div className="text-lg font-bold text-green-400">{percentage.toFixed(1)}%</div>
+                                  <div className="text-xs text-muted-foreground">probability</div>
+                                </motion.div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Visual Bar Chart */}
+                          <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">Probability Distribution</h4>
+                            {Object.entries(result.results.measurements).map(([state, count]) => {
+                              const percentage = (count / result.results!.shots * 100);
+                              return (
+                                <div key={state} className="space-y-2">
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-mono text-sm">|{state}⟩ quantum state</span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-medium">{percentage.toFixed(1)}%</span>
+                                      <span className="text-xs text-muted-foreground">({count} measurements)</span>
+                                    </div>
+                                  </div>
+                                  <div className="h-3 bg-muted/20 rounded-full overflow-hidden">
+                                    <motion.div
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${percentage}%` }}
+                                      transition={{ duration: 1, delay: 0.5 }}
+                                      className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Technical Details */}
+                      <Card className="border-primary/30">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2 text-primary">
+                            <Zap className="h-6 w-6" />
+                            Technical Execution Details
+                          </CardTitle>
+                          <CardDescription className="text-muted-foreground">
+                            Performance metrics and technical specifications from quantum hardware
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <span className="text-muted-foreground">🏭 Quantum Provider:</span>
-                              <div className="font-medium text-blue-400">{result.results.provider}</div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className="space-y-2">
+                              <div className="text-sm text-muted-foreground">Quantum Provider</div>
+                              <div className="text-lg font-semibold text-blue-400">{result.results.provider}</div>
                             </div>
-                            <div>
-                              <span className="text-muted-foreground">📏 Circuit Depth:</span>
-                              <div className="font-medium text-purple-400">{result.results.circuitDepth} layers</div>
+                            <div className="space-y-2">
+                              <div className="text-sm text-muted-foreground">Circuit Depth</div>
+                              <div className="text-lg font-semibold text-purple-400">{result.results.circuitDepth} layers</div>
                             </div>
-                            <div>
-                              <span className="text-muted-foreground">🎯 Measurements:</span>
-                              <div className="font-medium text-green-400">{result.results.shots.toLocaleString()} shots</div>
+                            <div className="space-y-2">
+                              <div className="text-sm text-muted-foreground">Total Shots</div>
+                              <div className="text-lg font-semibold text-green-400">{result.results.shots.toLocaleString()}</div>
                             </div>
-                            <div>
-                              <span className="text-muted-foreground">✨ Accuracy:</span>
-                              <div className="font-medium text-pink-400">{result.results.fidelity}</div>
+                            <div className="space-y-2">
+                              <div className="text-sm text-muted-foreground">Quantum Fidelity</div>
+                              <div className="text-lg font-semibold text-pink-400">{result.results.fidelity}</div>
                             </div>
                           </div>
                           
-                          <div className="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                            <p className="text-sm text-green-200">
-                              <strong>🎉 Success!</strong> Your quantum algorithm executed successfully on real quantum hardware. 
-                              The results above show the quantum measurement outcomes, permanently recorded on the MegaETH blockchain.
+                          <div className="mt-6 p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                            <div className="flex items-center gap-2 mb-2">
+                              <CheckCircle className="h-5 w-5 text-green-400" />
+                              <span className="font-semibold text-green-200">Execution Complete</span>
+                            </div>
+                            <p className="text-sm text-green-200/80">
+                              Your quantum algorithm executed successfully on real quantum hardware. 
+                              The results above show the quantum measurement outcomes, permanently recorded on the MegaETH blockchain for verification.
                             </p>
                           </div>
                         </CardContent>
                       </Card>
 
                       {/* Action Buttons */}
-                      <div className="flex gap-3">
-                        <Button onClick={downloadResults} className="quantum-button">
-                          <Download className="mr-2 h-4 w-4" />
-                          📥 Download Results
+                      <div className="flex flex-wrap gap-4">
+                        <Button onClick={downloadResults} className="quantum-button flex-1 min-w-[200px]">
+                          <Download className="mr-2 h-5 w-5" />
+                          Download Results
                         </Button>
-                        <Button variant="outline" asChild>
-                          <a href="/dashboard/history">
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            📚 View All Results
+                        <Button variant="outline" asChild className="flex-1 min-w-[200px]">
+                          <a href="/dashboard/results">
+                            <BarChart3 className="mr-2 h-5 w-5" />
+                            View All Results
                           </a>
+                        </Button>
+                        <Button variant="outline" onClick={onClose} className="flex-1 min-w-[200px]">
+                          <Activity className="mr-2 h-5 w-5" />
+                          Continue Working
                         </Button>
                       </div>
                     </div>
@@ -351,11 +390,20 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
 
                   {/* Error Display */}
                   {result.status === "failed" && result.error && (
-                    <Alert className="border-red-500/20 bg-red-500/5">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription className="text-red-200/80">
-                        <div className="font-semibold text-red-400 mb-1">Execution Failed</div>
-                        {result.error}
+                    <Alert className="border-red-500/30 bg-red-500/10">
+                      <AlertTriangle className="h-5 w-5" />
+                      <AlertDescription className="text-red-200">
+                        <div className="font-semibold text-red-400 mb-2">Quantum Execution Failed</div>
+                        <div className="text-red-200/80">{result.error}</div>
+                        <div className="mt-3 text-sm">
+                          <strong>What to try:</strong>
+                          <ul className="list-disc list-inside mt-1 space-y-1">
+                            <li>Check your algorithm syntax</li>
+                            <li>Try a different quantum provider</li>
+                            <li>Reduce circuit complexity</li>
+                            <li>Contact support if the issue persists</li>
+                          </ul>
+                        </div>
                       </AlertDescription>
                     </Alert>
                   )}

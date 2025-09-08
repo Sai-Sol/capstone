@@ -229,7 +229,7 @@ export default function WalletConnectButton() {
                 )}
                 <Wallet className="h-4 w-4 text-primary" />
                 <span className="font-semibold text-foreground">
-                  {connectedWallet?.name || 'Wallet'} Connected
+                  Connected to MegaETH Testnet
                 </span>
                 <Badge variant="outline" className="text-green-400 border-green-400/50">
                   <CheckCircle className="mr-1 h-3 w-3" />
