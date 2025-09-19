@@ -41,9 +41,12 @@ import {
   Loader2,
   Terminal,
   AlertTriangle,
-  Rocket
+  Rocket,
+  Brain,
+  Sparkles
 } from "lucide-react";
 import QuantumResultsDisplay from "@/components/quantum-results-display";
+import AIChatWidget from "@/components/ai-chat-widget";
 import { blockchainIntegration } from "@/lib/blockchain-integration";
 
 const formSchema = z.object({
@@ -136,6 +139,8 @@ export default function CreatePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [showAIHelp, setShowAIHelp] = useState(false);
+  const [aiHelpMessage, setAIHelpMessage] = useState<string>("");
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
@@ -163,6 +168,22 @@ export default function CreatePage() {
     }
   };
 
+  const getAIHelp = (topic: string) => {
+    const helpMessages = {
+      'bell-state': 'Explain Bell state creation and what results to expect',
+      'grover-search': 'How does Grover\'s algorithm work and why is it faster?',
+      'superposition': 'What is quantum superposition and how do I create it?',
+      'providers': 'Compare quantum providers and help me choose the best one',
+      'qasm': 'Help me understand QASM quantum programming language',
+      'natural': 'How do I describe quantum algorithms in natural language?'
+    };
+    
+    const message = helpMessages[topic as keyof typeof helpMessages] || 
+                   'Help me understand quantum computing concepts';
+    
+    setAIHelpMessage(message);
+    setShowAIHelp(true);
+  };
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!signer) {
       toast({
@@ -402,6 +423,18 @@ export default function CreatePage() {
                                       {preset.qubits} qubits
                                     </Badge>
                                   </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      getAIHelp(preset.id);
+                                    }}
+                                    className="mt-2 w-full"
+                                  >
+                                    <Brain className="h-3 w-3 mr-1" />
+                                    AI Explain
+                                  </Button>
                                 </CardContent>
                               </Card>
                             </motion.div>
@@ -578,6 +611,27 @@ measure q -> c;`}
                     )}
                   </Button>
 
+                  {/* AI Help Button */}
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => getAIHelp('providers')}
+                      className="flex-1"
+                    >
+                      <Brain className="mr-2 h-4 w-4" />
+                      AI Provider Guide
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => getAIHelp('qasm')}
+                      className="flex-1"
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      AI QASM Help
+                    </Button>
+                  </div>
                   {!isConnected && (
                     <Alert className="border-yellow-500/30 bg-yellow-500/10">
                       <Zap className="h-4 w-4 text-yellow-500" />
@@ -608,6 +662,13 @@ measure q -> c;`}
       <QuantumResultsDisplay 
         jobId={currentJobId} 
         onClose={() => setCurrentJobId(null)} 
+      />
+      
+      {/* AI Help Widget */}
+      <AIChatWidget
+        isOpen={showAIHelp}
+        onToggle={() => setShowAIHelp(!showAIHelp)}
+        initialMessage={aiHelpMessage}
       />
     </div>
   );

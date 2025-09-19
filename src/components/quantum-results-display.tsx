@@ -20,8 +20,11 @@ import {
   RefreshCw,
   Target,
   Cpu,
-  Database
+  Database,
+  Brain,
+  Sparkles
 } from "lucide-react";
+import AIResultAnalyzer from "./ai-result-analyzer";
 
 interface QuantumResult {
   jobId: string;
@@ -50,6 +53,7 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
   const [result, setResult] = useState<QuantumResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   useEffect(() => {
     if (jobId) {
@@ -370,6 +374,13 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
 
                       {/* Action Buttons */}
                       <div className="flex flex-wrap gap-4">
+                        <Button 
+                          onClick={() => setShowAIAnalysis(true)}
+                          className="quantum-button flex-1 min-w-[200px]"
+                        >
+                          <Brain className="mr-2 h-5 w-5" />
+                          AI Analysis
+                        </Button>
                         <Button onClick={downloadResults} className="quantum-button flex-1 min-w-[200px]">
                           <Download className="mr-2 h-5 w-5" />
                           Download Results
@@ -385,6 +396,22 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                           Continue Working
                         </Button>
                       </div>
+
+                      {/* AI Result Analyzer */}
+                      <AnimatePresence>
+                        {showAIAnalysis && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                          >
+                            <AIResultAnalyzer 
+                              results={result.results}
+                              onClose={() => setShowAIAnalysis(false)}
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   )}
 
