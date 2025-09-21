@@ -11,8 +11,6 @@ import PerformanceOptimizer from "@/components/performance-optimizer";
 import EthereumProviderFix from "@/components/ethereum-provider-fix";
 import AIChatWidget from "@/components/ai-chat-widget";
 
-import { useState } from "react";
-
 const inter = Inter({ 
   subsets: ["latin"],
   variable: '--font-inter',
@@ -38,8 +36,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [showAIWidget, setShowAIWidget] = useState(false);
-
   const [showAIWidget, setShowAIWidget] = useState(false);
 
   return (
