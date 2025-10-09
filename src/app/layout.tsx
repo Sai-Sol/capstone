@@ -9,7 +9,6 @@ import RealTimeNotifications from "@/components/real-time-notifications";
 import EnhancedErrorBoundary from "@/components/enhanced-error-boundary";
 import PerformanceOptimizer from "@/components/performance-optimizer";
 import EthereumProviderFix from "@/components/ethereum-provider-fix";
-import AIChatWidget from "@/components/ai-chat-widget";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -36,8 +35,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [showAIWidget, setShowAIWidget] = useState(false);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-body`}>
@@ -53,10 +50,6 @@ export default function RootLayout({
                 <EthereumProviderFix />
                 <PerformanceOptimizer />
                 {children}
-                <AIChatWidget 
-                  isOpen={showAIWidget} 
-                  onToggle={() => setShowAIWidget(!showAIWidget)} 
-                />
                 <Toaster />
                 <RealTimeNotifications />
               </EnhancedErrorBoundary>

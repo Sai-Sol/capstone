@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import AIQuantumExplainer from "@/components/ai-quantum-explainer";
 
 interface ExecutionInsight {
   algorithmName: string;
@@ -76,7 +75,6 @@ export default function InsightsPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
-  const [aiAnalysis, setAIAnalysis] = useState<string>("");
 
   useEffect(() => {
     fetchExecutionInsights();
@@ -84,15 +82,12 @@ export default function InsightsPage() {
 
   const fetchExecutionInsights = async () => {
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(`/api/execution-insights?timeRange=${selectedTimeRange}`);
       const data = await response.json();
       setInsights(data);
-      
-      // Generate AI analysis
-      generateAIAnalysis(data);
-      
+
     } catch (error) {
       console.error('Failed to fetch insights:', error);
       toast({
@@ -102,29 +97,6 @@ export default function InsightsPage() {
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const generateAIAnalysis = async (data: any) => {
-    try {
-      const response = await fetch('/api/ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: 'Analyze my quantum computing performance and provide insights',
-          context: { 
-            insights: data,
-            userLevel: user?.role === 'admin' ? 'advanced' : 'intermediate'
-          }
-        })
-      });
-
-      if (response.ok) {
-        const aiResponse = await response.json();
-        setAIAnalysis(aiResponse.answer);
-      }
-    } catch (error) {
-      console.error('AI analysis failed:', error);
     }
   };
 
@@ -145,10 +117,10 @@ export default function InsightsPage() {
         className="text-center"
       >
         <h1 className="text-4xl font-bold font-headline bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-          AI-Powered Quantum Insights
+          Quantum Performance Insights
         </h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          SpikingBrain analyzes your quantum experiments to provide personalized insights, performance optimization, and learning recommendations
+          Analyze your quantum experiments to track performance, optimization, and learning progress
         </p>
       </motion.div>
 
@@ -169,7 +141,7 @@ export default function InsightsPage() {
       </div>
 
       <Tabs defaultValue="performance" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-muted/30 h-12">
+        <TabsList className="grid w-full grid-cols-2 bg-muted/30 h-12">
           <TabsTrigger value="performance" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Performance
@@ -177,10 +149,6 @@ export default function InsightsPage() {
           <TabsTrigger value="learning" className="flex items-center gap-2">
             <BookOpen className="h-4 w-4" />
             Learning
-          </TabsTrigger>
-          <TabsTrigger value="concepts" className="flex items-center gap-2">
-            <Atom className="h-4 w-4" />
-            Concepts
           </TabsTrigger>
         </TabsList>
 
@@ -201,25 +169,6 @@ export default function InsightsPage() {
             </div>
           ) : insights ? (
             <div className="space-y-8">
-              {/* AI Analysis Summary */}
-              {aiAnalysis && (
-                <Card className="quantum-card border-primary/30">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Brain className="h-6 w-6 text-primary" />
-                      SpikingBrain Performance Analysis
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-primary/5 to-purple-500/5 border border-primary/20">
-                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                        {aiAnalysis}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Performance Metrics Grid */}
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {insights.metrics.map((metric, index) => (
@@ -283,36 +232,25 @@ export default function InsightsPage() {
                         }>
                           {metric.performance.complexity} Complexity
                         </Badge>
-
-                        {/* AI Insight Button */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                          onClick={() => getAIHelp(`Explain ${metric.algorithmName} performance and optimization tips`)}
-                        >
-                          <Brain className="h-3 w-3 mr-2" />
-                          AI Insights
-                        </Button>
                       </CardContent>
                     </Card>
                   </motion.div>
                 ))}
               </div>
 
-              {/* AI Recommendations */}
+              {/* Performance Recommendations */}
               <Card className="quantum-card border-green-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-green-400">
                     <Lightbulb className="h-6 w-6" />
-                    SpikingBrain Recommendations
+                    Performance Recommendations
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Alert className="border-green-500/20 bg-green-500/5">
                     <Sparkles className="h-4 w-4" />
                     <AlertDescription>
-                      <div className="font-semibold text-green-400 mb-2">AI Recommendation</div>
+                      <div className="font-semibold text-green-400 mb-2">Recommendation</div>
                       <div className="text-green-200/90">{insights.insights.recommendation}</div>
                     </AlertDescription>
                   </Alert>
@@ -357,15 +295,15 @@ export default function InsightsPage() {
 
         <TabsContent value="learning" className="mt-6">
           <div className="space-y-6">
-            {/* AI Learning Assistant */}
+            {/* Learning Assistant */}
             <Card className="quantum-card border-primary/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Brain className="h-6 w-6 text-primary" />
-                  Personalized Learning Path
+                  Learning Path
                 </CardTitle>
                 <CardDescription>
-                  SpikingBrain creates a custom learning journey based on your progress
+                  Continue your quantum computing journey based on your progress
                 </CardDescription>
               </CardHeader>
               
@@ -413,20 +351,9 @@ export default function InsightsPage() {
                     </motion.div>
                   ))}
                 </div>
-
-                <Button className="w-full quantum-button" asChild>
-                  <a href="/dashboard/ai">
-                    <Brain className="h-4 w-4 mr-2" />
-                    Get Personalized AI Guidance
-                  </a>
-                </Button>
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="concepts" className="mt-6">
-          <AIQuantumExplainer />
         </TabsContent>
       </Tabs>
     </div>

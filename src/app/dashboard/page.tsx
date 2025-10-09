@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminDashboard from "@/components/admin-dashboard";
-import AIEnhancedDashboard from "@/components/ai-enhanced-dashboard";
 import { Atom, Cpu, Zap, Shield, TrendingUp, Activity, Globe, Users, Briefcase, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWallet } from "@/hooks/use-wallet";
@@ -156,15 +155,6 @@ export default function DashboardHomePage() {
           <AdminDashboard totalJobs={totalJobs} />
         </motion.div>
       )}
-
-      {/* AI-Enhanced Dashboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.25 }}
-      >
-        <AIEnhancedDashboard />
-      </motion.div>
 
       {/* System Metrics */}
       <motion.div
