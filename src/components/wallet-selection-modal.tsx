@@ -42,9 +42,6 @@ export default function WalletSelectionModal({
   selectedWallet
 }: WalletSelectionModalProps) {
   const { toast } = useToast();
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [pendingWallet, setPendingWallet] = useState<WalletProvider | null>(null);
-  
   const { installed, notInstalled } = detectWallets();
 
   const handleWalletClick = async (wallet: WalletProvider) => {
@@ -64,28 +61,13 @@ export default function WalletSelectionModal({
       return;
     }
 
-    setPendingWallet(wallet);
-    setShowConfirmation(true);
-  };
-
-  const confirmConnection = async () => {
-    if (!pendingWallet) return;
-
+    // Directly connect without confirmation modal
     try {
-      await onWalletSelect(pendingWallet);
-      setShowConfirmation(false);
-      setPendingWallet(null);
+      await onWalletSelect(wallet);
       onClose();
     } catch (error: any) {
       console.error('Wallet connection failed:', error);
-      setShowConfirmation(false);
-      setPendingWallet(null);
     }
-  };
-
-  const cancelConnection = () => {
-    setShowConfirmation(false);
-    setPendingWallet(null);
   };
 
   return (
@@ -171,11 +153,11 @@ export default function WalletSelectionModal({
                             {isConnecting && selectedWallet === wallet.id ? (
                               <div className="flex items-center gap-2">
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
-                                <span className="text-sm text-primary">Connecting...</span>
+                                <span className="text-sm text-primary">Linking...</span>
                               </div>
                             ) : (
                               <Button variant="outline" size="sm">
-                                Connect
+                                Link Now
                               </Button>
                             )}
                           </div>
@@ -262,100 +244,6 @@ export default function WalletSelectionModal({
           </div>
         </div>
 
-        {/* Wallet Connection Confirmation Modal */}
-        <AnimatePresence>
-          {showConfirmation && pendingWallet && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="w-full max-w-md"
-              >
-                <Card className="quantum-card shadow-2xl">
-                  <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 p-4 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-2xl w-fit">
-                      <div className="text-4xl">{pendingWallet.icon}</div>
-                    </div>
-                    <CardTitle className="text-xl font-headline">
-                      Connect {pendingWallet.name}?
-                    </CardTitle>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/5 to-green-600/10 border border-green-500/20">
-                      <h4 className="font-semibold text-green-200 mb-2 flex items-center gap-2">
-                        <Zap className="h-4 w-4" />
-                        🔗 Connection Permissions
-                      </h4>
-                      <div className="space-y-2 text-sm text-green-200/80">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span>View your wallet address</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span>Check your MegaETH token balance</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span>Request transaction signatures</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-3 w-3 text-green-400" />
-                          <span>Use MegaETH tokens for quantum computing</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Shield className="h-4 w-4 text-blue-400" />
-                        <span className="text-sm font-medium text-blue-200">🔒 Privacy & Security</span>
-                      </div>
-                      <p className="text-xs text-blue-200/80">
-                        QuantumChain will never access your private keys or move MegaETH tokens without your explicit approval.
-                      </p>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <Button 
-                        variant="outline" 
-                        onClick={cancelConnection}
-                        className="flex-1"
-                        disabled={isConnecting}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        onClick={confirmConnection}
-                        className="flex-1 quantum-button"
-                        disabled={isConnecting}
-                      >
-                        {isConnecting ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                            Connecting...
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Confirm Connection
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );
