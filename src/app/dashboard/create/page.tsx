@@ -80,14 +80,26 @@ const quantumProviders = [
   },
 ];
 
-const presetAlgorithms = [
+interface PresetAlgorithm {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  qubits: number;
+  icon: string;
+  explanation: string;
+  qasm: string;
+}
+
+const presetAlgorithms: PresetAlgorithm[] = [
   {
     id: "bell-state",
     name: "Bell State Creation",
-    description: "Create quantum entanglement between two qubits",
+    description: "Create quantum entanglement between two qubits - the foundation of quantum computing!",
     difficulty: "Beginner",
     qubits: 2,
     icon: "🔗",
+    explanation: "This creates 'spooky action at a distance' - measuring one qubit instantly affects the other!",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[2];
@@ -99,10 +111,11 @@ measure q -> c;`
   {
     id: "grover-search",
     name: "Grover's Search",
-    description: "Quantum database search algorithm",
+    description: "Quantum database search algorithm - find items quadratically faster!",
     difficulty: "Intermediate",
     qubits: 2,
     icon: "🔍",
+    explanation: "Search unsorted databases much faster than classical computers using quantum amplification.",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[2];
@@ -117,10 +130,11 @@ measure q -> c;`
   {
     id: "superposition",
     name: "Quantum Superposition",
-    description: "Put qubits in multiple states simultaneously",
+    description: "Put qubits in multiple states simultaneously - quantum parallel computing!",
     difficulty: "Beginner",
     qubits: 3,
     icon: "🌊",
+    explanation: "Each qubit exists in both states at once, creating exponential computing power.",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[3];
@@ -129,6 +143,121 @@ h q[0];
 h q[1];
 h q[2];
 measure q -> c;`
+  },
+  {
+    id: "quantum-teleportation",
+    name: "Quantum Teleportation",
+    description: "Transfer quantum information using entanglement - like Star Trek!",
+    difficulty: "Advanced",
+    qubits: 3,
+    icon: "📡",
+    explanation: "Recreate the famous quantum teleportation protocol to transmit quantum states.",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+x q[0];
+h q[1];
+cx q[1],q[2];
+cx q[0],q[1];
+h q[0];
+measure q[0] -> c[0];
+measure q[1] -> c[1];
+if(c[1]==1) x q[2];
+if(c[0]==1) z q[2];
+measure q[2] -> c[2];`
+  },
+  {
+    id: "quantum-fourier",
+    name: "Quantum Fourier Transform",
+    description: "Quantum signal processing - essential for Shor's algorithm!",
+    difficulty: "Advanced",
+    qubits: 3,
+    icon: "🎵",
+    explanation: "The quantum equivalent of signal processing used in factoring and pattern detection.",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+x q[0];
+h q[2];
+cu1(pi/2) q[1],q[2];
+cu1(pi/4) q[0],q[2];
+h q[1];
+cu1(pi/2) q[0],q[1];
+h q[0];
+swap q[0],q[2];
+measure q -> c;`
+  },
+  {
+    id: "random-number",
+    name: "Quantum Random Generator",
+    description: "Generate truly random numbers using quantum mechanics!",
+    difficulty: "Beginner",
+    qubits: 4,
+    icon: "🎲",
+    explanation: "Unlike computer randomness, these numbers are truly unpredictable from the universe itself.",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[4];
+creg c[4];
+h q[0];
+h q[1];
+h q[2];
+h q[3];
+measure q -> c;`
+  },
+  {
+    id: "deutsch-jozsa",
+    name: "Deutsch-Jozsa Algorithm",
+    description: "Determine if a function is constant or balanced in one query!",
+    difficulty: "Intermediate",
+    qubits: 3,
+    icon: "🎯",
+    explanation: "A quantum algorithm that solves a problem exponentially faster than classical computers.",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[2];
+x q[2];
+h q[0];
+h q[1];
+h q[2];
+cx q[0],q[2];
+cx q[1],q[2];
+h q[0];
+h q[1];
+measure q[0] -> c[0];
+measure q[1] -> c[1];`
+  },
+  {
+    id: "quantum-phase",
+    name: "Quantum Phase Estimation",
+    description: "Estimate eigenvalues - core of many quantum algorithms!",
+    difficulty: "Advanced",
+    qubits: 4,
+    icon: "📐",
+    explanation: "Foundation for quantum chemistry and optimization algorithms.",
+    qasm: `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[4];
+creg c[3];
+h q[0];
+h q[1];
+h q[2];
+x q[3];
+cp(pi/4) q[0],q[3];
+cp(pi/2) q[1],q[3];
+cp(pi) q[2],q[3];
+swap q[0],q[2];
+h q[2];
+cp(-pi/2) q[1],q[2];
+h q[1];
+cp(-pi/4) q[0],q[1];
+h q[0];
+measure q[0] -> c[0];
+measure q[1] -> c[1];
+measure q[2] -> c[2];`
   }
 ];
 
@@ -248,7 +377,7 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-10 p-8 max-w-7xl mx-auto">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -270,7 +399,7 @@ export default function CreatePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
       >
-        <Card className="quantum-card shadow-2xl max-w-4xl mx-auto">
+        <Card className="quantum-card shadow-2xl">
           <CardHeader className="bg-gradient-to-r from-primary/5 to-purple-500/5">
             <CardTitle className="text-2xl flex items-center gap-3">
               <Rocket className="h-6 w-6 text-primary" />
@@ -366,12 +495,17 @@ export default function CreatePage() {
                     </TabsList>
                     
                     <TabsContent value="preset" className="mt-6">
-                      <div className="space-y-4">
-                        <p className="text-center text-muted-foreground">
-                          Choose from ready-to-use quantum algorithms
-                        </p>
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <p className="text-base text-muted-foreground mb-2">
+                            Choose from ready-to-use quantum algorithms
+                          </p>
+                          <p className="text-sm text-primary/70">
+                            Perfect for learning quantum computing or testing quantum hardware
+                          </p>
+                        </div>
                         
-                        <div className="grid gap-4 md:grid-cols-3">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                           {presetAlgorithms.map((preset) => (
                             <motion.div
                               key={preset.id}
@@ -379,28 +513,35 @@ export default function CreatePage() {
                               whileTap={{ scale: 0.98 }}
                             >
                               <Card
-                                className={`cursor-pointer transition-all duration-300 ${
-                                  selectedPreset === preset.id 
-                                    ? 'border-primary bg-primary/10' 
+                                className={`cursor-pointer transition-all duration-300 h-full ${
+                                  selectedPreset === preset.id
+                                    ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                                     : 'border-border hover:border-primary/50'
                                 }`}
                                 onClick={() => handlePresetSelect(preset.id)}
                               >
-                                <CardContent className="p-4 text-center">
-                                  <div className="text-3xl mb-2">{preset.icon}</div>
-                                  <h4 className="font-semibold text-foreground mb-1">{preset.name}</h4>
-                                  <p className="text-xs text-muted-foreground mb-3">{preset.description}</p>
-                                  <div className="flex justify-center gap-2">
-                                    <Badge variant="outline" className={
-                                      preset.difficulty === 'Beginner' ? 'text-green-400 border-green-400/50' :
-                                      preset.difficulty === 'Intermediate' ? 'text-yellow-400 border-yellow-400/50' :
-                                      'text-red-400 border-red-400/50'
-                                    }>
-                                      {preset.difficulty}
-                                    </Badge>
-                                    <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                                      {preset.qubits} qubits
-                                    </Badge>
+                                <CardContent className="p-5 text-center h-full flex flex-col">
+                                  <div className="text-4xl mb-3">{preset.icon}</div>
+                                  <h4 className="font-semibold text-foreground mb-2 text-base">{preset.name}</h4>
+                                  <p className="text-xs text-muted-foreground mb-4 flex-grow">{preset.description}</p>
+                                  <div className="space-y-2">
+                                    <div className="flex justify-center gap-2">
+                                      <Badge variant="outline" className={
+                                        preset.difficulty === 'Beginner' ? 'text-green-400 border-green-400/50' :
+                                        preset.difficulty === 'Intermediate' ? 'text-yellow-400 border-yellow-400/50' :
+                                        'text-red-400 border-red-400/50'
+                                      }>
+                                        {preset.difficulty}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+                                        {preset.qubits} qubits
+                                      </Badge>
+                                    </div>
+                                    {preset.explanation && (
+                                      <p className="text-xs text-muted-foreground/80 italic">
+                                        {preset.explanation}
+                                      </p>
+                                    )}
                                   </div>
                                 </CardContent>
                               </Card>
@@ -409,23 +550,32 @@ export default function CreatePage() {
                         </div>
                         
                         {selectedPreset && (
-                          <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Generated Quantum Circuit</FormLabel>
-                                <FormControl>
-                                  <Textarea 
-                                    className="quantum-input min-h-[120px] font-mono text-sm bg-muted/20" 
-                                    readOnly
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <FormField
+                              control={form.control}
+                              name="description"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-base font-semibold text-foreground">Generated Quantum Circuit</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      className="quantum-input min-h-[150px] font-mono text-sm bg-muted/20 resize-none"
+                                      readOnly
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <div className="text-xs text-green-400 mt-2">
+                                    Ready to execute on {selectedJobType}!
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </motion.div>
                         )}
                       </div>
                     </TabsContent>

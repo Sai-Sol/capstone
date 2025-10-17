@@ -116,15 +116,18 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       const browserProvider = new BrowserProvider(walletEthereum);
-      
+
       // Validate and switch to MegaETH network
       const isOnMegaETH = await validateMegaETHConnection(browserProvider);
       if (!isOnMegaETH) {
         try {
           await switchToMegaETH(walletEthereum);
         } catch (networkError: any) {
-          if (networkError.code === 4902) {
+          if (networkError.code === 4902 || networkError.code === -32603) {
+            // Network not added yet, add it
             await addMegaETHNetwork(walletEthereum);
+            // After adding, switch to it
+            await switchToMegaETH(walletEthereum);
           } else {
             throw new Error(`Please switch to MegaETH network in ${walletProvider.name}.`);
           }
@@ -193,11 +196,17 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         
         if (accounts && accounts.length > 0) {
           const browserProvider = new BrowserProvider(walletEthereum);
-          
+
           // Ensure we're on MegaETH network
           const isOnMegaETH = await validateMegaETHConnection(browserProvider);
           if (!isOnMegaETH) {
-            await switchToMegaETH(walletEthereum);
+            try {
+              await switchToMegaETH(walletEthereum);
+            } catch (error) {
+              // If network doesn't exist, add it first
+              await addMegaETHNetwork(walletEthereum);
+              await switchToMegaETH(walletEthereum);
+            }
           }
           
           const currentSigner = await browserProvider.getSigner();

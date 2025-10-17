@@ -79,10 +79,10 @@ export const detectWallets = (): { installed: WalletProvider[]; notInstalled: Wa
 // MegaETH network configuration for all wallets
 export const MEGAETH_NETWORK_CONFIG = {
   chainId: '0x2328', // 9000 in hex
-  chainName: 'MegaETH Network',
+  chainName: 'MegaETH Testnet',
   nativeCurrency: {
-    name: 'MegaETH',
-    symbol: 'MegaETH',
+    name: 'Ethereum',
+    symbol: 'ETH',
     decimals: 18,
   },
   rpcUrls: ['https://testnet.megaeth.io'],
@@ -120,25 +120,22 @@ const safeGetEthereumProvider = () => {
 // Add MegaETH network to wallet
 export const addMegaETHNetwork = async (provider: any): Promise<void> => {
   try {
-    const safeProvider = safeGetEthereumProvider();
-    if (!safeProvider) {
+    const ethereumProvider = provider || safeGetEthereumProvider();
+    if (!ethereumProvider) {
       throw new Error('No ethereum provider available');
     }
 
-    await safeProvider.request({
+    await ethereumProvider.request({
       method: 'wallet_addEthereumChain',
       params: [MEGAETH_NETWORK_CONFIG],
     });
+
+    console.log('MegaETH network added successfully');
   } catch (error: any) {
-    if (error.code === 4902) {
-      // Chain not added, try to add it
-      const safeProvider = safeGetEthereumProvider();
-      if (safeProvider) {
-        await safeProvider.request({
-          method: 'wallet_addEthereumChain',
-          params: [MEGAETH_NETWORK_CONFIG],
-        });
-      }
+    if (error.code === 4001) {
+      throw new Error('User rejected adding MegaETH network');
+    } else if (error.code === -32602) {
+      console.log('MegaETH network already added');
     } else {
       throw error;
     }
@@ -148,19 +145,29 @@ export const addMegaETHNetwork = async (provider: any): Promise<void> => {
 // Switch to MegaETH network
 export const switchToMegaETH = async (provider: any): Promise<void> => {
   try {
-    const safeProvider = safeGetEthereumProvider();
-    if (!safeProvider) {
+    const ethereumProvider = provider || safeGetEthereumProvider();
+    if (!ethereumProvider) {
       throw new Error('No ethereum provider available');
     }
 
-    await safeProvider.request({
+    await ethereumProvider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: MEGAETH_NETWORK_CONFIG.chainId }],
     });
+
+    console.log('Switched to MegaETH network successfully');
   } catch (error: any) {
-    if (error.code === 4902) {
+    if (error.code === 4902 || error.code === -32603) {
       // Chain not added, add it first
+      console.log('MegaETH network not found, adding it...');
       await addMegaETHNetwork(provider);
+      // Try switching again after adding
+      await ethereumProvider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: MEGAETH_NETWORK_CONFIG.chainId }],
+      });
+    } else if (error.code === 4001) {
+      throw new Error('User rejected switching to MegaETH network');
     } else {
       throw error;
     }
