@@ -42,12 +42,13 @@ export default function WalletConnectButton() {
   if (!isConnected) {
     return (
       <>
-        <Button 
-          onClick={() => setShowWalletModal(true)} 
+        <Button
+          onClick={() => setShowWalletModal(true)}
           className="quantum-button"
+          disabled={isConnecting}
         >
           <Wallet className="mr-2 h-4 w-4" />
-          Connect Wallet
+          {isConnecting ? 'Linking...' : 'Connect Wallet'}
         </Button>
         <WalletSelectionModal
           isOpen={showWalletModal}
@@ -63,13 +64,15 @@ export default function WalletConnectButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="bg-background/50 backdrop-blur-sm border-primary/20 shadow-lg">
+        <Button variant="outline" className="bg-background/50 backdrop-blur-sm border-primary/20 shadow-lg hover:bg-background/70 transition-all">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-400 quantum-pulse" />
-            <Wallet className="h-4 w-4" />
-            <span className="font-mono text-sm">
+            <span className="font-mono text-sm font-medium">
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </span>
+            <Badge variant="outline" className="ml-1 bg-green-500/10 text-green-400 border-green-400/30 font-mono text-xs">
+              {balance ? parseFloat(balance).toFixed(3) : '0.000'}
+            </Badge>
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -95,8 +98,11 @@ export default function WalletConnectButton() {
             </div>
             {balance && (
               <div>
-                <p className="text-xs text-muted-foreground">Balance</p>
-                <p className="font-mono text-sm font-semibold text-green-400">{parseFloat(balance).toFixed(4)} MegaETH</p>
+                <p className="text-xs text-muted-foreground">MegaETH Balance</p>
+                <p className="font-mono text-lg font-bold text-green-400">{parseFloat(balance).toFixed(6)} ETH</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  ≈ ${(parseFloat(balance) * 3400).toFixed(2)} USD
+                </p>
               </div>
             )}
           </div>
