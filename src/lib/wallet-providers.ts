@@ -78,15 +78,15 @@ export const detectWallets = (): { installed: WalletProvider[]; notInstalled: Wa
 
 // MegaETH network configuration for all wallets
 export const MEGAETH_NETWORK_CONFIG = {
-  chainId: '0x2328', // 9000 in hex
+  chainId: '0x18C6', // 6342 in hex
   chainName: 'MegaETH Testnet',
   nativeCurrency: {
-    name: 'Ethereum',
+    name: 'MegaETH',
     symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: ['https://testnet.megaeth.io'],
-  blockExplorerUrls: ['https://www.megaexplorer.xyz/'],
+  rpcUrls: ['https://rpc.megaeth.network'],
+  blockExplorerUrls: ['https://explorer.megaeth.network'],
 };
 
 // Enhanced ethereum provider access with conflict resolution
@@ -178,7 +178,7 @@ export const switchToMegaETH = async (provider: any): Promise<void> => {
 export const validateMegaETHConnection = async (provider: BrowserProvider): Promise<boolean> => {
   try {
     const network = await provider.getNetwork();
-    return Number(network.chainId) === 9000;
+    return Number(network.chainId) === 6342;
   } catch (error) {
     return false;
   }
