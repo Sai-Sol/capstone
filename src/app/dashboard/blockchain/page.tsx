@@ -256,11 +256,11 @@ export default function BlockchainPage() {
                 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="text-center">
-                    <div className="font-bold text-primary">Ethereum</div>
+                    <div className="font-bold text-primary">MegaETH</div>
                     <div className="text-muted-foreground">Network</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-bold text-green-400">12s</div>
+                    <div className="font-bold text-green-400">2s</div>
                     <div className="text-muted-foreground">Block Time</div>
                   </div>
                 </div>
@@ -658,7 +658,7 @@ export default function BlockchainPage() {
                     <div className="text-sm text-blue-200">Current TPS</div>
                   </div>
                   <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
-                    <div className="text-2xl font-bold text-green-400">12s</div>
+                    <div className="text-2xl font-bold text-green-400">2s</div>
                     <div className="text-sm text-green-200">Avg Block Time</div>
                   </div>
                   <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20 text-center">

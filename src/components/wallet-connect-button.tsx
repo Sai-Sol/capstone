@@ -16,12 +16,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
 import { MEGAETH_TESTNET } from "@/lib/constants";
 import WalletSelectionModal from "@/components/wallet-selection-modal";
-import { WalletProviderType } from "@/lib/wallet-providers";
+import { WalletProvider as WalletProviderType } from "@/lib/wallet-providers";
 
 export default function WalletConnectButton() {
-  const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
+  const { isConnected, address, balance, connectWallet, disconnectWallet, isConnecting } = useWallet();
   const { toast } = useToast();
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 
   const copyAddress = () => {
     if (address) {
@@ -33,9 +34,10 @@ export default function WalletConnectButton() {
     }
   };
 
-  const handleWalletSelect = (walletProvider: WalletProviderType) => {
-    connectWallet(walletProvider);
-    setShowWalletModal(false);
+  const handleWalletSelect = async (walletProvider: WalletProviderType) => {
+    setSelectedWallet(walletProvider.id);
+    await connectWallet(walletProvider);
+    setSelectedWallet(null);
   };
   if (!isConnected) {
     return (
@@ -50,7 +52,9 @@ export default function WalletConnectButton() {
         <WalletSelectionModal
           isOpen={showWalletModal}
           onClose={() => setShowWalletModal(false)}
-          onSelectWallet={handleWalletSelect}
+          onWalletSelect={handleWalletSelect}
+          isConnecting={isConnecting}
+          selectedWallet={selectedWallet}
         />
       </>
     );
@@ -92,7 +96,7 @@ export default function WalletConnectButton() {
             {balance && (
               <div>
                 <p className="text-xs text-muted-foreground">Balance</p>
-                <p className="font-mono text-sm font-semibold text-green-400">{parseFloat(balance).toFixed(4)} ETH</p>
+                <p className="font-mono text-sm font-semibold text-green-400">{parseFloat(balance).toFixed(4)} MegaETH</p>
               </div>
             )}
           </div>
