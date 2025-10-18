@@ -15,10 +15,13 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
 import { MEGAETH_TESTNET } from "@/lib/constants";
+import WalletSelectionModal from "@/components/wallet-selection-modal";
+import { WalletProviderType } from "@/lib/wallet-providers";
 
 export default function WalletConnectButton() {
   const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
   const { toast } = useToast();
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const copyAddress = () => {
     if (address) {
@@ -30,15 +33,26 @@ export default function WalletConnectButton() {
     }
   };
 
+  const handleWalletSelect = (walletProvider: WalletProviderType) => {
+    connectWallet(walletProvider);
+    setShowWalletModal(false);
+  };
   if (!isConnected) {
     return (
-      <Button 
-        onClick={connectWallet} 
-        className="quantum-button"
-      >
-        <Wallet className="mr-2 h-4 w-4" />
-        Connect Wallet
-      </Button>
+      <>
+        <Button 
+          onClick={() => setShowWalletModal(true)} 
+          className="quantum-button"
+        >
+          <Wallet className="mr-2 h-4 w-4" />
+          Connect Wallet
+        </Button>
+        <WalletSelectionModal
+          isOpen={showWalletModal}
+          onClose={() => setShowWalletModal(false)}
+          onSelectWallet={handleWalletSelect}
+        />
+      </>
     );
   }
 
