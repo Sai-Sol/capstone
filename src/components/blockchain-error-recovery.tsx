@@ -202,7 +202,7 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
             ) : (
               <RefreshCw className="h-5 w-5 text-yellow-400 animate-spin" />
             )}
-            <span className="font-medium">MegaETH Network Status</span>
+            <span className="font-medium">Base Network Status</span>
           </div>
           <Badge variant="outline" className={
             networkStatus === 'online' ? "text-green-400 border-green-400/50" :
