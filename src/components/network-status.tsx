@@ -42,7 +42,7 @@ export default function NetworkStatus() {
       setStatus(data);
       setLastUpdated(Date.now());
     } catch (error) {
-      console.error('Failed to fetch MegaETH status:', error);
+      console.error('Failed to fetch Base status:', error);
       setStatus({
         isOnline: false,
         blockNumber: 0,
@@ -69,7 +69,7 @@ export default function NetworkStatus() {
         <CardContent className="p-6">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-            <span>Loading MegaETH status...</span>
+            <span>Loading Base status...</span>
           </div>
         </CardContent>
       </Card>
@@ -82,14 +82,14 @@ export default function NetworkStatus() {
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Network className="h-5 w-5 text-primary" />
-            MegaETH Network Status
+            Base Network Status
           </div>
           <Button variant="ghost" size="sm" onClick={fetchNetworkStatus} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Network Health */}
         <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
@@ -121,7 +121,7 @@ export default function NetworkStatus() {
             </div>
             <p className="text-lg font-bold text-blue-100">{status.blockNumber.toLocaleString()}</p>
           </div>
-          
+
           <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
             <div className="flex items-center gap-2 mb-1">
               <Zap className="h-4 w-4 text-green-400" />
@@ -129,7 +129,7 @@ export default function NetworkStatus() {
             </div>
             <p className="text-lg font-bold text-green-100">{status.gasPrice}</p>
           </div>
-          
+
           <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="h-4 w-4 text-purple-400" />
@@ -137,7 +137,7 @@ export default function NetworkStatus() {
             </div>
             <p className="text-lg font-bold text-purple-100">{status.blockTime}s</p>
           </div>
-          
+
           <div className="p-3 rounded-lg bg-pink-500/10 border border-pink-500/20">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="h-4 w-4 text-pink-400" />
@@ -151,7 +151,7 @@ export default function NetworkStatus() {
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Chain ID:</span>
-            <span className="font-mono font-medium">{MEGAETH_TESTNET_CONFIG.chainId}</span>
+            <span className="font-mono font-medium">{baseConfig.chainId}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Network Load:</span>
@@ -172,13 +172,7 @@ export default function NetworkStatus() {
         {/* Quick Actions */}
         <div className="flex gap-2">
           <Button variant="outline" size="sm" asChild className="flex-1">
-            <a href={MEGAETH_TESTNET_CONFIG.tools.faucetUrl} target="_blank" rel="noopener noreferrer">
-              <Zap className="mr-2 h-4 w-4" />
-              Get MegaETH Tokens
-            </a>
-          </Button>
-          <Button variant="outline" size="sm" asChild className="flex-1">
-            <a href={MEGAETH_TESTNET_CONFIG.blockExplorerUrls[0]} target="_blank" rel="noopener noreferrer">
+            <a href={baseConfig.blockExplorerUrls[0]} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
               Explorer
             </a>
@@ -190,7 +184,7 @@ export default function NetworkStatus() {
           <Alert className="border-red-500/20 bg-red-500/5">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-red-200/80">
-              MegaETH network appears to be offline. Please check your connection or try again later.
+              Base network appears to be offline. Please check your connection or try again later.
             </AlertDescription>
           </Alert>
         )}
