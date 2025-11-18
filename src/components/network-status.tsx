@@ -17,7 +17,7 @@ import {
   AlertTriangle,
   ExternalLink
 } from "lucide-react";
-import { MEGAETH_TESTNET_CONFIG } from "@/lib/megaeth-config";
+import { baseConfig } from "@/lib/base-config";
 
 interface NetworkStatus {
   isOnline: boolean;
