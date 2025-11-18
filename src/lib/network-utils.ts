@@ -4,15 +4,15 @@
 import { baseConfig } from './base-config';
 import { BrowserProvider } from 'ethers';
 
-export class MegaETHUtils {
-  
+export class NetworkUtils {
+
   /**
-   * Check if the current network is MegaETH Testnet
+   * Check if the current network is correct
    */
-  static async isConnectedToMegaETH(provider: BrowserProvider): Promise<boolean> {
+  static async isConnectedToCorrectNetwork(provider: BrowserProvider): Promise<boolean> {
     try {
       const network = await provider.getNetwork();
-      return Number(network.chainId) === MEGAETH_TESTNET_CONFIG.chainId;
+      return Number(network.chainId) === baseConfig.chainId;
     } catch (error) {
       console.error('Failed to check network:', error);
       return false;
