@@ -9,65 +9,31 @@ export async function GET(request: NextRequest) {
 
     switch (action) {
       case 'network-status':
-        const networkHealth = await MegaETHUtils.checkNetworkHealth();
+        const networkHealth = await NetworkUtils.checkNetworkHealth();
         return NextResponse.json({
           ...networkHealth,
           config: {
-            chainId: MEGAETH_TESTNET_CONFIG.chainId,
-            rpcUrls: MEGAETH_TESTNET_CONFIG.rpcUrls,
-            blockExplorerUrls: MEGAETH_TESTNET_CONFIG.blockExplorerUrls,
-          },
-          timestamp: Date.now()
-        });
-
-      case 'gas-prices':
-        // Mock gas price data for MegaETH
-        return NextResponse.json({
-          slow: '1.0 gwei',
-          standard: '2.0 gwei',
-          fast: '5.0 gwei',
-          timestamp: Date.now(),
-          blockTime: MEGAETH_TESTNET_CONFIG.performance.blockTime,
-          maxTps: MEGAETH_TESTNET_CONFIG.performance.maxTps
-        });
-
-      case 'faucet-info':
-        return NextResponse.json({
-          faucetUrl: "https://testnet.megaeth.com/#2",
-          dailyLimit: '10 MegaETH tokens',
-          cooldown: '24 hours',
-          requirements: ['Valid Ethereum address', 'Not exceeded daily limit'],
-          redirectAfterLinking: true,
-          timestamp: Date.now()
-        });
-
-      case 'contracts':
-        return NextResponse.json({
-          contracts: MEGAETH_TESTNET_CONFIG.contracts,
-          verified: true,
-          deployedAt: {
-            quantumJobLogger: 'Block #1234567'
+            chainId: baseConfig.chainId,
+            rpcUrls: baseConfig.rpcUrls,
+            blockExplorerUrls: base.blockExplorerUrls,
           },
           timestamp: Date.now()
         });
 
       default:
         return NextResponse.json({
-          network: 'MegaETH Network',
-          chainId: MEGAETH_TESTNET_CONFIG.chainId,
+          network: 'Base Network',
+          chainId: baseConfig.chainId,
           status: 'operational',
-          features: MEGAETH_TESTNET_CONFIG.features,
-          performance: MEGAETH_TESTNET_CONFIG.performance,
-          tokenLinkingUrl: 'https://testnet.megaeth.com/#2',
           timestamp: Date.now()
         });
     }
 
   } catch (error) {
-    console.error('MegaETH API error:', error);
+    console.error('Network API error:', error);
     return NextResponse.json(
-      { 
-        error: 'MegaETH API request failed',
+      {
+        error: 'Network API request failed',
         details: error instanceof Error ? error.message : 'Unknown error',
         timestamp: Date.now()
       },
