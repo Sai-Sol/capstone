@@ -23,9 +23,7 @@ export class NetworkUtils {
    * Get optimized gas settings for MegaETH
    */
   static getOptimizedGasSettings(priority: 'slow' | 'standard' | 'fast' = 'standard') {
-    const gasPrice = MEGAETH_TESTNET_CONFIG.performance.blockTime === 2 
-      ? Math.floor(1000000000 * (priority === 'slow' ? 0.8 : priority === 'fast' ? 1.5 : 1))
-      : 2000000000; // 2 gwei default
+    const gasPrice = 2000000000; // 2 gwei default
 
     return {
       gasPrice,
@@ -35,7 +33,7 @@ export class NetworkUtils {
   }
 
   /**
-   * Format MegaETH transaction for display
+   * Format transaction for display
    */
   static formatTransaction(tx: any) {
     return {
@@ -48,12 +46,12 @@ export class NetworkUtils {
       blockNumber: tx.blockNumber,
       timestamp: tx.timestamp || Date.now(),
       status: tx.status === 1 ? 'success' : 'failed',
-      explorerUrl: `${MEGAETH_TESTNET_CONFIG.blockExplorerUrls[0]}tx/${tx.hash}`
+      explorerUrl: `${baseConfig.blockExplorerUrls[0]}/tx/${tx.hash}`
     };
   }
 
   /**
-   * Get MegaETH network status
+   * Get network status
    */
   static async getNetworkStatus(): Promise<{
     isOnline: boolean;
@@ -62,7 +60,7 @@ export class NetworkUtils {
     networkLoad: string;
   }> {
     try {
-      // In a real implementation, this would call MegaETH status API
+      // In a real implementation, this would call Base status API
       return {
         isOnline: true,
         blockNumber: Math.floor(Date.now() / 2000), // Mock block number based on 2s block time
@@ -80,33 +78,33 @@ export class NetworkUtils {
   }
 
   /**
-   * Validate MegaETH address format
+   * Validate address format
    */
-  static isValidMegaETHAddress(address: string): boolean {
+  static isValidAddress(address: string): boolean {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
   }
 
   /**
-   * Get MegaETH faucet URL for testnet ETH
+   * Get faucet URL for testnet ETH
    */
   static getFaucetUrl(address?: string): string {
-    const baseUrl = MEGAETH_TESTNET_CONFIG.tools.faucetUrl;
+    const baseUrl = 'https://bridge.base.org/deposit';
     return address ? `${baseUrl}?address=${address}` : baseUrl;
   }
 
   /**
-   * Generate MegaETH explorer URLs
+   * Generate explorer URLs
    */
   static getExplorerUrls(hash: string, type: 'tx' | 'address' | 'block' = 'tx') {
-    const baseUrl = MEGAETH_TESTNET_CONFIG.blockExplorerUrls[0];
+    const baseUrl = baseConfig.blockExplorerUrls[0];
     return {
-      primary: `${baseUrl}${type}/${hash}`,
-      backup: `${MEGAETH_TESTNET_CONFIG.blockExplorerUrls[1] || baseUrl}${type}/${hash}`
+      primary: `${baseUrl}/${type}/${hash}`,
+      backup: `${baseConfig.blockExplorerUrls[1] || baseUrl}/${type}/${hash}`
     };
   }
 
   /**
-   * Check MegaETH network health
+   * Check network health
    */
   static async checkNetworkHealth(): Promise<{
     status: 'healthy' | 'degraded' | 'down';
@@ -115,18 +113,18 @@ export class NetworkUtils {
     tps: number;
   }> {
     const startTime = performance.now();
-    
+
     try {
-      // Mock health check - in real implementation, ping MegaETH RPC
+      // Mock health check - in real implementation, ping Base RPC
       await new Promise(resolve => setTimeout(resolve, 50)); // Simulate network call
-      
+
       const latency = performance.now() - startTime;
-      
+
       return {
         status: latency < 100 ? 'healthy' : latency < 500 ? 'degraded' : 'down',
         latency,
-        blockTime: MEGAETH_TESTNET_CONFIG.performance.blockTime,
-        tps: MEGAETH_TESTNET_CONFIG.performance.maxTps
+        blockTime: 2,
+        tps: 15
       };
     } catch (error) {
       return {
@@ -149,14 +147,14 @@ export class NetworkUtils {
     try {
       const feeData = await provider.getFeeData();
       const baseGasPrice = Number(feeData.gasPrice || 0n) / 1e9; // Convert to gwei
-      
+
       return {
         slow: (baseGasPrice * 0.8).toFixed(2),
         standard: baseGasPrice.toFixed(2),
         fast: (baseGasPrice * 1.5).toFixed(2)
       };
     } catch (error) {
-      // Fallback to default MegaETH gas prices
+      // Fallback to default Base gas prices
       return {
         slow: '1.0',
         standard: '2.0',
@@ -167,4 +165,4 @@ export class NetworkUtils {
 }
 
 // Export singleton instance
-export const megaETHUtils = new MegaETHUtils();
+export const networkUtils = new NetworkUtils();
