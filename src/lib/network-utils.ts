@@ -1,7 +1,7 @@
 // MegaETH Testnet Utilities
 // Utility functions for MegaETH-specific operations
 
-import { MEGAETH_TESTNET_CONFIG, MEGAETH_ERRORS } from './megaeth-config';
+import { baseConfig } from './base-config';
 import { BrowserProvider } from 'ethers';
 
 export class MegaETHUtils {
