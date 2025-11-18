@@ -180,8 +180,6 @@ export default function NetworkDiagnostics() {
         return `${duration.toFixed(0)}ms response time`;
       case 'block-sync':
         return 'Blockchain synchronized';
-      case 'contract-access':
-        return 'Contract accessible';
       case 'wallet-integration':
         return 'Wallet properly connected';
       default:
