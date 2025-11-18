@@ -70,7 +70,7 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
 
   const checkNetworkStatus = async () => {
     try {
-      const response = await fetch('/api/megaeth?action=network-status');
+      const response = await fetch('/api/network?action=network-status');
       const data = await response.json();
       setNetworkStatus(data.isOnline ? 'online' : 'offline');
     } catch {
@@ -80,7 +80,7 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
 
   const checkNetworkConnectivity = async () => {
     try {
-      const response = await fetch('https://testnet.megaeth.io', {
+      const response = await fetch(baseConfig.rpcUrls[0], {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -91,7 +91,7 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
         }),
         signal: AbortSignal.timeout(5000)
       });
-      
+
       if (response.ok) {
         setNetworkStatus('online');
         return;
@@ -111,19 +111,6 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
 
   const refreshWalletBalance = async () => {
     await refreshBalance();
-  };
-
-  const verifyContract = async () => {
-    if (!provider) throw new Error('Provider not available');
-    
-    try {
-      const code = await provider.getCode(MEGAETH_TESTNET_CONFIG.contracts.quantumJobLogger);
-      if (code === '0x') {
-        throw new Error('Contract not found');
-      }
-    } catch (error) {
-      throw new Error('Contract verification failed');
-    }
   };
 
   const runRecoveryStep = async (stepId: string) => {
