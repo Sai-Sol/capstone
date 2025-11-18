@@ -131,7 +131,7 @@ export default function NetworkDiagnostics() {
   const runIndividualTest = async (testId: string): Promise<void> => {
     switch (testId) {
       case 'rpc-connectivity':
-        const response = await fetch('https://testnet.megaeth.io', {
+        const response = await fetch(baseConfig.rpcUrls[0], {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -144,35 +144,29 @@ export default function NetworkDiagnostics() {
         });
         if (!response.ok) throw new Error('RPC endpoint unreachable');
         break;
-        
+
       case 'network-latency':
         const latencyStart = performance.now();
         await fetch('/api/health', { signal: AbortSignal.timeout(3000) });
         const latency = performance.now() - latencyStart;
         if (latency > 2000) throw new Error('High latency detected');
         break;
-        
+
       case 'block-sync':
         if (!provider) throw new Error('Provider not available');
         const blockNumber = await provider.getBlockNumber();
         if (blockNumber === 0) throw new Error('Block synchronization failed');
         break;
-        
-      case 'contract-access':
-        if (!provider) throw new Error('Provider not available');
-        const code = await provider.getCode(MEGAETH_TESTNET_CONFIG.contracts.quantumJobLogger);
-        if (code === '0x') throw new Error('Contract not found');
-        break;
-        
+
       case 'wallet-integration':
         if (!isConnected) throw new Error('Wallet not connected');
         if (!provider) throw new Error('Provider not available');
         const network = await provider.getNetwork();
-        if (Number(network.chainId) !== MEGAETH_TESTNET_CONFIG.chainId) {
+        if (Number(network.chainId) !== baseConfig.chainId) {
           throw new Error('Wrong network');
         }
         break;
-        
+
       default:
         throw new Error('Unknown test');
     }
