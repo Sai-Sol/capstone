@@ -321,13 +321,13 @@ export default function NetworkDiagnostics() {
         <div className="pt-4 border-t border-primary/20">
           <div className="grid grid-cols-2 gap-3">
             <Button variant="outline" size="sm" asChild>
-              <a href={MEGAETH_TESTNET_CONFIG.tools.statusUrl} target="_blank" rel="noopener noreferrer">
+              <a href={baseConfig.blockExplorerUrls[0]} target="_blank" rel="noopener noreferrer">
                 <Globe className="mr-2 h-4 w-4" />
                 Network Status
               </a>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <a href={MEGAETH_TESTNET_CONFIG.tools.docsUrl} target="_blank" rel="noopener noreferrer">
+              <a href="https://docs.base.org/" target="_blank" rel="noopener noreferrer">
                 <Database className="mr-2 h-4 w-4" />
                 Documentation
               </a>
