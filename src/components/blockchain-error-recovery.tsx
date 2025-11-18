@@ -47,7 +47,7 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
     const steps = [
       {
         id: 'network-check',
-        label: 'Check MegaETH network connectivity',
+        label: 'Check network connectivity',
         status: 'pending' as const,
         action: checkNetworkConnectivity
       },
@@ -62,15 +62,9 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
         label: 'Refresh wallet balance',
         status: 'pending' as const,
         action: refreshWalletBalance
-      },
-      {
-        id: 'contract-verify',
-        label: 'Verify smart contract accessibility',
-        status: 'pending' as const,
-        action: verifyContract
       }
     ];
-    
+
     setRecoverySteps(steps);
   };
 
