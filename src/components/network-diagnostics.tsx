@@ -44,7 +44,7 @@ export default function NetworkDiagnostics() {
     {
       id: 'rpc-connectivity',
       name: 'RPC Connectivity',
-      description: 'Test connection to MegaETH RPC endpoint',
+      description: 'Test connection to Base RPC endpoint',
       status: 'pending'
     },
     {
@@ -57,12 +57,6 @@ export default function NetworkDiagnostics() {
       id: 'block-sync',
       name: 'Block Synchronization',
       description: 'Verify blockchain synchronization',
-      status: 'pending'
-    },
-    {
-      id: 'contract-access',
-      name: 'Contract Accessibility',
-      description: 'Test smart contract interaction',
       status: 'pending'
     },
     {
