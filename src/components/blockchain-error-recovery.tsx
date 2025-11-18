@@ -255,7 +255,7 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
 
         {/* Recovery Actions */}
         <div className="flex flex-col gap-3">
-          <Button 
+          <Button
             onClick={runFullRecovery}
             disabled={isRecovering}
             className="w-full quantum-button"
@@ -272,21 +272,11 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
               </>
             )}
           </Button>
-          
-          <div className="grid grid-cols-2 gap-3">
+
+          <div className="grid grid-cols-1 gap-3">
             <Button variant="outline" onClick={checkNetworkStatus}>
               <Globe className="mr-2 h-4 w-4" />
               Check Network
-            </Button>
-            <Button variant="outline" asChild>
-              <a 
-                href={MEGAETH_TESTNET_CONFIG.tools.faucetUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Get Testnet ETH
-              </a>
             </Button>
           </div>
         </div>
@@ -298,9 +288,9 @@ export default function BlockchainErrorRecovery({ error, onRecovery }: Blockchai
             <span className="text-sm font-medium text-blue-200">Need Additional Help?</span>
           </div>
           <div className="space-y-1 text-xs text-blue-200/80">
-            <p>• Check the MegaETH network status page</p>
+            <p>• Check the Base network status page</p>
             <p>• Ensure MetaMask is unlocked and connected</p>
-            <p>• Verify you have sufficient testnet ETH for gas fees</p>
+            <p>• Verify you have sufficient ETH for gas fees</p>
             <p>• Try switching to a different RPC endpoint</p>
           </div>
         </div>
