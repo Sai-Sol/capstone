@@ -19,7 +19,7 @@ import {
   Globe,
   Settings
 } from "lucide-react";
-import { MEGAETH_TESTNET_CONFIG } from "@/lib/megaeth-config";
+import { baseConfig } from "@/lib/base-config";
 
 interface BlockchainErrorRecoveryProps {
   error: string;
