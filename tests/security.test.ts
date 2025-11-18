@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { advancedErrorHandler, ErrorCategory, ErrorSeverity } from '@/lib/advanced-error-handler';
 import { performanceMonitor } from '@/lib/performance-monitor';
-import { MEGAETH_TESTNET_CONFIG } from '@/lib/megaeth-config';
-import { MegaETHUtils } from '@/lib/megaeth-utils';
+import { baseConfig } from '@/lib/base-config';
+import { NetworkUtils } from '@/lib/network-utils';
 
 describe('Security Features', () => {
   beforeEach(() => {
