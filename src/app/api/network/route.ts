@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MEGAETH_TESTNET_CONFIG, MEGAETH_ERRORS } from '@/lib/megaeth-config';
-import { MegaETHUtils } from '@/lib/megaeth-utils';
+import { baseConfig } from '@/lib/base-config';
+import { NetworkUtils } from '@/lib/network-utils';
 
 export async function GET(request: NextRequest) {
   try {
