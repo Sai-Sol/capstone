@@ -109,32 +109,32 @@ describe('Security Features', () => {
     });
   });
 
-  describe('MegaETH Security', () => {
-    it('should validate MegaETH network configuration', () => {
-      expect(MEGAETH_TESTNET_CONFIG.chainId).toBe(9000);
-      expect(MEGAETH_TESTNET_CONFIG.rpcUrls).toContain('https://testnet.megaeth.io');
-      expect(MEGAETH_TESTNET_CONFIG.contracts.quantumJobLogger).toBeDefined();
+  describe('Base Security', () => {
+    it('should validate Base network configuration', () => {
+      expect(baseConfig.chainId).toBe(8453);
+      expect(baseConfig.rpcUrls).toContain('https://mainnet.base.org');
+      expect(baseConfig.quantumJobLogger).toBeDefined();
     });
 
     it('should validate Ethereum addresses', () => {
       const validAddress = '0x1234567890123456789012345678901234567890';
       const invalidAddress = '0x123';
-      
-      expect(MegaETHUtils.isValidMegaETHAddress(validAddress)).toBe(true);
-      expect(MegaETHUtils.isValidMegaETHAddress(invalidAddress)).toBe(false);
+
+      expect(NetworkUtils.isValidAddress(validAddress)).toBe(true);
+      expect(NetworkUtils.isValidAddress(invalidAddress)).toBe(false);
     });
 
     it('should generate optimized gas settings', () => {
-      const gasSettings = MegaETHUtils.getOptimizedGasSettings('standard');
-      
+      const gasSettings = NetworkUtils.getOptimizedGasSettings('standard');
+
       expect(gasSettings.gasPrice).toBeGreaterThan(0);
       expect(gasSettings.maxFeePerGas).toBeGreaterThan(gasSettings.gasPrice);
       expect(gasSettings.maxPriorityFeePerGas).toBeGreaterThan(0);
     });
 
     it('should check network health', async () => {
-      const healthStatus = await MegaETHUtils.checkNetworkHealth();
-      
+      const healthStatus = await NetworkUtils.checkNetworkHealth();
+
       expect(healthStatus.status).toBeDefined();
       expect(healthStatus.latency).toBeGreaterThanOrEqual(0);
       expect(healthStatus.blockTime).toBe(2);
