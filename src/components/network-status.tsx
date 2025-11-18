@@ -29,7 +29,7 @@ interface NetworkStatus {
   tps: number;
 }
 
-export default function MegaETHNetworkStatus() {
+export default function NetworkStatus() {
   const [status, setStatus] = useState<NetworkStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
@@ -37,7 +37,7 @@ export default function MegaETHNetworkStatus() {
   const fetchNetworkStatus = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/megaeth?action=network-status');
+      const response = await fetch('/api/network?action=network-status');
       const data = await response.json();
       setStatus(data);
       setLastUpdated(Date.now());
