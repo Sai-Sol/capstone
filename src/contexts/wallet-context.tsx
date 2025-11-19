@@ -156,7 +156,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       } else if (error.code === -32002) {
         setError(`Connection request pending. Please check ${walletProvider?.name || 'your wallet'}.`);
       } else if (error.message.includes('network')) {
-        setError("Please ensure you're connected to Base network and try again.");
+        setError("Please ensure you're connected to MegaETH network and try again.");
       } else {
         setError(error.message || `Failed to connect ${walletProvider?.name || 'wallet'}. Please try again.`);
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useWallet } from "@/hooks/use-wallet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
+import WalletSelectionModal from "@/components/wallet-selection-modal";
+import { type WalletProvider } from "@/lib/wallet-providers";
 
 export default function WalletConnectButton() {
   const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
   const { toast } = useToast();
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const copyAddress = () => {
     if (address) {
@@ -29,15 +32,31 @@ export default function WalletConnectButton() {
     }
   };
 
+  const handleWalletSelect = async (wallet: WalletProvider) => {
+    try {
+      await connectWallet(wallet);
+      setShowWalletModal(false);
+    } catch (error) {
+      console.error("Wallet connection error:", error);
+    }
+  };
+
   if (!isConnected) {
     return (
-      <Button 
-        onClick={connectWallet} 
-        className="quantum-button"
-      >
-        <Wallet className="mr-2 h-4 w-4" />
-        Connect Wallet
-      </Button>
+      <>
+        <Button
+          onClick={() => setShowWalletModal(true)}
+          className="quantum-button"
+        >
+          <Wallet className="mr-2 h-4 w-4" />
+          Connect Wallet
+        </Button>
+        <WalletSelectionModal
+          isOpen={showWalletModal}
+          onClose={() => setShowWalletModal(false)}
+          onWalletSelect={handleWalletSelect}
+        />
+      </>
     );
   }
 
@@ -83,19 +102,19 @@ export default function WalletConnectButton() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
+
         <DropdownMenuItem asChild>
           <a
-            href={`https://basescan.org/address/${address}`}
+            href={`https://explorer.megaeth.network/address/${address}`}
             target="_blank"
             rel="noopener noreferrer"
             className="cursor-pointer"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
-            <span>View on BaseScan</span>
+            <span>View on Explorer</span>
           </a>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={disconnectWallet} className="cursor-pointer text-red-400 hover:text-red-300">
           <Wallet className="mr-2 h-4 w-4" />

@@ -6,21 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { 
-  Wallet, 
-  Download, 
-  CheckCircle, 
+import {
+  Wallet,
+  Download,
+  CheckCircle,
   AlertTriangle,
   ExternalLink,
   Shield,
-  Zap,
   Globe
 } from "lucide-react";
 import { SUPPORTED_WALLETS, detectWallets, type WalletProvider } from "@/lib/wallet-providers";
@@ -30,19 +29,20 @@ interface WalletSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onWalletSelect: (wallet: WalletProvider) => Promise<void>;
-  isConnecting: boolean;
-  selectedWallet: string | null;
+  isConnecting?: boolean;
+  selectedWallet?: string | null;
 }
 
 export default function WalletSelectionModal({
   isOpen,
   onClose,
   onWalletSelect,
-  isConnecting,
-  selectedWallet
+  isConnecting = false,
+  selectedWallet = null
 }: WalletSelectionModalProps) {
   const { toast } = useToast();
   const { installed, notInstalled } = detectWallets();
+  const [connecting, setConnecting] = useState(false);
 
   const handleWalletClick = async (wallet: WalletProvider) => {
     if (!wallet.isInstalled()) {
@@ -61,12 +61,19 @@ export default function WalletSelectionModal({
       return;
     }
 
-    // Directly connect without confirmation modal
+    setConnecting(true);
     try {
       await onWalletSelect(wallet);
       onClose();
     } catch (error: any) {
       console.error('Wallet connection failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Connection Failed",
+        description: error.message || "Failed to connect wallet. Please try again.",
+      });
+    } finally {
+      setConnecting(false);
     }
   };
 
@@ -78,24 +85,24 @@ export default function WalletSelectionModal({
             <div className="p-2 bg-primary/20 rounded-lg">
               <Wallet className="h-6 w-6 text-primary" />
             </div>
-            Connect Wallet to Base Mainnet
+            Connect Wallet
           </DialogTitle>
           <DialogDescription className="text-base">
-            Choose your preferred wallet to connect to Base Mainnet
+            Choose your preferred wallet to connect to MegaETH Testnet
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Base Network Info */}
+          {/* Network Info */}
           <div className="p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
             <div className="flex items-center gap-3 mb-3">
               <Globe className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold text-primary">🔵 Base Mainnet</h3>
+              <h3 className="font-semibold text-primary">MegaETH Testnet</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div>
                 <span className="text-muted-foreground">Chain ID:</span>
-                <div className="font-mono font-bold text-primary">8453</div>
+                <div className="font-mono font-bold text-primary">6342</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Block Time:</span>
@@ -103,11 +110,11 @@ export default function WalletSelectionModal({
               </div>
               <div>
                 <span className="text-muted-foreground">Max TPS:</span>
-                <div className="font-mono font-bold text-blue-400">4,700+</div>
+                <div className="font-mono font-bold text-blue-400">100k+</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Gas Fees:</span>
-                <div className="font-mono font-bold text-green-400">Very Low</div>
+                <div className="font-mono font-bold text-purple-400">Ultra Low</div>
               </div>
             </div>
           </div>
@@ -128,10 +135,10 @@ export default function WalletSelectionModal({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Card 
+                    <Card
                       className={`cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
-                        selectedWallet === wallet.id 
-                          ? 'border-primary bg-primary/10' 
+                        selectedWallet === wallet.id
+                          ? 'border-primary bg-primary/10'
                           : 'border-border hover:border-primary/50'
                       }`}
                       onClick={() => handleWalletClick(wallet)}
@@ -150,14 +157,14 @@ export default function WalletSelectionModal({
                             <p className="text-sm text-muted-foreground">{wallet.description}</p>
                           </div>
                           <div className="flex items-center gap-2">
-                            {isConnecting && selectedWallet === wallet.id ? (
+                            {connecting && selectedWallet === wallet.id ? (
                               <div className="flex items-center gap-2">
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
-                                <span className="text-sm text-primary">Linking...</span>
+                                <span className="text-sm text-primary">Connecting...</span>
                               </div>
                             ) : (
                               <Button variant="outline" size="sm">
-                                Link Now
+                                Connect
                               </Button>
                             )}
                           </div>
@@ -175,7 +182,7 @@ export default function WalletSelectionModal({
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Download className="h-5 w-5 text-yellow-400" />
-                Install Additional Wallets
+                Install Wallet
               </h3>
               <div className="grid gap-3">
                 {notInstalled.map((wallet) => (
@@ -219,14 +226,9 @@ export default function WalletSelectionModal({
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 <div className="font-semibold text-yellow-400 mb-2">No Wallets Detected</div>
-                <p className="text-yellow-200/80 mb-3">
-                  You need a Web3 wallet to interact with the MegaETH blockchain. 
-                  Please install one of the supported wallets above.
+                <p className="text-yellow-200/80">
+                  You need a Web3 wallet to connect. Please install one of the supported wallets above.
                 </p>
-                <div className="flex items-center gap-2 text-xs text-yellow-300/60">
-                  <Shield className="h-3 w-3" />
-                  <div className="font-mono font-bold text-purple-400">Minimal MegaETH</div>
-                </div>
               </AlertDescription>
             </Alert>
           )}
@@ -235,15 +237,13 @@ export default function WalletSelectionModal({
           <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
             <div className="flex items-center gap-2 mb-2">
               <Shield className="h-4 w-4 text-blue-400" />
-              <span className="text-sm font-medium text-blue-200">🛡️ Security Notice</span>
+              <span className="text-sm font-medium text-blue-200">Security Notice</span>
             </div>
             <p className="text-xs text-blue-200/80">
-              Your wallet connection is secured with enterprise-grade encryption.
-              We never store your private keys or seed phrases.
+              Your wallet connection is secured. QuantumChain never stores your private keys or seed phrases.
             </p>
           </div>
         </div>
-
       </DialogContent>
     </Dialog>
   );
