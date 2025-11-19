@@ -78,24 +78,24 @@ export default function WalletSelectionModal({
             <div className="p-2 bg-primary/20 rounded-lg">
               <Wallet className="h-6 w-6 text-primary" />
             </div>
-            Link MegaETH Tokens
+            Connect Wallet to Base Mainnet
           </DialogTitle>
           <DialogDescription className="text-base">
-            Choose your preferred wallet to link MegaETH tokens for quantum computing
+            Choose your preferred wallet to connect to Base Mainnet
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* MegaETH Network Info */}
+          {/* Base Network Info */}
           <div className="p-4 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
             <div className="flex items-center gap-3 mb-3">
               <Globe className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold text-primary">🚀 MegaETH Token Network</h3>
+              <h3 className="font-semibold text-primary">🔵 Base Mainnet</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div>
                 <span className="text-muted-foreground">Chain ID:</span>
-                <div className="font-mono font-bold text-primary">9000</div>
+                <div className="font-mono font-bold text-primary">8453</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Block Time:</span>
@@ -103,11 +103,11 @@ export default function WalletSelectionModal({
               </div>
               <div>
                 <span className="text-muted-foreground">Max TPS:</span>
-                <div className="font-mono font-bold text-blue-400">100k+</div>
+                <div className="font-mono font-bold text-blue-400">4,700+</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Gas Fees:</span>
-                <div className="font-mono font-bold text-purple-400">Ultra Low</div>
+                <div className="font-mono font-bold text-green-400">Very Low</div>
               </div>
             </div>
           </div>
@@ -238,8 +238,8 @@ export default function WalletSelectionModal({
               <span className="text-sm font-medium text-blue-200">🛡️ Security Notice</span>
             </div>
             <p className="text-xs text-blue-200/80">
-              Your wallet connection is secured with enterprise-grade encryption. 
-              QuantumChain never stores your private keys or seed phrases.
+              Your wallet connection is secured with enterprise-grade encryption.
+              We never store your private keys or seed phrases.
             </p>
           </div>
         </div>

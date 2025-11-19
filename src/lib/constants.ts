@@ -5,17 +5,17 @@ export const HARDCODED_USERS = [
   { name: "Test User", email: "p1@example.com", password: "123", role: "user", country: "Canada" },
 ];
 
-// MegaETH Testnet Configuration
+// Base Mainnet Configuration
 export const CONTRACT_ADDRESS = "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2";
 
 export const MEGAETH_TESTNET = {
-  chainId: "0x2328", // 9000
-  chainName: "MegaETH Testnet",
+  chainId: "0x2105", // 8453
+  chainName: "Base Mainnet",
   nativeCurrency: {
-    name: "MegaETH",
+    name: "Ethereum",
     symbol: "ETH",
     decimals: 18,
   },
-  rpcUrls: ["https://testnet.megaeth.io"],
-  blockExplorerUrls: ["https://www.megaexplorer.xyz/"],
+  rpcUrls: ["https://mainnet.base.org"],
+  blockExplorerUrls: ["https://basescan.org/"],
 };

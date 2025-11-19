@@ -1,68 +1,65 @@
-// MegaETH Testnet Configuration
-// This file contains all MegaETH-specific configurations and utilities
+// Base Mainnet Configuration
+// This file contains all Base-specific configurations and utilities
 
 export const MEGAETH_TESTNET_CONFIG = {
   // Network Configuration
-  chainId: 9000,
-  chainIdHex: "0x2328",
-  networkName: "MegaETH Testnet",
-  
+  chainId: 8453,
+  chainIdHex: "0x2105",
+  networkName: "Base Mainnet",
+
   // RPC Configuration
   rpcUrls: [
-    "https://testnet.megaeth.io",
-    "https://rpc.megaeth.io/testnet", // Backup RPC
+    "https://mainnet.base.org",
   ],
-  
+
   // Explorer Configuration
   blockExplorerUrls: [
-    "https://www.megaexplorer.xyz/",
-    "https://explorer.megaeth.io/testnet", // Backup explorer
+    "https://basescan.org/",
   ],
-  
+
   // Native Currency
   nativeCurrency: {
-    name: "MegaETH",
+    name: "Ethereum",
     symbol: "ETH",
     decimals: 18,
   },
-  
-  // Contract Addresses (MegaETH Testnet)
+
+  // Contract Addresses (Base Mainnet)
   contracts: {
     quantumJobLogger: "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2",
-    // Add more contract addresses as needed
   },
-  
-  // MegaETH-specific features
+
+  // Base features
   features: {
     highThroughput: true,
     lowLatency: true,
     eip1559: true,
-    postQuantumSecurity: true,
+    postQuantumSecurity: false,
   },
-  
-  // Performance optimizations for MegaETH
+
+  // Performance optimizations for Base
   performance: {
-    blockTime: 2, // 2 seconds average block time
-    maxTps: 100000, // 100k transactions per second
-    finalityTime: 12, // 12 seconds for finality
+    blockTime: 2,
+    maxTps: 4700,
+    finalityTime: 12,
   },
-  
-  // Faucet and development tools
+
+  // Base tools and links
   tools: {
-    faucetUrl: "https://testnet.megaeth.com/#2",
-    docsUrl: "https://docs.megaeth.io",
-    statusUrl: "https://status.megaeth.io",
-    tokenLinkingUrl: "https://testnet.megaeth.com/#2",
+    faucetUrl: "https://www.coinbase.com/faucets/base-eth-testnet",
+    docsUrl: "https://docs.base.org",
+    statusUrl: "https://status.base.org",
+    tokenLinkingUrl: "https://basescan.org",
   }
 };
 
-// Validation function to ensure we're on MegaETH Testnet
+// Validation function to ensure we're on Base Mainnet
 export function validateMegaETHNetwork(chainId: number | bigint): boolean {
   const numericChainId = typeof chainId === 'bigint' ? Number(chainId) : chainId;
   return numericChainId === MEGAETH_TESTNET_CONFIG.chainId;
 }
 
-// Get MegaETH network configuration for MetaMask
+// Get Base network configuration for MetaMask
 export function getMegaETHNetworkConfig() {
   return {
     chainId: MEGAETH_TESTNET_CONFIG.chainIdHex,
@@ -73,16 +70,16 @@ export function getMegaETHNetworkConfig() {
   };
 }
 
-// MegaETH-specific error messages
+// Base-specific error messages
 export const MEGAETH_ERRORS = {
-  WRONG_NETWORK: "Please switch to MegaETH Testnet to continue",
-  RPC_ERROR: "Failed to connect to MegaETH Testnet RPC",
-  CONTRACT_NOT_FOUND: "Contract not deployed on MegaETH Testnet",
-  INSUFFICIENT_GAS: "Insufficient gas for MegaETH transaction",
-  NETWORK_CONGESTION: "MegaETH network is experiencing high traffic",
+  WRONG_NETWORK: "Please switch to Base Mainnet to continue",
+  RPC_ERROR: "Failed to connect to Base Mainnet RPC",
+  CONTRACT_NOT_FOUND: "Contract not deployed on Base Mainnet",
+  INSUFFICIENT_GAS: "Insufficient gas for Base transaction",
+  NETWORK_CONGESTION: "Base network is experiencing high traffic",
 };
 
-// MegaETH transaction optimization
+// Base transaction optimization
 export const MEGAETH_TX_CONFIG = {
   gasLimit: {
     simple: 21000,
@@ -90,10 +87,10 @@ export const MEGAETH_TX_CONFIG = {
     complex: 500000,
   },
   gasPrice: {
-    slow: 1000000000, // 1 gwei
-    standard: 2000000000, // 2 gwei
-    fast: 5000000000, // 5 gwei
+    slow: 100000000, // 0.1 gwei
+    standard: 200000000, // 0.2 gwei
+    fast: 500000000, // 0.5 gwei
   },
-  maxFeePerGas: 10000000000, // 10 gwei
-  maxPriorityFeePerGas: 2000000000, // 2 gwei
+  maxFeePerGas: 1000000000, // 1 gwei
+  maxPriorityFeePerGas: 100000000, // 0.1 gwei
 };
