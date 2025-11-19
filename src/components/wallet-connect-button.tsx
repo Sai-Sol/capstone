@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { Wallet, Copy, ExternalLink, CheckCircle } from "lucide-react";
-import { MEGAETH_TESTNET } from "@/lib/constants";
 
 export default function WalletConnectButton() {
   const { isConnected, address, balance, connectWallet, disconnectWallet } = useWallet();
@@ -87,13 +86,13 @@ export default function WalletConnectButton() {
         
         <DropdownMenuItem asChild>
           <a
-            href={`https://www.megaexplorer.xyz/address/${address}`}
+            href={`https://basescan.org/address/${address}`}
             target="_blank"
             rel="noopener noreferrer"
             className="cursor-pointer"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
-            <span>View on Explorer</span>
+            <span>View on BaseScan</span>
           </a>
         </DropdownMenuItem>
         

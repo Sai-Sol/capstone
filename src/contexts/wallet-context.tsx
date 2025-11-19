@@ -35,14 +35,9 @@ declare global {
   }
 }
 
-// Token linking success handler
+// Base wallet connection success handler
 const handleTokenLinkingSuccess = (address: string) => {
-  console.log('MegaETH tokens linked successfully for address:', address);
-  
-  // Redirect to MegaETH testnet interface
-  setTimeout(() => {
-    window.open('https://testnet.megaeth.com/#2', '_blank', 'noopener,noreferrer');
-  }, 1000); // Small delay to ensure transaction completion
+  console.log('Base wallet connected successfully for address:', address);
 };
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
@@ -149,10 +144,9 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       if (typeof window !== "undefined") {
         localStorage.setItem("wallet-connected", "true");
         localStorage.setItem("wallet-type", walletProvider.id);
-        localStorage.setItem("megaeth-tokens-linked", "true");
       }
 
-      // Handle successful token linking
+      // Handle successful connection
       handleTokenLinkingSuccess(currentAddress);
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
@@ -162,7 +156,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       } else if (error.code === -32002) {
         setError(`Connection request pending. Please check ${walletProvider?.name || 'your wallet'}.`);
       } else if (error.message.includes('network')) {
-        setError("Please ensure you're connected to MegaETH network and try again.");
+        setError("Please ensure you're connected to Base network and try again.");
       } else {
         setError(error.message || `Failed to connect ${walletProvider?.name || 'wallet'}. Please try again.`);
       }
@@ -225,7 +219,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         if (typeof window !== "undefined") {
           localStorage.removeItem("wallet-connected");
           localStorage.removeItem("wallet-type");
-          localStorage.removeItem("megaeth-tokens-linked");
         }
       }
     };
