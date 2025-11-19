@@ -3,20 +3,20 @@
 
 export const MEGAETH_TESTNET_CONFIG = {
   // Network Configuration
-  chainId: 6342,
-  chainIdHex: "0x18C6",
+  chainId: 9000,
+  chainIdHex: "0x2328",
   networkName: "MegaETH Testnet",
-
+  
   // RPC Configuration
   rpcUrls: [
-    "https://rpc.megaeth.network",
-    "https://testnet.megaeth.io", // Backup RPC
+    "https://testnet.megaeth.io",
+    "https://rpc.megaeth.io/testnet", // Backup RPC
   ],
-
+  
   // Explorer Configuration
   blockExplorerUrls: [
-    "https://explorer.megaeth.network",
-    "https://www.megaexplorer.xyz/", // Backup explorer
+    "https://www.megaexplorer.xyz/",
+    "https://explorer.megaeth.io/testnet", // Backup explorer
   ],
   
   // Native Currency

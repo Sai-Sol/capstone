@@ -9,13 +9,13 @@ export const HARDCODED_USERS = [
 export const CONTRACT_ADDRESS = "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2";
 
 export const MEGAETH_TESTNET = {
-  chainId: "0x18C6", // 6342
+  chainId: "0x2328", // 9000
   chainName: "MegaETH Testnet",
   nativeCurrency: {
     name: "MegaETH",
     symbol: "ETH",
     decimals: 18,
   },
-  rpcUrls: ["https://rpc.megaeth.network"],
-  blockExplorerUrls: ["https://explorer.megaeth.network"],
+  rpcUrls: ["https://testnet.megaeth.io"],
+  blockExplorerUrls: ["https://www.megaexplorer.xyz/"],
 };
