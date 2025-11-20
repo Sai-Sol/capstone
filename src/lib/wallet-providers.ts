@@ -76,17 +76,17 @@ export const detectWallets = (): { installed: WalletProvider[]; notInstalled: Wa
   return { installed, notInstalled };
 };
 
-// Base Mainnet network configuration for all wallets
+// MEGA Testnet v2 network configuration for all wallets
 export const MEGAETH_NETWORK_CONFIG = {
-  chainId: '0x2105', // 8453 in hex
-  chainName: 'Base Mainnet',
+  chainId: '0x18C7', // 6343 in hex
+  chainName: 'MEGA Testnet v2',
   nativeCurrency: {
     name: 'Ethereum',
     symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: ['https://mainnet.base.org'],
-  blockExplorerUrls: ['https://basescan.org/'],
+  rpcUrls: ['https://timothy.megaeth.com/rpc'],
+  blockExplorerUrls: ['https://megaeth-testnet-v2.blockscout.com/'],
 };
 
 // Enhanced ethereum provider access with conflict resolution
@@ -117,7 +117,7 @@ const safeGetEthereumProvider = () => {
   }
 };
 
-// Add Base network to wallet
+// Add MEGA Testnet v2 network to wallet
 export const addMegaETHNetwork = async (provider: any): Promise<void> => {
   try {
     const ethereumProvider = provider || safeGetEthereumProvider();
@@ -130,19 +130,19 @@ export const addMegaETHNetwork = async (provider: any): Promise<void> => {
       params: [MEGAETH_NETWORK_CONFIG],
     });
 
-    console.log('Base network added successfully');
+    console.log('MEGA Testnet v2 network added successfully');
   } catch (error: any) {
     if (error.code === 4001) {
-      throw new Error('User rejected adding Base network');
+      throw new Error('User rejected adding MEGA Testnet v2 network');
     } else if (error.code === -32602) {
-      console.log('Base network already added');
+      console.log('MEGA Testnet v2 network already added');
     } else {
       throw error;
     }
   }
 };
 
-// Switch to Base network
+// Switch to MEGA Testnet v2 network
 export const switchToMegaETH = async (provider: any): Promise<void> => {
   try {
     const ethereumProvider = provider || safeGetEthereumProvider();
@@ -155,11 +155,11 @@ export const switchToMegaETH = async (provider: any): Promise<void> => {
       params: [{ chainId: MEGAETH_NETWORK_CONFIG.chainId }],
     });
 
-    console.log('Switched to Base network successfully');
+    console.log('Switched to MEGA Testnet v2 network successfully');
   } catch (error: any) {
     if (error.code === 4902 || error.code === -32603) {
       // Chain not added, add it first
-      console.log('Base network not found, adding it...');
+      console.log('MEGA Testnet v2 network not found, adding it...');
       await addMegaETHNetwork(provider);
       // Try switching again after adding
       await ethereumProvider.request({
@@ -167,18 +167,18 @@ export const switchToMegaETH = async (provider: any): Promise<void> => {
         params: [{ chainId: MEGAETH_NETWORK_CONFIG.chainId }],
       });
     } else if (error.code === 4001) {
-      throw new Error('User rejected switching to Base network');
+      throw new Error('User rejected switching to MEGA Testnet v2 network');
     } else {
       throw error;
     }
   }
 };
 
-// Validate Base network connection
+// Validate MEGA Testnet v2 network connection
 export const validateMegaETHConnection = async (provider: BrowserProvider): Promise<boolean> => {
   try {
     const network = await provider.getNetwork();
-    return Number(network.chainId) === 8453;
+    return Number(network.chainId) === 6343;
   } catch (error) {
     return false;
   }

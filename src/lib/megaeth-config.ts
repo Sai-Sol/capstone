@@ -1,20 +1,20 @@
-// Base Mainnet Configuration
-// This file contains all Base-specific configurations and utilities
+// MEGA Testnet v2 Configuration
+// This file contains all MEGA Testnet v2-specific configurations and utilities
 
 export const MEGAETH_TESTNET_CONFIG = {
   // Network Configuration
-  chainId: 8453,
-  chainIdHex: "0x2105",
-  networkName: "Base Mainnet",
+  chainId: 6343,
+  chainIdHex: "0x18C7",
+  networkName: "MEGA Testnet v2",
 
   // RPC Configuration
   rpcUrls: [
-    "https://mainnet.base.org",
+    "https://timothy.megaeth.com/rpc",
   ],
 
   // Explorer Configuration
   blockExplorerUrls: [
-    "https://basescan.org/",
+    "https://megaeth-testnet-v2.blockscout.com/",
   ],
 
   // Native Currency
@@ -24,42 +24,42 @@ export const MEGAETH_TESTNET_CONFIG = {
     decimals: 18,
   },
 
-  // Contract Addresses (Base Mainnet)
+  // Contract Addresses (MEGA Testnet v2)
   contracts: {
     quantumJobLogger: "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2",
   },
 
-  // Base features
+  // MEGA Testnet v2 features
   features: {
     highThroughput: true,
     lowLatency: true,
     eip1559: true,
-    postQuantumSecurity: false,
+    postQuantumSecurity: true,
   },
 
-  // Performance optimizations for Base
+  // Performance optimizations for MEGA Testnet v2
   performance: {
     blockTime: 2,
-    maxTps: 4700,
+    maxTps: 100000,
     finalityTime: 12,
   },
 
-  // Base tools and links
+  // MEGA Testnet v2 tools and links
   tools: {
-    faucetUrl: "https://www.coinbase.com/faucets/base-eth-testnet",
-    docsUrl: "https://docs.base.org",
-    statusUrl: "https://status.base.org",
-    tokenLinkingUrl: "https://basescan.org",
+    faucetUrl: "https://megaeth-testnet-v2.blockscout.com/",
+    docsUrl: "https://docs.megaeth.io",
+    statusUrl: "https://status.megaeth.io",
+    tokenLinkingUrl: "https://megaeth-testnet-v2.blockscout.com/",
   }
 };
 
-// Validation function to ensure we're on Base Mainnet
+// Validation function to ensure we're on MEGA Testnet v2
 export function validateMegaETHNetwork(chainId: number | bigint): boolean {
   const numericChainId = typeof chainId === 'bigint' ? Number(chainId) : chainId;
   return numericChainId === MEGAETH_TESTNET_CONFIG.chainId;
 }
 
-// Get Base network configuration for MetaMask
+// Get MEGA Testnet v2 network configuration for MetaMask
 export function getMegaETHNetworkConfig() {
   return {
     chainId: MEGAETH_TESTNET_CONFIG.chainIdHex,
@@ -70,16 +70,16 @@ export function getMegaETHNetworkConfig() {
   };
 }
 
-// Base-specific error messages
+// MEGA Testnet v2 error messages
 export const MEGAETH_ERRORS = {
-  WRONG_NETWORK: "Please switch to Base Mainnet to continue",
-  RPC_ERROR: "Failed to connect to Base Mainnet RPC",
-  CONTRACT_NOT_FOUND: "Contract not deployed on Base Mainnet",
-  INSUFFICIENT_GAS: "Insufficient gas for Base transaction",
-  NETWORK_CONGESTION: "Base network is experiencing high traffic",
+  WRONG_NETWORK: "Please switch to MEGA Testnet v2 to continue",
+  RPC_ERROR: "Failed to connect to MEGA Testnet v2 RPC",
+  CONTRACT_NOT_FOUND: "Contract not deployed on MEGA Testnet v2",
+  INSUFFICIENT_GAS: "Insufficient gas for MEGA Testnet v2 transaction",
+  NETWORK_CONGESTION: "MEGA Testnet v2 network is experiencing high traffic",
 };
 
-// Base transaction optimization
+// MEGA Testnet v2 transaction optimization
 export const MEGAETH_TX_CONFIG = {
   gasLimit: {
     simple: 21000,
@@ -87,10 +87,10 @@ export const MEGAETH_TX_CONFIG = {
     complex: 500000,
   },
   gasPrice: {
-    slow: 100000000, // 0.1 gwei
-    standard: 200000000, // 0.2 gwei
-    fast: 500000000, // 0.5 gwei
+    slow: 1000000000, // 1 gwei
+    standard: 2000000000, // 2 gwei
+    fast: 5000000000, // 5 gwei
   },
-  maxFeePerGas: 1000000000, // 1 gwei
-  maxPriorityFeePerGas: 100000000, // 0.1 gwei
+  maxFeePerGas: 10000000000, // 10 gwei
+  maxPriorityFeePerGas: 2000000000, // 2 gwei
 };
