@@ -48,6 +48,7 @@ import { blockchainIntegration } from "@/lib/blockchain-integration";
 import { JobTemplatesManager } from "@/components/job-templates-manager";
 import { CircuitOptimizerAnalyzer } from "@/components/circuit-optimizer-analyzer";
 import { BatchScheduler } from "@/components/batch-scheduler";
+import Link from "next/link";
 
 const formSchema = z.object({
   jobType: z.string().min(1, { message: "Please select a quantum provider." }),
@@ -674,29 +675,108 @@ measure q -> c;`}
                   >
                     <div className="border-t border-slate-700 pt-6">
                       <h3 className="text-lg font-semibold mb-4">Advanced Features</h3>
-                      <div className="space-y-4">
-                        <CircuitOptimizerAnalyzer
-                          circuitCode={descriptionValue}
-                          provider={selectedJobType}
-                          onOptimize={(suggestion) => {
-                            toast({
-                              title: "Optimization Applied",
-                              description: suggestion,
-                            });
-                          }}
-                        />
+                      <Tabs defaultValue="optimizer" className="w-full">
+                        <TabsList className="grid w-full grid-cols-4 mb-6">
+                          <TabsTrigger value="optimizer" className="flex items-center gap-2">
+                            <Zap className="h-4 w-4" />
+                            <span className="hidden sm:inline">Optimize</span>
+                          </TabsTrigger>
+                          <TabsTrigger value="templates" className="flex items-center gap-2">
+                            <Atom className="h-4 w-4" />
+                            <span className="hidden sm:inline">Templates</span>
+                          </TabsTrigger>
+                          <TabsTrigger value="batch" className="flex items-center gap-2">
+                            <Package className="h-4 w-4" />
+                            <span className="hidden sm:inline">Batch</span>
+                          </TabsTrigger>
+                          <TabsTrigger value="quick-links" className="flex items-center gap-2">
+                            <Lightbulb className="h-4 w-4" />
+                            <span className="hidden sm:inline">More</span>
+                          </TabsTrigger>
+                        </TabsList>
 
-                        <JobTemplatesManager
-                          templates={savedTemplates}
-                          currentFormData={{
-                            jobType: selectedJobType,
-                            description: descriptionValue,
-                            priority,
-                          }}
-                          onSelectTemplate={handleTemplateSelect}
-                          onSaveTemplate={handleSaveTemplate}
-                        />
-                      </div>
+                        <TabsContent value="optimizer" className="space-y-4">
+                          <CircuitOptimizerAnalyzer
+                            circuitCode={descriptionValue}
+                            provider={selectedJobType}
+                            onOptimize={(suggestion) => {
+                              toast({
+                                title: "Optimization Applied",
+                                description: suggestion,
+                              });
+                            }}
+                          />
+                        </TabsContent>
+
+                        <TabsContent value="templates" className="space-y-4">
+                          <JobTemplatesManager
+                            templates={savedTemplates}
+                            currentFormData={{
+                              jobType: selectedJobType,
+                              description: descriptionValue,
+                              priority,
+                            }}
+                            onSelectTemplate={handleTemplateSelect}
+                            onSaveTemplate={handleSaveTemplate}
+                          />
+                        </TabsContent>
+
+                        <TabsContent value="batch" className="space-y-4">
+                          <BatchScheduler
+                            currentFormData={{
+                              jobType: selectedJobType,
+                              description: descriptionValue,
+                              priority,
+                            }}
+                            onSubmitBatch={handleBatchSubmit}
+                          />
+                        </TabsContent>
+
+                        <TabsContent value="quick-links" className="space-y-4">
+                          <Card className="quantum-card">
+                            <CardContent className="pt-6">
+                              <div className="grid md:grid-cols-2 gap-4">
+                                <Link href="/dashboard/templates">
+                                  <Card className="cursor-pointer hover:border-primary/50 transition-all h-full">
+                                    <CardContent className="p-4 text-center">
+                                      <Atom className="h-8 w-8 text-primary mx-auto mb-2" />
+                                      <h4 className="font-semibold">Job Templates</h4>
+                                      <p className="text-xs text-muted-foreground mt-1">Manage your saved templates</p>
+                                    </CardContent>
+                                  </Card>
+                                </Link>
+                                <Link href="/dashboard/optimize">
+                                  <Card className="cursor-pointer hover:border-primary/50 transition-all h-full">
+                                    <CardContent className="p-4 text-center">
+                                      <Zap className="h-8 w-8 text-cyan-400 mx-auto mb-2" />
+                                      <h4 className="font-semibold">Optimize Circuit</h4>
+                                      <p className="text-xs text-muted-foreground mt-1">Advanced circuit analysis</p>
+                                    </CardContent>
+                                  </Card>
+                                </Link>
+                                <Link href="/dashboard/batch">
+                                  <Card className="cursor-pointer hover:border-primary/50 transition-all h-full">
+                                    <CardContent className="p-4 text-center">
+                                      <Package className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
+                                      <h4 className="font-semibold">Batch Submit</h4>
+                                      <p className="text-xs text-muted-foreground mt-1">Submit multiple jobs</p>
+                                    </CardContent>
+                                  </Card>
+                                </Link>
+                                <Link href="/dashboard/circuits">
+                                  <Card className="cursor-pointer hover:border-primary/50 transition-all h-full">
+                                    <CardContent className="p-4 text-center">
+                                      <Cpu className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                                      <h4 className="font-semibold">Visualizer</h4>
+                                      <p className="text-xs text-muted-foreground mt-1">Interactive circuit viz</p>
+                                    </CardContent>
+                                  </Card>
+                                </Link>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </motion.div>
                 )}
