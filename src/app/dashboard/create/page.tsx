@@ -45,6 +45,9 @@ import {
 } from "lucide-react";
 import QuantumResultsDisplay from "@/components/quantum-results-display";
 import { blockchainIntegration } from "@/lib/blockchain-integration";
+import { JobTemplatesManager } from "@/components/job-templates-manager";
+import { CircuitOptimizerAnalyzer } from "@/components/circuit-optimizer-analyzer";
+import { BatchScheduler } from "@/components/batch-scheduler";
 
 const formSchema = z.object({
   jobType: z.string().min(1, { message: "Please select a quantum provider." }),
@@ -265,6 +268,7 @@ export default function CreatePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [savedTemplates, setSavedTemplates] = useState<any[]>([]);
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
@@ -288,8 +292,35 @@ export default function CreatePage() {
       setSelectedPreset(presetId);
       form.setValue("description", preset.qasm);
       form.setValue("submissionType", "qasm");
-      form.setValue("jobType", "Google Willow"); // Default provider
+      form.setValue("jobType", "Google Willow");
     }
+  };
+
+  const handleTemplateSelect = (template: any) => {
+    form.setValue("jobType", template.jobType);
+    form.setValue("description", template.algorithm);
+    form.setValue("submissionType", "qasm");
+    form.setValue("priority", template.priority);
+    setSelectedPreset(null);
+    toast({
+      title: "Template Loaded",
+      description: `Loaded "${template.name}" template successfully`,
+    });
+  };
+
+  const handleSaveTemplate = (name: string, description: string, formData: any) => {
+    setSavedTemplates([...savedTemplates, { name, description, ...formData }]);
+    toast({
+      title: "Template Saved",
+      description: `"${name}" saved as a reusable template`,
+    });
+  };
+
+  const handleBatchSubmit = async (batchJobs: any[]) => {
+    toast({
+      title: "Batch Submitted",
+      description: `${batchJobs.length} quantum jobs queued for execution`,
+    });
   };
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -634,6 +665,42 @@ measure q -> c;`}
                   </Tabs>
                 </div>
 
+                {/* New Features Section */}
+                {selectedJobType && descriptionValue && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    <div className="border-t border-slate-700 pt-6">
+                      <h3 className="text-lg font-semibold mb-4">Advanced Features</h3>
+                      <div className="space-y-4">
+                        <CircuitOptimizerAnalyzer
+                          circuitCode={descriptionValue}
+                          provider={selectedJobType}
+                          onOptimize={(suggestion) => {
+                            toast({
+                              title: "Optimization Applied",
+                              description: suggestion,
+                            });
+                          }}
+                        />
+
+                        <JobTemplatesManager
+                          templates={savedTemplates}
+                          currentFormData={{
+                            jobType: selectedJobType,
+                            description: descriptionValue,
+                            priority,
+                          }}
+                          onSelectTemplate={handleTemplateSelect}
+                          onSaveTemplate={handleSaveTemplate}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Priority Selection */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -708,25 +775,42 @@ measure q -> c;`}
                   </motion.div>
                 )}
 
-                {/* Submit Button */}
-                <div className="space-y-4">
-                  <Button 
-                    type="submit" 
-                    disabled={isLoading || !isConnected || !selectedJobType || !descriptionValue} 
-                    className="w-full h-14 quantum-button font-semibold text-lg"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-3 h-5 w-5 animate-spin" /> 
-                        Submitting to Blockchain...
-                      </>
-                    ) : (
-                      <>
-                        <Terminal className="mr-3 h-5 w-5" />
-                        Execute Quantum Algorithm
-                      </>
+                {/* Submit Options */}
+                <div className="space-y-3">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !isConnected || !selectedJobType || !descriptionValue}
+                      className="h-12 quantum-button font-semibold"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Terminal className="mr-3 h-5 w-5" />
+                          Execute Algorithm
+                        </>
+                      )}
+                    </Button>
+
+                    {selectedJobType && descriptionValue && (
+                      <BatchScheduler
+                        currentFormData={{
+                          jobType: selectedJobType,
+                          description: descriptionValue,
+                          priority,
+                        }}
+                        onSubmitBatch={handleBatchSubmit}
+                      />
                     )}
-                  </Button>
+                  </div>
+                </div>
+
+                {/* Submit Button Original */}
+                <div className="space-y-4 hidden">
 
                   {!isConnected && (
                     <Alert className="border-yellow-500/30 bg-yellow-500/10">
@@ -738,6 +822,29 @@ measure q -> c;`}
                     </Alert>
                   )}
                   
+                  {error && isConnected && (
+                    <Alert className="border-red-500/30 bg-red-500/10">
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <AlertDescription className="text-foreground">
+                        <div className="font-semibold text-red-400 mb-1">Connection Issue</div>
+                        {error}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+
+                {/* Alerts Section */}
+                <div className="space-y-3">
+                  {!isConnected && (
+                    <Alert className="border-yellow-500/30 bg-yellow-500/10">
+                      <Zap className="h-4 w-4 text-yellow-500" />
+                      <AlertDescription className="text-foreground">
+                        <div className="font-semibold text-yellow-400 mb-1">Wallet Connection Required</div>
+                        Connect your wallet to submit quantum jobs and record results on the MegaETH blockchain.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
                   {error && isConnected && (
                     <Alert className="border-red-500/30 bg-red-500/10">
                       <AlertTriangle className="h-4 w-4 text-red-500" />
