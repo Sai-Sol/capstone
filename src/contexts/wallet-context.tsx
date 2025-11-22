@@ -88,7 +88,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    if (!walletProvider.isInstalled()) {
+    if (walletProvider && typeof walletProvider.isInstalled === 'function' && !walletProvider.isInstalled()) {
       setError(`${walletProvider.name} is not installed. Please install it first.`);
       return;
     }
@@ -179,7 +179,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
       try {
         const wallet = getWalletById(walletType);
-        if (!wallet || !wallet.isInstalled()) return;
+        if (!wallet || (typeof wallet.isInstalled === 'function' && !wallet.isInstalled())) return;
 
         const walletEthereum = wallet.getProvider();
         if (!walletEthereum) return;
@@ -232,7 +232,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     if (!walletType) return;
     
     const wallet = getWalletById(walletType);
-    if (!wallet || !wallet.isInstalled()) return;
+    if (!wallet || (typeof wallet.isInstalled === 'function' && !wallet.isInstalled())) return;
     
     const walletEthereum = wallet.getProvider();
     if (!walletEthereum) return;

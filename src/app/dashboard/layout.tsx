@@ -5,8 +5,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { Loader2, Atom } from "lucide-react";
 import { motion } from "framer-motion";
-import Header from "@/components/header";
 import { Toaster } from "@/components/ui/toaster";
+import Sidebar from "@/components/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -16,7 +16,6 @@ export default function DashboardLayout({
   const { user, loading } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
-  const [redirecting, setRedirecting] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -24,42 +23,11 @@ export default function DashboardLayout({
 
   React.useEffect(() => {
     if (mounted && !loading && !user) {
-      console.log("No user found, redirecting to login");
-      setRedirecting(true);
       router.replace("/login");
     }
   }, [user, loading, router, mounted]);
 
-  // Enhanced timeout for loading state with better error handling
-  React.useEffect(() => {
-    if (loading) {
-      const timeout = setTimeout(() => {
-        if (!user && mounted && !redirecting) {
-          console.log("Loading timeout reached, redirecting to login");
-          setRedirecting(true);
-          router.replace("/login");
-        }
-      }, 3000); // Reduced timeout for better UX
-
-      return () => clearTimeout(timeout);
-    }
-  }, [loading, user, mounted, router, redirecting]);
-
-  // Additional safety check for authentication
-  React.useEffect(() => {
-    if (mounted && !loading && !user) {
-      const authCheck = setTimeout(() => {
-        if (!user && !redirecting) {
-          console.log("Auth check failed, forcing redirect");
-          setRedirecting(true);
-          router.replace("/login");
-        }
-      }, 1000);
-
-      return () => clearTimeout(authCheck);
-    }
-  }, [mounted, loading, user, redirecting, router]);
-  if (!mounted || loading) {
+  if (!mounted || loading || !user) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <motion.div
@@ -85,14 +53,11 @@ export default function DashboardLayout({
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <Header />
-      <main className="flex-1">{children}</main>
+      <Sidebar>
+        {children}
+      </Sidebar>
       <Toaster />
     </div>
   );
