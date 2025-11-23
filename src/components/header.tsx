@@ -46,22 +46,38 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        {/* Logo */}
+    <header className="sticky top-0 z-50 w-full border-b border-border/20 bg-background/40 backdrop-blur-xl supports-[backdrop-filter]:bg-background/20 shadow-2xl">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-purple-500/5 to-blue-500/5 backdrop-blur-3xl" />
+
+      <div className="container flex h-16 items-center justify-between px-4 relative">
+        {/* Enhanced Logo */}
         <Link href="/dashboard" className="flex items-center gap-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-primary/20 rounded-xl blur-md group-hover:blur-lg transition-all duration-300" />
-            <div className="relative bg-gradient-to-br from-primary to-primary/70 p-2.5 rounded-xl shadow-lg">
-              <Atom className="h-6 w-6 text-white animate-pulse" />
+            {/* Multi-layer glow effect */}
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary/30 to-purple-500/30 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 group-hover:from-primary/40 group-hover:to-purple-500/40" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-xl blur-lg group-hover:blur-lg transition-all duration-500 group-hover:from-primary/30 group-hover:to-purple-500/30" />
+
+            {/* Main logo container */}
+            <div className="relative bg-gradient-to-br from-primary via-purple-500 to-indigo-500 p-3 rounded-xl shadow-xl border border-white/20 backdrop-blur-sm">
+              <Atom className="h-7 w-7 text-white animate-pulse drop-shadow-lg" />
+
+              {/* Floating particles */}
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-white/80 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+              <div className="absolute -bottom-1 -left-1 w-1 h-1 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
             </div>
           </div>
+
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-primary to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
               QuantumChain
             </span>
-            <span className="text-xs text-muted-foreground font-medium">
-              🚀 Quantum Computing Platform
+            <span className="text-xs text-primary/80 font-medium flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75 animate-ping"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+              </span>
+              Advanced Quantum Computing
             </span>
           </div>
         </Link>
