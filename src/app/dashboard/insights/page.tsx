@@ -863,7 +863,7 @@ export default function InsightsPage() {
           ) : (
             <Card className="quantum-card">
               <CardContent className="p-12 text-center">
-                <Waveform className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                <Activity className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Quantum Data Available</h3>
                 <p className="text-muted-foreground">
                   Run quantum algorithms to see advanced quantum metrics and hardware analysis.
