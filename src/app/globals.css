@@ -301,21 +301,43 @@
   }
 
   .quantum-button {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-lg hover:shadow-xl;
-    transition: all 0.3s ease;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-xl hover:shadow-2xl;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
     will-change: transform, box-shadow;
     color: hsl(var(--primary-foreground)) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .quantum-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent);
+    transition: left 0.5s ease;
   }
 
   .quantum-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px hsl(var(--primary) / 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 12px 30px hsl(var(--primary) / 0.4),
+                0 0 0 1px hsl(var(--primary) / 0.2),
+                inset 0 0 20px hsl(var(--primary) / 0.2);
+  }
+
+  .quantum-button:hover::before {
+    left: 100%;
   }
 
   .quantum-button:active {
-    transform: translateY(0);
+    transform: translateY(-1px) scale(1.02);
   }
 
   /* Wallet selection animations */
