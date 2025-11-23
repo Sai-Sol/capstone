@@ -890,30 +890,7 @@ measure q -> c;`}
                   </div>
                 </div>
 
-                {/* Submit Button Original */}
-                <div className="space-y-4 hidden">
-
-                  {!isConnected && (
-                    <Alert className="border-yellow-500/30 bg-yellow-500/10">
-                      <Zap className="h-4 w-4 text-yellow-500" />
-                      <AlertDescription className="text-foreground">
-                        <div className="font-semibold text-yellow-400 mb-1">Wallet Connection Required</div>
-                        Connect your wallet to submit quantum jobs and record results on the MegaETH blockchain.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  {error && isConnected && (
-                    <Alert className="border-red-500/30 bg-red-500/10">
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
-                      <AlertDescription className="text-foreground">
-                        <div className="font-semibold text-red-400 mb-1">Connection Issue</div>
-                        {error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-
+  
                 {/* Alerts Section */}
                 <div className="space-y-3">
                   {!isConnected && (
