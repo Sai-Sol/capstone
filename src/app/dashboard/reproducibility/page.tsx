@@ -191,6 +191,30 @@ export default function ReproducibilityDashboard() {
   const [selectedRecord, setSelectedRecord] = useState<ExecutionRecord | null>(
     mockExecutionRecords[0]
   );
+  const [selectedHardware, setSelectedHardware] = useState("all");
+  const [selectedFramework, setSelectedFramework] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [timeRange, setTimeRange] = useState("24h");
+  const [verificationMode, setVerificationMode] = useState(false);
+
+  const filteredRecords = useMemo(() => {
+    return mockExecutionRecords.filter(record => {
+      const hardwareMatch = selectedHardware === "all" || record.environment.hardware === selectedHardware;
+      const frameworkMatch = selectedFramework === "all" || record.environment.framework === selectedFramework;
+      const statusMatch = selectedStatus === "all" || record.status === selectedStatus;
+      return hardwareMatch && frameworkMatch && statusMatch;
+    });
+  }, [selectedHardware, selectedFramework, selectedStatus]);
+
+  const averageReproducibility = useMemo(() => {
+    const successful = filteredRecords.filter(r => r.status === "success");
+    if (successful.length === 0) return 0;
+    return successful.reduce((sum, r) => sum + r.reproducibilityScore, 0) / successful.length;
+  }, [filteredRecords]);
+
+  const anomalyCount = useMemo(() => {
+    return filteredRecords.reduce((sum, r) => sum + r.anomalies.length, 0);
+  }, [filteredRecords]);
 
   const handleCopyHash = (hash: string, type: string) => {
     navigator.clipboard.writeText(hash);
