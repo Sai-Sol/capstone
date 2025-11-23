@@ -6,18 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Brain, 
-  Sparkles, 
-  Target, 
-  BookOpen, 
+import {
+  Brain,
+  Sparkles,
+  Target,
+  BookOpen,
   TrendingUp,
   Lightbulb,
   RefreshCw,
   Copy,
   ExternalLink,
   Atom,
-  Zap
+  Zap,
+  MessageSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
