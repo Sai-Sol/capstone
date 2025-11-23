@@ -292,33 +292,7 @@ export default function CreatePage() {
     }
   };
 
-  const handleTemplateSelect = (template: any) => {
-    form.setValue("jobType", template.jobType);
-    form.setValue("description", template.algorithm);
-    form.setValue("submissionType", "qasm");
-    form.setValue("priority", template.priority);
-    setSelectedPreset(null);
-    toast({
-      title: "Template Loaded",
-      description: `Loaded "${template.name}" template successfully`,
-    });
-  };
-
-  const handleSaveTemplate = (name: string, description: string, formData: any) => {
-    setSavedTemplates([...savedTemplates, { name, description, ...formData }]);
-    toast({
-      title: "Template Saved",
-      description: `"${name}" saved as a reusable template`,
-    });
-  };
-
-  const handleBatchSubmit = async (batchJobs: any[]) => {
-    toast({
-      title: "Batch Submitted",
-      description: `${batchJobs.length} quantum jobs queued for execution`,
-    });
-  };
-
+  
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!signer) {
       toast({
