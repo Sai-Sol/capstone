@@ -30,7 +30,8 @@ import {
   Shield,
   Thermometer,
   Waveform,
-  Grid
+  Grid,
+  AlertTriangle
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
