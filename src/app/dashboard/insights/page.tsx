@@ -424,75 +424,132 @@ export default function InsightsPage() {
                 </Card>
               ))}
             </div>
-          ) : insights ? (
+          ) : insights && filteredMetrics.length > 0 ? (
             <div className="space-y-8">
-              {/* Performance Metrics Grid */}
+              {/* Enhanced Performance Metrics Grid */}
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {insights.metrics.map((metric, index) => (
-                  <motion.div
-                    key={metric.algorithmName}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Card className="quantum-card hover:scale-105 transition-all duration-300 h-full">
-                      <CardHeader className="pb-4">
-                        <CardTitle className="text-lg flex items-center gap-2">
-                          <Atom className="h-5 w-5 text-primary" />
-                          {metric.algorithmName}
-                        </CardTitle>
-                        <CardDescription>{metric.provider}</CardDescription>
-                      </CardHeader>
-                      
-                      <CardContent className="space-y-4">
-                        {/* Performance Scores */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="text-center">
-                            <div className={`text-2xl font-bold ${getPerformanceColor(metric.performance.efficiency)}`}>
-                              {metric.performance.efficiency}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">Efficiency</div>
-                          </div>
-                          <div className="text-center">
-                            <div className={`text-2xl font-bold ${getPerformanceColor(metric.resourceUsage.fidelity)}`}>
-                              {metric.resourceUsage.fidelity.toFixed(1)}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">Fidelity</div>
-                          </div>
-                        </div>
+                {filteredMetrics.map((metric, index) => {
+                  const algorithmMetrics = getAlgorithmSpecificMetrics(metric.algorithmType, metric.quantumMetrics);
 
-                        {/* Execution Metrics */}
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Execution Time:</span>
-                            <span className="font-medium text-green-400">{metric.executionTime.real.toFixed(1)}ms</span>
+                  return (
+                    <motion.div
+                      key={`${metric.algorithmName}-${metric.provider}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className={`quantum-card hover:scale-105 transition-all duration-300 h-full ${
+                        compareMode && selectedForComparison.includes(metric.algorithmName)
+                          ? 'ring-2 ring-primary/50 bg-primary/5'
+                          : ''
+                      }`}>
+                        <CardHeader className="pb-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="text-lg">{algorithmMetrics.icon}</div>
+                              <div>
+                                <CardTitle className="text-lg">{metric.algorithmName}</CardTitle>
+                                <CardDescription>{metric.provider}</CardDescription>
+                              </div>
+                            </div>
+                            {compareMode && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  if (selectedForComparison.includes(metric.algorithmName)) {
+                                    setSelectedForComparison(prev =>
+                                      prev.filter(name => name !== metric.algorithmName)
+                                    );
+                                  } else {
+                                    setSelectedForComparison(prev => [...prev, metric.algorithmName]);
+                                  }
+                                }}
+                                className={selectedForComparison.includes(metric.algorithmName) ? "text-primary" : ""}
+                              >
+                                {selectedForComparison.includes(metric.algorithmName) ? "✓" : "+"}
+                              </Button>
+                            )}
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Qubits Used:</span>
-                            <span className="font-medium text-blue-400">{metric.resourceUsage.qubits}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Total Cost:</span>
-                            <span className="font-medium text-purple-400">{metric.costAnalysis.totalCost.toFixed(4)} ETH</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Runs:</span>
-                            <span className="font-medium">{metric.runCount}</span>
-                          </div>
-                        </div>
+                        </CardHeader>
 
-                        {/* Complexity Badge */}
-                        <Badge variant="outline" className={
-                          metric.performance.complexity === 'Low' ? 'text-green-400 border-green-400/50' :
-                          metric.performance.complexity === 'Medium' ? 'text-yellow-400 border-yellow-400/50' :
-                          'text-red-400 border-red-400/50'
-                        }>
-                          {metric.performance.complexity} Complexity
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+                        <CardContent className="space-y-4">
+                          {/* Algorithm-Specific Primary Metric */}
+                          <div className="p-3 rounded-lg bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20">
+                            <div className="text-center">
+                              <div className={`text-2xl font-bold ${algorithmMetrics.color}`}>
+                                {algorithmMetrics.primary.toFixed(algorithmMetrics.unit === '%' ? 1 : 2)}{algorithmMetrics.unit}
+                              </div>
+                              <div className="text-xs text-muted-foreground">{algorithmMetrics.label}</div>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1 italic">
+                              {algorithmMetrics.description}
+                            </div>
+                          </div>
+
+                          {/* Performance Scores */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="text-center">
+                              <div className={`text-xl font-bold ${getPerformanceColor(metric.performance.efficiency)}`}>
+                                {metric.performance.efficiency}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">Efficiency</div>
+                            </div>
+                            <div className="text-center">
+                              <div className={`text-xl font-bold ${getPerformanceColor(metric.resourceUsage.fidelity)}`}>
+                                {metric.resourceUsage.fidelity.toFixed(1)}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">Fidelity</div>
+                            </div>
+                          </div>
+
+                          {/* Trend Indicators */}
+                          <div className="flex justify-around p-2 rounded bg-muted/10">
+                            <div className="text-center">
+                              {getTrendIcon(metric.trends.fidelityTrend)}
+                              <div className="text-xs text-muted-foreground mt-1">Fidelity</div>
+                            </div>
+                            <div className="text-center">
+                              {getTrendIcon(metric.trends.performanceTrend)}
+                              <div className="text-xs text-muted-foreground mt-1">Performance</div>
+                            </div>
+                            <div className="text-center">
+                              {getTrendIcon(metric.trends.costTrend)}
+                              <div className="text-xs text-muted-foreground mt-1">Cost</div>
+                            </div>
+                          </div>
+
+                          {/* Key Metrics */}
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Throughput:</span>
+                              <span className="font-medium text-blue-400">{metric.performance.throughput}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Next Run Est:</span>
+                              <span className="font-medium text-green-400">{metric.predictions.nextRunTime.toFixed(1)}ms</span>
+                            </div>
+                          </div>
+
+                          {/* Hardware & Complexity */}
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className={
+                              metric.performance.complexity === 'Low' ? 'text-green-400 border-green-400/50' :
+                              metric.performance.complexity === 'Medium' ? 'text-yellow-400 border-yellow-400/50' :
+                              'text-red-400 border-red-400/50'
+                            }>
+                              {metric.performance.complexity}
+                            </Badge>
+                            <div className="text-xs text-muted-foreground">
+                              <Thermometer className="inline h-3 w-3 mr-1" />
+                              {metric.hardwareMetrics.temperature.toFixed(1)}°K
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Performance Recommendations */}
