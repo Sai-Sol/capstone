@@ -288,12 +288,18 @@ export default function CreatePage() {
   const priority = form.watch("priority");
 
   const handlePresetSelect = (presetId: string) => {
-    const preset = presetAlgorithms.find(p => p.id === presetId);
+    const preset = presetAlgorithms.find((p) => p.id === presetId);
     if (preset) {
       setSelectedPreset(presetId);
       form.setValue("description", preset.qasm);
       form.setValue("submissionType", "qasm");
-      form.setValue("jobType", "Google Willow");
+      // Bug fix: Set the jobType to a valid provider ID
+      const provider = quantumProviders.find((p) => p.qubits >= preset.qubits);
+      if (provider) {
+        form.setValue("jobType", provider.id);
+      } else {
+        form.setValue("jobType", "Google Willow");
+      }
     }
   };
 
