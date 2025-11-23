@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, UserCircle, Atom, Home, Plus, History, Globe, Menu, X, BarChart3, TrendingUp, Users, Zap } from "lucide-react";
+import { LogOut, UserCircle, Atom, Home, Plus, History, Globe, Menu, X, BarChart3, TrendingUp, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import WalletConnectButton from "./wallet-connect-button";
