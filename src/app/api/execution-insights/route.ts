@@ -388,13 +388,14 @@ async function generateExecutionMetrics(
   let filteredAlgorithms = baseAlgorithms;
   
   if (algorithm) {
-    filteredAlgorithms = filteredAlgorithms.filter(a => 
-      a.name.toLowerCase().includes(algorithm.toLowerCase())
+    filteredAlgorithms = filteredAlgorithms.filter(a =>
+      a.name.toLowerCase().includes(algorithm.toLowerCase()) ||
+      a.algorithmType.toLowerCase().includes(algorithm.toLowerCase())
     );
   }
-  
+
   if (provider) {
-    filteredAlgorithms = filteredAlgorithms.filter(a => 
+    filteredAlgorithms = filteredAlgorithms.filter(a =>
       a.provider.toLowerCase().includes(provider.toLowerCase())
     );
   }
@@ -402,23 +403,33 @@ async function generateExecutionMetrics(
   return filteredAlgorithms.map(algo => {
     const simulatedTime = algo.baseTime / 50; // Simulation is much faster but less accurate
     const improvement = (algo.baseTime / simulatedTime) * 100;
-    
+
     // Calculate performance metrics
     const efficiency = Math.max(60, 100 - (algo.depth * 2) - (algo.gates * 0.5));
     const accuracy = algo.baseFidelity;
     const scalability = Math.max(50, 100 - (algo.qubits * 2));
-    
+    const throughput = Math.round(1000 / algo.baseTime * 100) / 100; // Operations per second
+    const latency = algo.baseTime + (Math.random() * 10); // Add network latency
+
     // Calculate costs (MegaETH has very low gas fees)
     const megaethCost = 0.001 + (algo.gates * 0.00005); // Base cost + gate complexity
     const computeCost = 0.001 + (algo.qubits * 0.0003) + (algo.depth * 0.0001);
-    
+    const costPerOperation = (megaethCost + computeCost) / algo.gates;
+
+    // Generate trends and predictions
+    const trendOptions = ["improving", "stable", "declining"] as const;
+    const randomVariation = () => (Math.random() - 0.5) * 0.2; // ±10% variation
+
     return {
       algorithmName: algo.name,
+      algorithmType: algo.algorithmType,
       provider: algo.provider,
       executionTime: {
         simulated: simulatedTime,
         real: algo.baseTime,
-        improvement
+        improvement,
+        queueTime: Math.random() * 15 + 2, // 2-17ms queue time
+        compilationTime: Math.random() * 8 + 1, // 1-9ms compilation
       },
       resourceUsage: {
         qubits: algo.qubits,
@@ -430,12 +441,39 @@ async function generateExecutionMetrics(
         efficiency,
         accuracy,
         scalability,
-        complexity: algo.complexity
+        complexity: algo.complexity,
+        throughput,
+        latency
       },
       costAnalysis: {
         megaethCost,
         computeCost,
-        totalCost: megaethCost + computeCost
+        totalCost: megaethCost + computeCost,
+        costPerOperation
+      },
+      quantumMetrics: {
+        ...algo.quantumMetrics,
+        // Add some realistic variation to the quantum metrics
+        coherenceTime: algo.quantumMetrics.coherenceTime * (1 + randomVariation()),
+        gateFidelity: Math.min(99.9, algo.quantumMetrics.gateFidelity * (1 + randomVariation() * 0.5)),
+        measurementFidelity: Math.min(99.9, algo.quantumMetrics.measurementFidelity * (1 + randomVariation() * 0.5)),
+        errorRate: Math.max(0.001, algo.quantumMetrics.errorRate * (1 + randomVariation())),
+      },
+      hardwareMetrics: {
+        ...algo.hardwareMetrics,
+        temperature: algo.hardwareMetrics.temperature * (1 + randomVariation()),
+        clockFrequency: algo.hardwareMetrics.clockFrequency * (1 + randomVariation() * 0.2),
+        connectivity: Math.floor(algo.hardwareMetrics.connectivity + (Math.random() - 0.5) * 4),
+      },
+      trends: {
+        fidelityTrend: trendOptions[Math.floor(Math.random() * trendOptions.length)],
+        performanceTrend: trendOptions[Math.floor(Math.random() * trendOptions.length)],
+        costTrend: trendOptions[Math.floor(Math.random() * trendOptions.length)],
+      },
+      predictions: {
+        nextRunFidelity: Math.min(99.9, algo.baseFidelity * (1 + randomVariation() * 0.3)),
+        nextRunTime: Math.max(algo.baseTime * 0.8, algo.baseTime * (1 + randomVariation() * 0.4)),
+        optimizationPotential: Math.floor(Math.random() * 40) + 10, // 10-50% optimization potential
       },
       runCount: Math.floor(Math.random() * 50) + 10,
       lastRun: Date.now() - Math.floor(Math.random() * 86400000) // Random time in last 24h
