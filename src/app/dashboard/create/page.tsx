@@ -701,7 +701,7 @@ measure q -> c;`}
                         <div className="text-lg font-bold text-green-400">0.001 ETH</div>
                       </div>
                       <div className="text-center">
-                        <Atom className="h-6 w-6 text-purple-400 mx-auto mb-2" />
+                        <Zap className="h-6 w-6 text-purple-400 mx-auto mb-2" />
                         <div className="text-sm text-muted-foreground">Qubits Used</div>
                         <div className="text-lg font-bold text-purple-400">2-5</div>
                       </div>
