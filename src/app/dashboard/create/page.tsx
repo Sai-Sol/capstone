@@ -265,7 +265,6 @@ export default function CreatePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
-  const [savedTemplates, setSavedTemplates] = useState<any[]>([]);
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
