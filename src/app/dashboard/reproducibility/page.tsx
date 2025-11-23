@@ -21,15 +21,25 @@ interface ExecutionRecord {
     hardware: string;
     framework: string;
     version: string;
+    temperature: number;
+    pressure: number;
+    errorCorrection: string;
   };
   metrics: {
     duration: number;
     accuracy: number;
     iterations: number;
+    fidelity: number;
+    errorRate: number;
+    throughput: number;
   };
   parameters: Record<string, string | number>;
   inputHash: string;
   outputHash: string;
+  blockchainHash: string;
+  reproducibilityScore: number;
+  driftDetected: boolean;
+  anomalies: string[];
   notes: string;
 }
 
