@@ -46,47 +46,98 @@ cx q[0],q[1];
 cx q[1],q[2];
 measure q -> c;`;
 
-const optimizationTips = [
+interface OptimizationTip {
+  id: string;
+  title: string;
+  description: string;
+  impact: "critical" | "high" | "medium" | "low";
+  suggestion: string;
+  estimatedImprovement: string;
+  difficulty: "easy" | "moderate" | "complex";
+  category: "layout" | "gate" | "timing" | "hardware" | "error";
+}
+
+const optimizationTips: OptimizationTip[] = [
   {
     id: "1",
-    title: "Reduce Circuit Depth",
-    description:
-      "Combine consecutive single-qubit gates on the same qubit to reduce overall circuit depth.",
-    impact: "high",
-    suggestion: "Use gate fusion to merge H-X-H into Z gate",
+    title: "Quantum Gate Fusion",
+    description: "Combine consecutive single-qubit gates on the same qubit to reduce overall circuit depth and error accumulation.",
+    impact: "critical",
+    suggestion: "Fuse H-X-H into Z gate, Rx(π)Ry(π/2) → Ry(-π/2)",
+    estimatedImprovement: "23% depth reduction, 18% error reduction",
+    difficulty: "easy",
+    category: "gate"
   },
   {
     id: "2",
-    title: "Optimize Qubit Layout",
-    description:
-      "Reorder qubits to minimize CNOT gate distances and improve connectivity.",
-    impact: "high",
-    suggestion: "Rearrange qubits: [0,1,2] -> [2,0,1] reduces distance by 30%",
+    title: "Dynamic Qubit Mapping",
+    description: "AI-optimized qubit placement based on hardware topology and circuit structure.",
+    impact: "critical",
+    suggestion: "Rearrange qubits: [0,1,2,3] → [2,0,3,1] reduces CNOT distance by 42%",
+    estimatedImprovement: "35% faster execution, 12% fidelity improvement",
+    difficulty: "complex",
+    category: "layout"
   },
   {
     id: "3",
-    title: "Remove Redundant Gates",
-    description: "Eliminate unnecessary gates that cancel out or have no effect.",
-    impact: "medium",
-    suggestion: "Remove X-X sequence (identity operation) at position 5",
+    title: "Error Mitigation Optimization",
+    description: "Apply dynamical decoupling and zero-noise extrapolation techniques.",
+    impact: "high",
+    suggestion: "Insert echo pulses between idle periods, use Richardson extrapolation",
+    estimatedImprovement: "28% accuracy improvement",
+    difficulty: "moderate",
+    category: "error"
   },
   {
     id: "4",
-    title: "Parallelize Operations",
-    description:
-      "Identify gates that can execute simultaneously on different qubits.",
-    impact: "medium",
-    suggestion:
-      "Move gate H(q2) earlier to run parallel with CNOT(q0,q1), saving 1 cycle",
+    title: "Hardware-Aware Compilation",
+    description: "Optimize for specific quantum processor characteristics and native gate sets.",
+    impact: "high",
+    suggestion: "Use Google's native gates: fsim, cz, rx, rz for Willow processor",
+    estimatedImprovement: "41% compilation speed, 15% depth reduction",
+    difficulty: "moderate",
+    category: "hardware"
   },
   {
     id: "5",
-    title: "Use Native Gates",
-    description:
-      "Replace decomposed gates with native hardware gates for your target provider.",
-    impact: "low",
-    suggestion: "Replace RX gates with native parametric gates available on IBM Condor",
+    title: "Parallel Gate Execution",
+    description: "Identify and schedule commutable gates for simultaneous execution.",
+    impact: "medium",
+    suggestion: "Execute H(q2), H(q3) in parallel with CNOT(q0,q1)",
+    estimatedImprovement: "19% execution time reduction",
+    difficulty: "easy",
+    category: "timing"
   },
+  {
+    id: "6",
+    title: "Adaptive Circuit Design",
+    description: "Machine learning-based circuit adaptation based on real-time hardware feedback.",
+    impact: "medium",
+    suggestion: "Adapt rotation angles based on calibration drift and noise patterns",
+    estimatedImprovement: "22% accuracy improvement",
+    difficulty: "complex",
+    category: "hardware"
+  },
+  {
+    id: "7",
+    title: "Quantum Approximation Optimization",
+    description: "Trade precision for depth using QAOA-inspired approximation techniques.",
+    impact: "medium",
+    suggestion: "Approximate Toffoli with 7 gates instead of 6 CNOTs",
+    estimatedImprovement: "18% depth reduction, minimal accuracy loss",
+    difficulty: "moderate",
+    category: "gate"
+  },
+  {
+    id: "8",
+    title: "Subroutine Extraction",
+    description: "Identify and optimize frequently used circuit subroutines.",
+    impact: "low",
+    suggestion: "Extract 3-qubit QFT subroutine, pre-optimize for reuse",
+    estimatedImprovement: "8% overall optimization",
+    difficulty: "easy",
+    category: "gate"
+  }
 ];
 
 export default function OptimizePage() {
