@@ -266,27 +266,141 @@ export default function InsightsPage() {
         </p>
       </motion.div>
 
-      {/* Time Range Selector */}
-      <div className="flex justify-center">
-        <div className="flex gap-2 p-1 bg-muted/30 rounded-lg">
-          {['1d', '7d', '30d', '90d'].map((range) => (
-            <Button
-              key={range}
-              variant={selectedTimeRange === range ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setSelectedTimeRange(range)}
-            >
-              {range}
-            </Button>
-          ))}
+      {/* Enhanced Controls */}
+      <div className="flex flex-col gap-4">
+        {/* Time Range Selector */}
+        <div className="flex justify-center">
+          <div className="flex gap-2 p-1 bg-muted/30 rounded-lg">
+            {['1d', '7d', '30d', '90d'].map((range) => (
+              <Button
+                key={range}
+                variant={selectedTimeRange === range ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setSelectedTimeRange(range)}
+              >
+                {range}
+              </Button>
+            ))}
+          </div>
         </div>
+
+        {/* Advanced Filters */}
+        <Card className="quantum-card border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Filter className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">Advanced Filters</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              {/* Algorithm Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Algorithm Type</label>
+                <select
+                  value={selectedAlgorithm}
+                  onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                  className="w-full p-2 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="all">All Algorithms</option>
+                  <option value="bell-state">Bell State</option>
+                  <option value="grover-search">Grover's Search</option>
+                  <option value="superposition">Superposition</option>
+                  <option value="teleportation">Teleportation</option>
+                  <option value="fourier-transform">Fourier Transform</option>
+                  <option value="random-generator">Random Generator</option>
+                  <option value="deutsch-jozsa">Deutsch-Jozsa</option>
+                  <option value="phase-estimation">Phase Estimation</option>
+                </select>
+              </div>
+
+              {/* Provider Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Quantum Provider</label>
+                <select
+                  value={selectedProvider}
+                  onChange={(e) => setSelectedProvider(e.target.value)}
+                  className="w-full p-2 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="all">All Providers</option>
+                  <option value="Google Willow">Google Willow</option>
+                  <option value="IBM Condor">IBM Condor</option>
+                  <option value="Amazon Braket">Amazon Braket</option>
+                </select>
+              </div>
+
+              {/* Metric Filter */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">Primary Metric</label>
+                <select
+                  value={selectedMetric}
+                  onChange={(e) => setSelectedMetric(e.target.value)}
+                  className="w-full p-2 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="efficiency">Efficiency</option>
+                  <option value="fidelity">Fidelity</option>
+                  <option value="accuracy">Accuracy</option>
+                  <option value="throughput">Throughput</option>
+                  <option value="cost">Cost Efficiency</option>
+                </select>
+              </div>
+
+              {/* View Mode */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground">View Mode</label>
+                <div className="flex gap-1">
+                  {[
+                    { value: 'grid', icon: <Grid className="h-3 w-3" /> },
+                    { value: 'table', icon: <BarChart3 className="h-3 w-3" /> },
+                    { value: 'comparison', icon: <GitBranch className="h-3 w-3" /> }
+                  ].map((mode) => (
+                    <Button
+                      key={mode.value}
+                      variant={viewMode === mode.value ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode(mode.value as 'grid' | 'table' | 'comparison')}
+                      className="flex-1"
+                    >
+                      {mode.icon}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Results Summary */}
+            {insights && (
+              <div className="mt-3 pt-3 border-t border-primary/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Showing {filteredMetrics.length} of {insights.metrics.length} results
+                  </span>
+                  {filteredMetrics.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCompareMode(!compareMode)}
+                      className={compareMode ? "bg-primary/20 border-primary/50" : ""}
+                    >
+                      <GitBranch className="h-3 w-3 mr-1" />
+                      Compare
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="performance" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-muted/30 h-12">
+        <TabsList className="grid w-full grid-cols-3 bg-muted/30 h-12">
           <TabsTrigger value="performance" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Performance
+          </TabsTrigger>
+          <TabsTrigger value="quantum" className="flex items-center gap-2">
+            <Atom className="h-4 w-4" />
+            Quantum Metrics
           </TabsTrigger>
           <TabsTrigger value="learning" className="flex items-center gap-2">
             <BookOpen className="h-4 w-4" />
