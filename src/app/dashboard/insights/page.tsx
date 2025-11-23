@@ -123,6 +123,12 @@ export default function InsightsPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>('all');
+  const [selectedProvider, setSelectedProvider] = useState<string>('all');
+  const [selectedMetric, setSelectedMetric] = useState<string>('efficiency');
+  const [viewMode, setViewMode] = useState<'grid' | 'table' | 'comparison'>('grid');
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
 
   useEffect(() => {
     fetchExecutionInsights();
