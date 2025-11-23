@@ -8,16 +8,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  RefreshCw, 
-  Wifi, 
-  WifiOff, 
-  AlertTriangle, 
+import {
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  AlertTriangle,
   CheckCircle,
+  XCircle,
+  Clock,
   ExternalLink,
   Zap,
   Globe,
-  Settings
+  Settings,
+  Info
 } from "lucide-react";
 import { MEGAETH_TESTNET_CONFIG } from "@/lib/megaeth-config";
 
