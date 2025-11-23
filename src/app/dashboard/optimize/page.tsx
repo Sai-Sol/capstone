@@ -270,19 +270,6 @@ export default function OptimizePage() {
     setIsAnalyzing(false);
   };
 
-  const getImpactColor = (impact: string) => {
-    switch (impact) {
-      case "high":
-        return "text-red-400 border-red-500/50 bg-red-500/10";
-      case "medium":
-        return "text-yellow-400 border-yellow-500/50 bg-yellow-500/10";
-      case "low":
-        return "text-green-400 border-green-500/50 bg-green-500/10";
-      default:
-        return "text-gray-400";
-    }
-  };
-
   return (
     <div className="space-y-8 p-6">
       <motion.div
