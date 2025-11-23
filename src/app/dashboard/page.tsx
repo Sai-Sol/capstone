@@ -41,25 +41,50 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-8 p-6">
-      {/* Clean Welcome Section */}
+      {/* Enhanced Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <Avatar className="h-16 w-16 border-4 border-primary/30 shadow-xl">
-            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary">
-              <Atom size={32} className="animate-pulse"/>
-            </AvatarFallback>
-          </Avatar>
+        {/* Hero Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-purple-500/10 to-blue-500/10 rounded-3xl blur-3xl -z-10" />
+
+        <div className="flex items-center justify-center gap-6 mb-8 relative">
+          {/* Animated Avatar */}
+          <motion.div
+            animate={{
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="relative"
+          >
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 to-purple-500/30 rounded-full blur-xl animate-pulse" />
+            <Avatar className="h-20 w-20 border-4 border-white/20 shadow-2xl bg-gradient-to-br from-primary to-purple-500">
+              <AvatarFallback className="bg-gradient-to-br from-primary/30 to-purple-500/30 text-white">
+                <Atom size={40} className="animate-pulse"/>
+              </AvatarFallback>
+            </Avatar>
+
+            {/* Floating particles around avatar */}
+            <div className="absolute -top-2 -right-2 w-3 h-3 bg-cyan-400 rounded-full animate-bounce" style={{ animationDuration: '2s' }} />
+            <div className="absolute -bottom-2 -left-2 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDuration: '1.5s', animationDelay: '0.5s' }} />
+            <div className="absolute top-1/2 -left-4 w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '1s' }} />
+          </motion.div>
+
           <div className="text-left">
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-white via-primary to-purple-400 bg-clip-text text-transparent drop-shadow-2xl mb-2">
               Welcome back, {user?.name || user?.email}!
             </h1>
-            <p className="text-lg text-muted-foreground mt-1">
-              Ready to explore quantum computing on the blockchain
+            <p className="text-xl text-foreground/90 font-medium">
+              <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                Ready to explore quantum computing on the blockchain
+              </span>
             </p>
           </div>
         </div>
