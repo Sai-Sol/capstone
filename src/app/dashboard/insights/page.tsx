@@ -553,42 +553,86 @@ export default function InsightsPage() {
                 })}
               </div>
 
-              {/* Performance Recommendations */}
+              {/* Enhanced Performance Recommendations */}
               <Card className="quantum-card border-green-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-green-400">
                     <Lightbulb className="h-6 w-6" />
-                    Performance Recommendations
+                    AI-Powered Performance Recommendations
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Alert className="border-green-500/20 bg-green-500/5">
-                    <Sparkles className="h-4 w-4" />
-                    <AlertDescription>
-                      <div className="font-semibold text-green-400 mb-2">Recommendation</div>
-                      <div className="text-green-200/90">{insights.insights.recommendation}</div>
-                    </AlertDescription>
-                  </Alert>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-center">
-                      <Target className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                      <div className="text-sm text-blue-200 mb-1">Fastest Algorithm</div>
-                      <div className="font-bold text-blue-100">{insights.insights.fastest}</div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
-                      <Zap className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                      <div className="text-sm text-green-200 mb-1">Most Efficient</div>
-                      <div className="font-bold text-green-100">{insights.insights.mostEfficient}</div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20 text-center">
-                      <Activity className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                      <div className="text-sm text-purple-200 mb-1">Most Accurate</div>
-                      <div className="font-bold text-purple-100">{insights.insights.mostAccurate}</div>
-                    </div>
-                  </div>
+                  {filteredMetrics.length > 0 && (
+                    <>
+                      <Alert className="border-green-500/20 bg-green-500/5">
+                        <Sparkles className="h-4 w-4" />
+                        <AlertDescription>
+                          <div className="font-semibold text-green-400 mb-2">Algorithm Recommendation</div>
+                          <div className="text-green-200/90">
+                            {selectedAlgorithm !== 'all'
+                              ? `Focus on optimizing ${selectedAlgorithm.replace('-', ' ')} algorithms for better performance and fidelity.`
+                              : `Based on your ${filteredMetrics.length} algorithms, consider optimizing the lowest performing one for maximum impact.`
+                            }
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                        {(() => {
+                          const sortedByEfficiency = [...filteredMetrics].sort((a, b) => b.performance.efficiency - a.performance.efficiency);
+                          const sortedByFidelity = [...filteredMetrics].sort((a, b) => b.resourceUsage.fidelity - a.resourceUsage.fidelity);
+                          const sortedBySpeed = [...filteredMetrics].sort((a, b) => a.executionTime.real - b.executionTime.real);
+
+                          return (
+                            <>
+                              <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-center">
+                                <Target className="h-6 w-6 text-blue-400 mx-auto mb-2" />
+                                <div className="text-sm text-blue-200 mb-1">Most Efficient</div>
+                                <div className="font-bold text-blue-100">{sortedByEfficiency[0]?.algorithmName}</div>
+                                <div className="text-xs text-blue-200/70 mt-1">{sortedByEfficiency[0]?.performance.efficiency}%</div>
+                              </div>
+
+                              <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
+                                <Zap className="h-6 w-6 text-green-400 mx-auto mb-2" />
+                                <div className="text-sm text-green-200 mb-1">Highest Fidelity</div>
+                                <div className="font-bold text-green-100">{sortedByFidelity[0]?.algorithmName}</div>
+                                <div className="text-xs text-green-200/70 mt-1">{sortedByFidelity[0]?.resourceUsage.fidelity.toFixed(1)}%</div>
+                              </div>
+
+                              <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20 text-center">
+                                <Activity className="h-6 w-6 text-purple-400 mx-auto mb-2" />
+                                <div className="text-sm text-purple-200 mb-1">Fastest Execution</div>
+                                <div className="font-bold text-purple-100">{sortedBySpeed[0]?.algorithmName}</div>
+                                <div className="text-xs text-purple-200/70 mt-1">{sortedBySpeed[0]?.executionTime.real.toFixed(1)}ms</div>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Algorithm-Specific Tips */}
+                      <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-primary/5 to-purple-500/5 border border-primary/20">
+                        <h4 className="font-semibold text-primary mb-3 flex items-center gap-2">
+                          <Brain className="h-4 w-4" />
+                          Algorithm Optimization Tips
+                        </h4>
+                        <div className="grid gap-2 text-sm">
+                          {Array.from(new Set(filteredMetrics.map(m => m.algorithmType))).map(algoType => {
+                            const algorithmMetrics = getAlgorithmSpecificMetrics(algoType, {});
+                            return (
+                              <div key={algoType} className="flex items-center gap-2 p-2 rounded bg-muted/10">
+                                <span className="text-lg">{algorithmMetrics.icon}</span>
+                                <div className="flex-1">
+                                  <div className="font-medium capitalize">{algoType.replace('-', ' ')}</div>
+                                  <div className="text-xs text-muted-foreground">{algorithmMetrics.description}</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
