@@ -607,6 +607,231 @@ export default function InsightsPage() {
           )}
         </TabsContent>
 
+        <TabsContent value="quantum" className="mt-6">
+          {isLoading ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="quantum-card">
+                  <CardContent className="p-6">
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-4 bg-muted/50 rounded w-3/4"></div>
+                      <div className="h-6 bg-muted/50 rounded"></div>
+                      <div className="h-4 bg-muted/50 rounded w-1/2"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : insights && filteredMetrics.length > 0 ? (
+            <div className="space-y-8">
+              {/* Quantum Hardware Performance */}
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                {[
+                  {
+                    title: "Avg Coherence Time",
+                    value: filteredMetrics.reduce((sum, m) => sum + (m.quantumMetrics.coherenceTime || 0), 0) / filteredMetrics.length,
+                    unit: "μs",
+                    icon: <Clock className="h-5 w-5" />,
+                    color: "text-blue-400",
+                    description: "Qubit state preservation"
+                  },
+                  {
+                    title: "Avg Gate Fidelity",
+                    value: filteredMetrics.reduce((sum, m) => sum + (m.quantumMetrics.gateFidelity || 0), 0) / filteredMetrics.length,
+                    unit: "%",
+                    icon: <Shield className="h-5 w-5" />,
+                    color: "text-green-400",
+                    description: "Gate operation accuracy"
+                  },
+                  {
+                    title: "Avg Error Rate",
+                    value: filteredMetrics.reduce((sum, m) => sum + (m.quantumMetrics.errorRate || 0), 0) / filteredMetrics.length,
+                    unit: "%",
+                    icon: <AlertTriangle className="h-5 w-5" />,
+                    color: "text-red-400",
+                    description: "Quantum error probability"
+                  },
+                  {
+                    title: "Avg Quantum Volume",
+                    value: filteredMetrics.reduce((sum, m) => sum + (m.quantumMetrics.quantumVolume || 0), 0) / filteredMetrics.length,
+                    unit: "",
+                    icon: <Gauge className="h-5 w-5" />,
+                    color: "text-purple-400",
+                    description: "Computational capability"
+                  }
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="quantum-card border-primary/20">
+                      <CardContent className="p-4 text-center">
+                        <div className={`${stat.color} mb-2`}>{stat.icon}</div>
+                        <div className="text-xs text-muted-foreground mb-1">{stat.title}</div>
+                        <div className={`text-2xl font-bold ${stat.color}`}>
+                          {stat.value.toFixed(1)}{stat.unit}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">{stat.description}</div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Algorithm-Specific Quantum Metrics */}
+              <div className="grid gap-6 md:grid-cols-2">
+                {filteredMetrics.map((metric, index) => {
+                  const algorithmMetrics = getAlgorithmSpecificMetrics(metric.algorithmType, metric.quantumMetrics);
+
+                  return (
+                    <motion.div
+                      key={`quantum-${metric.algorithmName}-${index}`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="quantum-card border-primary/30">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Waveform className="h-5 w-5 text-primary" />
+                            {metric.algorithmName} - Quantum Analysis
+                          </CardTitle>
+                          <CardDescription>{metric.provider}</CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="space-y-4">
+                          {/* Primary Quantum Metric */}
+                          <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-2xl">{algorithmMetrics.icon}</span>
+                              <div className="text-right">
+                                <div className={`text-2xl font-bold ${algorithmMetrics.color}`}>
+                                  {algorithmMetrics.primary.toFixed(algorithmMetrics.unit === '%' ? 1 : 2)}{algorithmMetrics.unit}
+                                </div>
+                                <div className="text-sm text-muted-foreground">{algorithmMetrics.label}</div>
+                              </div>
+                            </div>
+                            <div className="text-xs text-muted-foreground italic">
+                              {algorithmMetrics.description}
+                            </div>
+                          </div>
+
+                          {/* Advanced Quantum Metrics */}
+                          <div className="grid grid-cols-2 gap-3">
+                            {metric.quantumMetrics.entanglementRatio && (
+                              <div className="text-center p-2 rounded bg-blue-500/10 border border-blue-500/20">
+                                <div className="text-lg font-bold text-blue-400">
+                                  {(metric.quantumMetrics.entanglementRatio * 100).toFixed(1)}%
+                                </div>
+                                <div className="text-xs text-muted-foreground">Entanglement</div>
+                              </div>
+                            )}
+
+                            {metric.quantumMetrics.coherenceTime && (
+                              <div className="text-center p-2 rounded bg-green-500/10 border border-green-500/20">
+                                <div className="text-lg font-bold text-green-400">
+                                  {metric.quantumMetrics.coherenceTime.toFixed(1)}μs
+                                </div>
+                                <div className="text-xs text-muted-foreground">T1 Time</div>
+                              </div>
+                            )}
+
+                            {metric.quantumMetrics.gateFidelity && (
+                              <div className="text-center p-2 rounded bg-purple-500/10 border border-purple-500/20">
+                                <div className="text-lg font-bold text-purple-400">
+                                  {metric.quantumMetrics.gateFidelity.toFixed(1)}%
+                                </div>
+                                <div className="text-xs text-muted-foreground">Gate Fidelity</div>
+                              </div>
+                            )}
+
+                            {metric.quantumMetrics.readoutError && (
+                              <div className="text-center p-2 rounded bg-orange-500/10 border border-orange-500/20">
+                                <div className="text-lg font-bold text-orange-400">
+                                  {(metric.quantumMetrics.readoutError * 100).toFixed(1)}%
+                                </div>
+                                <div className="text-xs text-muted-foreground">Readout Error</div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Hardware Characteristics */}
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground flex items-center gap-1">
+                                <Thermometer className="h-3 w-3" />
+                                Temperature:
+                              </span>
+                              <span className="font-medium text-cyan-400">
+                                {metric.hardwareMetrics.temperature.toFixed(1)}°K
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground flex items-center gap-1">
+                                <Cpu className="h-3 w-3" />
+                                Clock Frequency:
+                              </span>
+                              <span className="font-medium text-blue-400">
+                                {metric.hardwareMetrics.clockFrequency.toFixed(1)} GHz
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground flex items-center gap-1">
+                                <Network className="h-3 w-3" />
+                                Connectivity:
+                              </span>
+                              <span className="font-medium text-green-400">
+                                {metric.hardwareMetrics.connectivity}%
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Predictive Analysis */}
+                          <div className="p-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Brain className="h-4 w-4 text-yellow-400" />
+                              <span className="text-sm font-medium">Predictive Analysis</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-muted-foreground">Next Run Fidelity:</span>
+                                <span className="font-medium text-yellow-400 ml-1">
+                                  {metric.predictions.nextRunFidelity.toFixed(1)}%
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Optimization Potential:</span>
+                                <span className="font-medium text-orange-400 ml-1">
+                                  {metric.predictions.optimizationPotential.toFixed(0)}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <Card className="quantum-card">
+              <CardContent className="p-12 text-center">
+                <Waveform className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Quantum Data Available</h3>
+                <p className="text-muted-foreground">
+                  Run quantum algorithms to see advanced quantum metrics and hardware analysis.
+                </p>
+                <Button className="mt-4" asChild>
+                  <a href="/dashboard/create">Run Quantum Algorithms</a>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
         <TabsContent value="learning" className="mt-6">
           <div className="space-y-6">
             {/* Learning Assistant */}
