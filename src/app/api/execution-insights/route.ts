@@ -1,13 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { performanceMonitor } from '@/lib/performance-monitor';
 
+interface QuantumMetrics {
+  entanglementRatio?: number;
+  superpositionStates?: number;
+  amplificationFactor?: number;
+  coherenceTime?: number;
+  errorRate?: number;
+  quantumVolume?: number;
+  gateFidelity?: number;
+  measurementFidelity?: number;
+  statePreparationFidelity?: number;
+  readoutError?: number;
+  decoherenceRate?: number;
+  t1Time?: number;
+  t2Time?: number;
+}
+
 interface ExecutionMetrics {
   algorithmName: string;
+  algorithmType: "bell-state" | "grover-search" | "superposition" | "teleportation" | "fourier-transform" | "random-generator" | "deutsch-jozsa" | "phase-estimation" | "custom";
   provider: string;
   executionTime: {
     simulated: number;
     real: number;
     improvement: number;
+    queueTime: number;
+    compilationTime: number;
   };
   resourceUsage: {
     qubits: number;
@@ -20,11 +39,31 @@ interface ExecutionMetrics {
     accuracy: number;
     scalability: number;
     complexity: string;
+    throughput: number;
+    latency: number;
   };
   costAnalysis: {
     megaethCost: number;
     computeCost: number;
     totalCost: number;
+    costPerOperation: number;
+  };
+  quantumMetrics: QuantumMetrics;
+  hardwareMetrics: {
+    temperature: number;
+    clockFrequency: number;
+    connectivity: number;
+    errorCorrection: string;
+  };
+  trends: {
+    fidelityTrend: "improving" | "stable" | "declining";
+    performanceTrend: "improving" | "stable" | "declining";
+    costTrend: "increasing" | "stable" | "decreasing";
+  };
+  predictions: {
+    nextRunFidelity: number;
+    nextRunTime: number;
+    optimizationPotential: number;
   };
   runCount: number;
   lastRun: number;
