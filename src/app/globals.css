@@ -262,17 +262,42 @@
   }
 
   .quantum-card {
-    @apply border-border bg-card text-card-foreground shadow-lg;
-    transition: all 0.3s ease;
+    @apply border-border bg-card text-card-foreground shadow-xl;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform, box-shadow;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: hsl(var(--card-foreground)) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quantum-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(124, 58, 237, 0.05) 50%,
+      transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   .quantum-card:hover {
-    @apply shadow-xl;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px hsl(var(--primary) / 0.15);
+    @apply shadow-2xl;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 40px hsl(var(--primary) / 0.25),
+                0 0 0 1px hsl(var(--primary) / 0.1),
+                0 0 20px hsl(var(--primary) / 0.15);
+    border-color: hsl(var(--primary) / 0.3);
+  }
+
+  .quantum-card:hover::before {
+    opacity: 1;
   }
 
   .quantum-button {
