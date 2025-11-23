@@ -29,8 +29,7 @@ import {
   Network,
   Shield,
   Thermometer,
-  Waveform,
-  Grid,
+    Grid,
   AlertTriangle
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
