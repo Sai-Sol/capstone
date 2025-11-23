@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Brain, 
-  TrendingUp, 
-  Target, 
+import {
+  Brain,
+  TrendingUp,
+  Target,
   BarChart3,
   Atom,
   Zap,
@@ -20,7 +20,16 @@ import {
   Lightbulb,
   RefreshCw,
   Sparkles,
-  BookOpen
+  BookOpen,
+  Filter,
+  Gauge,
+  Cpu,
+  Database,
+  GitBranch,
+  Network,
+  Shield,
+  Thermometer,
+  Waveform
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
