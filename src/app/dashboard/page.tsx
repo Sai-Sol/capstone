@@ -122,71 +122,142 @@ export default function DashboardHomePage() {
         </div>
       </motion.div>
 
-      {/* Quick Actions Grid */}
+      {/* Enhanced Quick Actions Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
       >
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-foreground">
-          <Zap className="h-7 w-7 text-primary" />
-          Quick Actions
+        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 text-foreground">
+          <div className="relative">
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary/30 to-purple-500/30 rounded-lg blur-lg animate-pulse" />
+            <Zap className="h-8 w-8 text-primary relative" />
+          </div>
+          <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+            Quantum Hub
+          </span>
         </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Link href="/dashboard/create">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-green-500/20 hover:border-green-500/40 h-full">
-              <CardContent className="p-6 text-center">
-                <div className="p-4 bg-green-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Atom className="h-8 w-8 text-green-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Create Job</h3>
-                <p className="text-muted-foreground text-sm">
-                  Submit quantum algorithms for execution
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: [0, 1, -1, 0] }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="group relative overflow-hidden backdrop-blur-sm bg-gradient-to-br from-green-500/20 to-emerald-500/10 border-green-500/30 hover:border-green-400/50 h-full hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-300">
+                {/* Card background effects */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/20 to-transparent rounded-full blur-xl -translate-y-16 translate-x-16 group-hover:translate-x-12 transition-all duration-500" />
+
+                <CardContent className="p-6 text-center relative z-10">
+                  <motion.div
+                    whileHover={{ rotate: [0, 360] }}
+                    transition={{ duration: 0.5 }}
+                    className="p-4 bg-gradient-to-br from-green-500/30 to-emerald-500/20 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                  >
+                    <Atom className="h-8 w-8 text-green-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-2 text-green-100 group-hover:text-white transition-colors">
+                    Create Job
+                  </h3>
+                  <p className="text-green-200/80 text-sm group-hover:text-green-100 transition-colors">
+                    Submit quantum algorithms for execution
+                  </p>
+                  <div className="mt-4 flex items-center justify-center gap-1">
+                    <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse" />
+                    <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                    <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Link>
 
           <Link href="/dashboard/results">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-blue-500/20 hover:border-blue-500/40 h-full">
-              <CardContent className="p-6 text-center">
-                <div className="p-4 bg-blue-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <BarChart3 className="h-8 w-8 text-blue-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">View Results</h3>
-                <p className="text-muted-foreground text-sm">
-                  Analyze your quantum execution results
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: [0, -1, 1, 0] }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="group relative overflow-hidden backdrop-blur-sm bg-gradient-to-br from-blue-500/20 to-cyan-500/10 border-blue-500/30 hover:border-blue-400/50 h-full hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-xl -translate-y-16 translate-x-16 group-hover:translate-x-12 transition-all duration-500" />
+
+                <CardContent className="p-6 text-center relative z-10">
+                  <motion.div
+                    whileHover={{ rotate: [0, -360] }}
+                    transition={{ duration: 0.5 }}
+                    className="p-4 bg-gradient-to-br from-blue-500/30 to-cyan-500/20 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                  >
+                    <BarChart3 className="h-8 w-8 text-blue-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-2 text-blue-100 group-hover:text-white transition-colors">
+                    View Results
+                  </h3>
+                  <p className="text-blue-200/80 text-sm group-hover:text-blue-100 transition-colors">
+                    Analyze your quantum execution results
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Link>
 
           <Link href="/dashboard/blockchain">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-purple-500/20 hover:border-purple-500/40 h-full">
-              <CardContent className="p-6 text-center">
-                <div className="p-4 bg-purple-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Globe className="h-8 w-8 text-purple-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Blockchain Hub</h3>
-                <p className="text-muted-foreground text-sm">
-                  Monitor network and transactions
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: [0, 1, 0, -1] }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="group relative overflow-hidden backdrop-blur-sm bg-gradient-to-br from-purple-500/20 to-pink-500/10 border-purple-500/30 hover:border-purple-400/50 h-full hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-transparent rounded-full blur-xl -translate-y-16 translate-x-16 group-hover:translate-x-12 transition-all duration-500" />
+
+                <CardContent className="p-6 text-center relative z-10">
+                  <motion.div
+                    whileHover={{ rotate: [0, 360] }}
+                    transition={{ duration: 0.5 }}
+                    className="p-4 bg-gradient-to-br from-purple-500/30 to-pink-500/20 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                  >
+                    <Globe className="h-8 w-8 text-purple-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-2 text-purple-100 group-hover:text-white transition-colors">
+                    Blockchain Hub
+                  </h3>
+                  <p className="text-purple-200/80 text-sm group-hover:text-purple-100 transition-colors">
+                    Monitor network and transactions
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Link>
 
           <Link href="/dashboard/history">
-            <Card className="hover:scale-105 transition-all duration-300 cursor-pointer border-orange-500/20 hover:border-orange-500/40 h-full">
-              <CardContent className="p-6 text-center">
-                <div className="p-4 bg-orange-500/20 rounded-xl w-fit mx-auto mb-4">
-                  <Activity className="h-8 w-8 text-orange-500" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Job History</h3>
-                <p className="text-muted-foreground text-sm">
-                  Track your quantum experiments
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ scale: 1.05, rotate: [0, 0, 360, 0] }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="group relative overflow-hidden backdrop-blur-sm bg-gradient-to-br from-orange-500/20 to-red-500/10 border-orange-500/30 hover:border-orange-400/50 h-full hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400/20 to-transparent rounded-full blur-xl -translate-y-16 translate-x-16 group-hover:translate-x-12 transition-all duration-500" />
+
+                <CardContent className="p-6 text-center relative z-10">
+                  <motion.div
+                    whileHover={{ rotate: [0, -360] }}
+                    transition={{ duration: 0.5 }}
+                    className="p-4 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg"
+                  >
+                    <Activity className="h-8 w-8 text-orange-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-2 text-orange-100 group-hover:text-white transition-colors">
+                    Job History
+                  </h3>
+                  <p className="text-orange-200/80 text-sm group-hover:text-orange-100 transition-colors">
+                    Track your quantum experiments
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Link>
         </div>
       </motion.div>
