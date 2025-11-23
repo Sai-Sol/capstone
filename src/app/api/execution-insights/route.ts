@@ -168,63 +168,220 @@ async function generateExecutionMetrics(
   const baseAlgorithms = [
     {
       name: "Bell State Creation",
+      algorithmType: "bell-state" as const,
       provider: "Google Willow",
       baseTime: 23.4,
       qubits: 2,
       gates: 3,
       depth: 2,
       baseFidelity: 97.8,
-      complexity: "Low"
+      complexity: "Low",
+      // Algorithm-specific quantum metrics
+      quantumMetrics: {
+        entanglementRatio: 0.94,
+        superpositionStates: 2,
+        coherenceTime: 85.2,
+        gateFidelity: 98.1,
+        measurementFidelity: 96.8,
+        t1Time: 120.5,
+        t2Time: 89.3,
+        errorRate: 0.015
+      },
+      hardwareMetrics: {
+        temperature: 0.015,
+        clockFrequency: 5.2,
+        connectivity: 95,
+        errorCorrection: "Surface Code"
+      }
     },
     {
       name: "Grover's Search",
-      provider: "IBM Condor", 
+      algorithmType: "grover-search" as const,
+      provider: "IBM Condor",
       baseTime: 156.7,
       qubits: 4,
       gates: 12,
       depth: 8,
       baseFidelity: 94.2,
-      complexity: "Medium"
+      complexity: "Medium",
+      quantumMetrics: {
+        amplificationFactor: 3.2,
+        superpositionStates: 16,
+        coherenceTime: 72.8,
+        gateFidelity: 95.6,
+        measurementFidelity: 94.1,
+        t1Time: 98.2,
+        t2Time: 76.4,
+        errorRate: 0.028,
+        quantumVolume: 64
+      },
+      hardwareMetrics: {
+        temperature: 0.018,
+        clockFrequency: 4.8,
+        connectivity: 88,
+        errorCorrection: "Bacon-Shor"
+      }
     },
     {
-      name: "Quantum Fourier Transform",
+      name: "Quantum Superposition",
+      algorithmType: "superposition" as const,
       provider: "Amazon Braket",
-      baseTime: 342.1,
-      qubits: 8,
-      gates: 28,
-      depth: 15,
-      baseFidelity: 91.5,
-      complexity: "High"
-    },
-    {
-      name: "Shor's Algorithm",
-      provider: "IBM Condor",
-      baseTime: 2300,
-      qubits: 15,
-      gates: 156,
-      depth: 24,
-      baseFidelity: 89.3,
-      complexity: "Very High"
-    },
-    {
-      name: "VQE Optimization",
-      provider: "Google Willow",
-      baseTime: 847,
-      qubits: 6,
-      gates: 45,
-      depth: 12,
-      baseFidelity: 93.7,
-      complexity: "High"
+      baseTime: 45.3,
+      qubits: 3,
+      gates: 6,
+      depth: 3,
+      baseFidelity: 96.1,
+      complexity: "Low",
+      quantumMetrics: {
+        superpositionStates: 8,
+        coherenceTime: 91.5,
+        gateFidelity: 97.2,
+        measurementFidelity: 95.8,
+        t1Time: 134.7,
+        t2Time: 102.3,
+        errorRate: 0.019
+      },
+      hardwareMetrics: {
+        temperature: 0.014,
+        clockFrequency: 5.5,
+        connectivity: 92,
+        errorCorrection: "Repetition Code"
+      }
     },
     {
       name: "Quantum Teleportation",
-      provider: "Amazon Braket",
+      algorithmType: "teleportation" as const,
+      provider: "Google Willow",
       baseTime: 78.9,
       qubits: 3,
       gates: 8,
       depth: 6,
       baseFidelity: 95.1,
-      complexity: "Medium"
+      complexity: "Medium",
+      quantumMetrics: {
+        statePreparationFidelity: 96.4,
+        entanglementRatio: 0.89,
+        coherenceTime: 83.7,
+        gateFidelity: 96.8,
+        measurementFidelity: 94.2,
+        t1Time: 112.8,
+        t2Time: 85.1,
+        errorRate: 0.022
+      },
+      hardwareMetrics: {
+        temperature: 0.016,
+        clockFrequency: 5.1,
+        connectivity: 90,
+        errorCorrection: "Surface Code"
+      }
+    },
+    {
+      name: "Quantum Fourier Transform",
+      algorithmType: "fourier-transform" as const,
+      provider: "IBM Condor",
+      baseTime: 342.1,
+      qubits: 8,
+      gates: 28,
+      depth: 15,
+      baseFidelity: 91.5,
+      complexity: "High",
+      quantumMetrics: {
+        quantumVolume: 128,
+        coherenceTime: 65.3,
+        gateFidelity: 93.4,
+        measurementFidelity: 92.1,
+        t1Time: 87.6,
+        t2Time: 68.9,
+        errorRate: 0.035,
+        decoherenceRate: 0.0021
+      },
+      hardwareMetrics: {
+        temperature: 0.020,
+        clockFrequency: 4.5,
+        connectivity: 85,
+        errorCorrection: "Color Code"
+      }
+    },
+    {
+      name: "Quantum Random Generator",
+      algorithmType: "random-generator" as const,
+      provider: "Amazon Braket",
+      baseTime: 31.2,
+      qubits: 4,
+      gates: 4,
+      depth: 2,
+      baseFidelity: 98.3,
+      complexity: "Low",
+      quantumMetrics: {
+        coherenceTime: 95.8,
+        gateFidelity: 98.7,
+        measurementFidelity: 97.9,
+        t1Time: 145.2,
+        t2Time: 118.7,
+        errorRate: 0.011,
+        superpositionStates: 16
+      },
+      hardwareMetrics: {
+        temperature: 0.013,
+        clockFrequency: 5.8,
+        connectivity: 94,
+        errorCorrection: "Surface Code"
+      }
+    },
+    {
+      name: "Deutsch-Jozsa Algorithm",
+      algorithmType: "deutsch-jozsa" as const,
+      provider: "Google Willow",
+      baseTime: 89.4,
+      qubits: 3,
+      gates: 9,
+      depth: 5,
+      baseFidelity: 93.6,
+      complexity: "Medium",
+      quantumMetrics: {
+        amplificationFactor: 1.0,
+        coherenceTime: 78.4,
+        gateFidelity: 94.9,
+        measurementFidelity: 93.2,
+        t1Time: 103.5,
+        t2Time: 79.8,
+        errorRate: 0.026,
+        superpositionStates: 8
+      },
+      hardwareMetrics: {
+        temperature: 0.017,
+        clockFrequency: 4.9,
+        connectivity: 89,
+        errorCorrection: "Bacon-Shor"
+      }
+    },
+    {
+      name: "Quantum Phase Estimation",
+      algorithmType: "phase-estimation" as const,
+      provider: "IBM Condor",
+      baseTime: 267.8,
+      qubits: 6,
+      gates: 22,
+      depth: 12,
+      baseFidelity: 90.2,
+      complexity: "High",
+      quantumMetrics: {
+        quantumVolume: 96,
+        coherenceTime: 59.7,
+        gateFidelity: 91.8,
+        measurementFidelity: 90.4,
+        t1Time: 82.3,
+        t2Time: 62.1,
+        errorRate: 0.041,
+        decoherenceRate: 0.0028,
+        readoutError: 0.023
+      },
+      hardwareMetrics: {
+        temperature: 0.021,
+        clockFrequency: 4.3,
+        connectivity: 82,
+        errorCorrection: "Subsystem Code"
+      }
     }
   ];
 
