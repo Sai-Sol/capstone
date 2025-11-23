@@ -41,20 +41,38 @@ const additionalCircuits = [
 
 export default function CircuitsPage() {
   const [selectedCircuit, setSelectedCircuit] = useState(mockCircuit);
+  const [visualizerMode, setVisualizerMode] = useState("quantum");
+  const [executionSpeed, setExecutionSpeed] = useState("normal");
+  const [showMetrics, setShowMetrics] = useState(true);
+  const [enableDebugging, setEnableDebugging] = useState(false);
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-6 p-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl font-bold font-headline bg-gradient-to-r from-primary via-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4">
-          Quantum Circuit Visualizer
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl">
-          Interactive quantum circuit visualization with step-through execution, real-time state evolution, and entanglement mapping.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold font-headline bg-gradient-to-r from-primary via-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+              Advanced Quantum Circuit Lab
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl">
+              Real-time quantum circuit visualization with state vector evolution, entanglement mapping, and hardware simulation.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Upload className="h-4 w-4 mr-2" />
+              Import QASM
+            </Button>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
+        </div>
       </motion.div>
 
       <motion.div
