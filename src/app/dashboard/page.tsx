@@ -89,15 +89,36 @@ export default function DashboardHomePage() {
           </div>
         </div>
         
-        <div className="flex items-center justify-center gap-6">
-          <Badge variant="outline" className="text-green-400 border-green-400/50 px-4 py-2">
-            <Zap className="mr-2 h-4 w-4" />
-            Platform Online
-          </Badge>
-          <Badge variant="outline" className={isConnected ? "text-blue-400 border-blue-400/50 px-4 py-2" : "text-yellow-400 border-yellow-400/50 px-4 py-2"}>
-            <Globe className="mr-2 h-4 w-4" />
-            {isConnected ? "Connected to MegaETH Testnet" : "Wallet Disconnected"}
-          </Badge>
+        <div className="flex items-center justify-center gap-6 mt-4">
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <Badge className="relative text-green-400 border-green-400/50 px-6 py-2 bg-green-500/10 backdrop-blur-sm border-l-4 border-green-400 shadow-lg">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+                <Zap className="h-4 w-4" />
+                <span className="font-semibold">Platform Online</span>
+              </div>
+            </Badge>
+          </div>
+
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <Badge className={`relative px-6 py-2 backdrop-blur-sm border-l-4 shadow-lg ${
+              isConnected
+                ? "text-blue-400 border-blue-400/50 bg-blue-500/10"
+                : "text-yellow-400 border-yellow-400/50 bg-yellow-500/10"
+            }`}>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                <span className="font-medium">
+                  {isConnected ? "Connected to MegaETH" : "Wallet Disconnected"}
+                </span>
+              </div>
+            </Badge>
+          </div>
         </div>
       </motion.div>
 
