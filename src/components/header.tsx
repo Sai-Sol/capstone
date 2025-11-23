@@ -83,16 +83,46 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-2">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
-              <Button 
-                variant={pathname === item.href ? "secondary" : "ghost"} 
-                className={`transition-all duration-300 text-foreground ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : ''}`}
+              <div
+                className={`group relative transition-all duration-500 transform hover:scale-105 ${
+                  pathname === item.href
+                    ? 'scale-100'
+                    : 'hover:scale-105'
+                }`}
               >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-              </Button>
+                {/* Glow effect for active/hover state */}
+                {pathname === item.href && (
+                  <div className="absolute -inset-1 bg-primary/20 rounded-lg blur-md animate-pulse" />
+                )}
+
+                <Button
+                  variant="ghost"
+                  className={`relative backdrop-blur-sm border transition-all duration-500 transform group-hover:border-primary/50 ${
+                    pathname === item.href
+                      ? 'bg-primary/20 text-primary border-primary/40 shadow-lg shadow-primary/20'
+                      : 'bg-background/40 border-white/10 hover:bg-background/60 hover:border-white/20 hover:shadow-lg'
+                  }`}
+                >
+                  <item.icon className={`mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110 ${
+                    pathname === item.href ? 'text-primary' : 'text-foreground/80 group-hover:text-primary'
+                  }`} />
+                  <span className={`transition-colors duration-300 ${
+                    pathname === item.href
+                      ? 'text-primary font-semibold'
+                      : 'text-foreground/90 group-hover:text-primary'
+                  }`}>
+                    {item.label}
+                  </span>
+
+                  {/* Active indicator */}
+                  {pathname === item.href && (
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                  )}
+                </Button>
+              </div>
             </Link>
           ))}
         </nav>
