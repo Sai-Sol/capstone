@@ -742,38 +742,25 @@ measure q -> c;`}
                   </motion.div>
                 )}
 
-                {/* Submit Options */}
+                {/* Submit Button */}
                 <div className="space-y-3">
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <Button
-                      type="submit"
-                      disabled={isLoading || !isConnected || !selectedJobType || !descriptionValue}
-                      className="h-12 quantum-button font-semibold"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <Terminal className="mr-3 h-5 w-5" />
-                          Execute Algorithm
-                        </>
-                      )}
-                    </Button>
-
-                    {selectedJobType && descriptionValue && (
-                      <BatchScheduler
-                        currentFormData={{
-                          jobType: selectedJobType,
-                          description: descriptionValue,
-                          priority,
-                        }}
-                        onSubmitBatch={handleBatchSubmit}
-                      />
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !isConnected || !selectedJobType || !descriptionValue}
+                    className="h-12 quantum-button font-semibold"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Terminal className="mr-3 h-5 w-5" />
+                        Execute Algorithm
+                      </>
                     )}
-                  </div>
+                  </Button>
                 </div>
 
   
