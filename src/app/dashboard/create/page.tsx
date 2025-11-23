@@ -46,10 +46,6 @@ import {
 } from "lucide-react";
 import QuantumResultsDisplay from "@/components/quantum-results-display";
 import { blockchainIntegration } from "@/lib/blockchain-integration";
-import { JobTemplatesManager } from "@/components/job-templates-manager";
-import { CircuitOptimizerAnalyzer } from "@/components/circuit-optimizer-analyzer";
-import { BatchScheduler } from "@/components/batch-scheduler";
-import Link from "next/link";
 
 const formSchema = z.object({
   jobType: z.string().min(1, { message: "Please select a quantum provider." }),
