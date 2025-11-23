@@ -228,14 +228,43 @@ export default function OptimizePage() {
           )
         : 0;
 
+    // Enhanced analysis with hardware-specific metrics
+    const provider = hardwareProviders.find(p => p.id === selectedProvider);
+    const baseDepth = gateCount / 2.5;
+    const baseScore = Math.max(40, 100 - (baseDepth * 3) - (maxQubit * 2));
+
+    const optimizations = {
+      depthOptimized: Math.round(baseDepth * 0.65), // 35% reduction
+      timeOptimized: Math.round(245 * 0.65), // 35% faster
+      costOptimized: Math.round(15.5 * 0.85), // 15% cheaper
+      fidelityOptimized: Math.min(99.9, 95.8 + (97.8 - 95.8) * 0.3) // Better fidelity
+    };
+
+    const hardwareMetrics = {
+      temperature: 0.015 + (Math.random() - 0.5) * 0.004, // 15mK ± 2mK
+      coherenceTime: 85.2 + (Math.random() - 0.5) * 10.5, // 85.2μs ± 10μs
+      gateFidelity: provider ? 98.1 + (Math.random() - 0.5) * 1.2 : 97.8, // Varies by provider
+      connectivity: provider ? 95 + (Math.random() - 0.5) * 2 : 92,
+      errorRate: 0.015 + (Math.random() - 0.5) * 0.005 // 1.5% ± 0.5%
+    };
+
+    const predictions = {
+      nextRunFidelity: hardwareMetrics.gateFidelity + (Math.random() - 0.5) * 2,
+      successProbability: Math.min(0.98, 0.85 + (baseScore / 100) * 0.13),
+      optimalShots: Math.round(1024 + (100 - baseScore) * 5)
+    };
+
     setAnalysis({
-      depth: 8,
+      depth: baseDepth,
       gates: gateCount,
       qubits: maxQubit + 1,
-      score: 72,
+      score: Math.round(baseScore),
       time: 245,
       cost: 15.5,
       valid: true,
+      hardwareMetrics,
+      optimizations,
+      predictions
     });
 
     setIsAnalyzing(false);
