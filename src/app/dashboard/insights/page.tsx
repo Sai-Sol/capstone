@@ -739,7 +739,7 @@ export default function InsightsPage() {
                       <Card className="quantum-card border-primary/30">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
-                            <Waveform className="h-5 w-5 text-primary" />
+                            <Activity className="h-5 w-5 text-primary" />
                             {metric.algorithmName} - Quantum Analysis
                           </CardTitle>
                           <CardDescription>{metric.provider}</CardDescription>
