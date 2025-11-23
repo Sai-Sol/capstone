@@ -51,14 +51,20 @@ const mockExecutionRecords: ExecutionRecord[] = [
     status: "success",
     environment: {
       seed: 42,
-      hardware: "CPU",
+      hardware: "Google Willow",
       framework: "Qiskit",
       version: "0.43.0",
+      temperature: 0.015,
+      pressure: 2.1,
+      errorCorrection: "Surface Code"
     },
     metrics: {
       duration: 2.4,
       accuracy: 0.95,
       iterations: 1000,
+      fidelity: 94.2,
+      errorRate: 0.008,
+      throughput: 416.7
     },
     parameters: {
       depth: 5,
@@ -67,7 +73,11 @@ const mockExecutionRecords: ExecutionRecord[] = [
     },
     inputHash: "a1b2c3d4e5f6",
     outputHash: "x9y8z7w6v5u4",
-    notes: "Baseline execution with optimal parameters",
+    blockchainHash: "0x7a3b9c2d8e5f1a6b4c9d0e2f7a8b1c5d",
+    reproducibilityScore: 97.8,
+    driftDetected: false,
+    anomalies: [],
+    notes: "Baseline execution with optimal parameters"
   },
   {
     id: "exec-002",
@@ -76,14 +86,20 @@ const mockExecutionRecords: ExecutionRecord[] = [
     status: "success",
     environment: {
       seed: 42,
-      hardware: "GPU",
+      hardware: "IBM Condor",
       framework: "Qiskit",
       version: "0.43.0",
+      temperature: 0.018,
+      pressure: 2.3,
+      errorCorrection: "Bacon-Shor"
     },
     metrics: {
       duration: 1.8,
       accuracy: 0.95,
       iterations: 1000,
+      fidelity: 94.1,
+      errorRate: 0.009,
+      throughput: 555.6
     },
     parameters: {
       depth: 5,
@@ -92,7 +108,11 @@ const mockExecutionRecords: ExecutionRecord[] = [
     },
     inputHash: "a1b2c3d4e5f6",
     outputHash: "x9y8z7w6v5u4",
-    notes: "GPU acceleration test",
+    blockchainHash: "0x8c4d2e9f1a6b7c3d0e5f2a8b9c1d6e4",
+    reproducibilityScore: 96.2,
+    driftDetected: false,
+    anomalies: ["Minor temperature variation"],
+    notes: "GPU acceleration test"
   },
   {
     id: "exec-003",
@@ -101,14 +121,20 @@ const mockExecutionRecords: ExecutionRecord[] = [
     status: "failed",
     environment: {
       seed: 123,
-      hardware: "CPU",
+      hardware: "Amazon Braket",
       framework: "Cirq",
       version: "1.0.0",
+      temperature: 0.020,
+      pressure: 2.5,
+      errorCorrection: "Color Code"
     },
     metrics: {
       duration: 0.5,
       accuracy: 0,
       iterations: 0,
+      fidelity: 0,
+      errorRate: 1.0,
+      throughput: 0
     },
     parameters: {
       depth: 10,
@@ -117,8 +143,47 @@ const mockExecutionRecords: ExecutionRecord[] = [
     },
     inputHash: "b2c3d4e5f6g7",
     outputHash: "y8z7w6v5u4t3",
-    notes: "Parameter mismatch detected",
+    blockchainHash: "0x9d5e3f0a7b8c4d1e6f3b9a0c1d7e5f2",
+    reproducibilityScore: 12.5,
+    driftDetected: true,
+    anomalies: ["Seed mismatch", "Parameter drift", "Hardware calibration error"],
+    notes: "Parameter mismatch detected"
   },
+  {
+    id: "exec-004",
+    jobId: "job-1027",
+    timestamp: "2024-11-22T07:30:00Z",
+    status: "success",
+    environment: {
+      seed: 42,
+      hardware: "Google Willow",
+      framework: "Qiskit",
+      version: "0.43.0",
+      temperature: 0.016,
+      pressure: 2.0,
+      errorCorrection: "Surface Code"
+    },
+    metrics: {
+      duration: 2.6,
+      accuracy: 0.94,
+      iterations: 1000,
+      fidelity: 93.8,
+      errorRate: 0.012,
+      throughput: 384.6
+    },
+    parameters: {
+      depth: 5,
+      qubits: 8,
+      shots: 1024,
+    },
+    inputHash: "a1b2c3d4e5f6",
+    outputHash: "x9y8z7w6v5u4",
+    blockchainHash: "0x0e6f4a1b9c2d8e3f7a5b0c1d6e9f2a4b",
+    reproducibilityScore: 91.3,
+    driftDetected: true,
+    anomalies: ["Coherence time drift"],
+    notes: "Morning run with minor environmental variations"
+  }
 ];
 
 export default function ReproducibilityDashboard() {
