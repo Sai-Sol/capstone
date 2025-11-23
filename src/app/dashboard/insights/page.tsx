@@ -134,6 +134,94 @@ export default function InsightsPage() {
     fetchExecutionInsights();
   }, [selectedTimeRange]);
 
+  // Enhanced filtering logic
+  const filteredMetrics = useMemo(() => {
+    if (!insights) return [];
+
+    return insights.metrics.filter(metric => {
+      const algorithmMatch = selectedAlgorithm === 'all' || metric.algorithmType === selectedAlgorithm;
+      const providerMatch = selectedProvider === 'all' || metric.provider === selectedProvider;
+      return algorithmMatch && providerMatch;
+    });
+  }, [insights, selectedAlgorithm, selectedProvider]);
+
+  // Algorithm-specific analysis
+  const getAlgorithmSpecificMetrics = (algorithm: string, metrics: QuantumMetrics) => {
+    switch (algorithm) {
+      case 'bell-state':
+        return {
+          primary: metrics.entanglementRatio || 0,
+          label: 'Entanglement',
+          unit: '%',
+          icon: '🔗',
+          color: 'text-blue-400',
+          description: 'Quantum correlation strength between qubits'
+        };
+      case 'grover-search':
+        return {
+          primary: metrics.amplificationFactor || 0,
+          label: 'Amplification',
+          unit: 'x',
+          icon: '🔍',
+          color: 'text-green-400',
+          description: 'Quantum speedup over classical search'
+        };
+      case 'superposition':
+        return {
+          primary: metrics.superpositionStates || 0,
+          label: 'Superposition',
+          unit: 'states',
+          icon: '🌊',
+          color: 'text-purple-400',
+          description: 'Number of quantum states simultaneously'
+        };
+      case 'teleportation':
+        return {
+          primary: metrics.statePreparationFidelity || 0,
+          label: 'Teleport Fidelity',
+          unit: '%',
+          icon: '📡',
+          color: 'text-cyan-400',
+          description: 'Accuracy of quantum state transfer'
+        };
+      case 'fourier-transform':
+        return {
+          primary: metrics.quantumVolume || 0,
+          label: 'Quantum Volume',
+          unit: '',
+          icon: '🎵',
+          color: 'text-indigo-400',
+          description: 'Overall quantum computational capability'
+        };
+      case 'random-generator':
+        return {
+          primary: metrics.coherenceTime || 0,
+          label: 'Coherence',
+          unit: 'μs',
+          icon: '🎲',
+          color: 'text-orange-400',
+          description: 'Quantum state preservation duration'
+        };
+      default:
+        return {
+          primary: metrics.gateFidelity || 0,
+          label: 'Gate Fidelity',
+          unit: '%',
+          icon: '⚛️',
+          color: 'text-primary',
+          description: 'Quantum gate operation accuracy'
+        };
+    }
+  };
+
+  const getTrendIcon = (trend: "improving" | "stable" | "declining") => {
+    switch (trend) {
+      case 'improving': return <TrendingUp className="h-4 w-4 text-green-400" />;
+      case 'declining': return <TrendingUp className="h-4 w-4 text-red-400 rotate-180" />;
+      default: return <Activity className="h-4 w-4 text-yellow-400" />;
+    }
+  };
+
   const fetchExecutionInsights = async () => {
     setIsLoading(true);
 
