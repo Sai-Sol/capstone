@@ -1,15 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Copy, Download, Share2, Check, AlertCircle, GitFork, Code2, CheckCircle2, XCircle, Clock, Activity, Shield, Target, TrendingUp, BarChart3, Filter, RefreshCw, Eye, Upload, Database, Brain, Zap } from "lucide-react";
+import { Copy, Download, Share2, Check, AlertCircle, GitFork, Code2, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
 
 interface ExecutionRecord {
   id: string;
@@ -21,25 +18,15 @@ interface ExecutionRecord {
     hardware: string;
     framework: string;
     version: string;
-    temperature: number;
-    pressure: number;
-    errorCorrection: string;
   };
   metrics: {
     duration: number;
     accuracy: number;
     iterations: number;
-    fidelity: number;
-    errorRate: number;
-    throughput: number;
   };
   parameters: Record<string, string | number>;
   inputHash: string;
   outputHash: string;
-  blockchainHash: string;
-  reproducibilityScore: number;
-  driftDetected: boolean;
-  anomalies: string[];
   notes: string;
 }
 
@@ -51,20 +38,14 @@ const mockExecutionRecords: ExecutionRecord[] = [
     status: "success",
     environment: {
       seed: 42,
-      hardware: "Google Willow",
+      hardware: "CPU",
       framework: "Qiskit",
       version: "0.43.0",
-      temperature: 0.015,
-      pressure: 2.1,
-      errorCorrection: "Surface Code"
     },
     metrics: {
       duration: 2.4,
       accuracy: 0.95,
       iterations: 1000,
-      fidelity: 94.2,
-      errorRate: 0.008,
-      throughput: 416.7
     },
     parameters: {
       depth: 5,
@@ -73,11 +54,7 @@ const mockExecutionRecords: ExecutionRecord[] = [
     },
     inputHash: "a1b2c3d4e5f6",
     outputHash: "x9y8z7w6v5u4",
-    blockchainHash: "0x7a3b9c2d8e5f1a6b4c9d0e2f7a8b1c5d",
-    reproducibilityScore: 97.8,
-    driftDetected: false,
-    anomalies: [],
-    notes: "Baseline execution with optimal parameters"
+    notes: "Baseline execution with optimal parameters",
   },
   {
     id: "exec-002",
@@ -86,20 +63,14 @@ const mockExecutionRecords: ExecutionRecord[] = [
     status: "success",
     environment: {
       seed: 42,
-      hardware: "IBM Condor",
+      hardware: "GPU",
       framework: "Qiskit",
       version: "0.43.0",
-      temperature: 0.018,
-      pressure: 2.3,
-      errorCorrection: "Bacon-Shor"
     },
     metrics: {
       duration: 1.8,
       accuracy: 0.95,
       iterations: 1000,
-      fidelity: 94.1,
-      errorRate: 0.009,
-      throughput: 555.6
     },
     parameters: {
       depth: 5,
@@ -108,11 +79,7 @@ const mockExecutionRecords: ExecutionRecord[] = [
     },
     inputHash: "a1b2c3d4e5f6",
     outputHash: "x9y8z7w6v5u4",
-    blockchainHash: "0x8c4d2e9f1a6b7c3d0e5f2a8b9c1d6e4",
-    reproducibilityScore: 96.2,
-    driftDetected: false,
-    anomalies: ["Minor temperature variation"],
-    notes: "GPU acceleration test"
+    notes: "GPU acceleration test",
   },
   {
     id: "exec-003",
@@ -121,20 +88,14 @@ const mockExecutionRecords: ExecutionRecord[] = [
     status: "failed",
     environment: {
       seed: 123,
-      hardware: "Amazon Braket",
+      hardware: "CPU",
       framework: "Cirq",
       version: "1.0.0",
-      temperature: 0.020,
-      pressure: 2.5,
-      errorCorrection: "Color Code"
     },
     metrics: {
       duration: 0.5,
       accuracy: 0,
       iterations: 0,
-      fidelity: 0,
-      errorRate: 1.0,
-      throughput: 0
     },
     parameters: {
       depth: 10,
@@ -143,47 +104,8 @@ const mockExecutionRecords: ExecutionRecord[] = [
     },
     inputHash: "b2c3d4e5f6g7",
     outputHash: "y8z7w6v5u4t3",
-    blockchainHash: "0x9d5e3f0a7b8c4d1e6f3b9a0c1d7e5f2",
-    reproducibilityScore: 12.5,
-    driftDetected: true,
-    anomalies: ["Seed mismatch", "Parameter drift", "Hardware calibration error"],
-    notes: "Parameter mismatch detected"
+    notes: "Parameter mismatch detected",
   },
-  {
-    id: "exec-004",
-    jobId: "job-1027",
-    timestamp: "2024-11-22T07:30:00Z",
-    status: "success",
-    environment: {
-      seed: 42,
-      hardware: "Google Willow",
-      framework: "Qiskit",
-      version: "0.43.0",
-      temperature: 0.016,
-      pressure: 2.0,
-      errorCorrection: "Surface Code"
-    },
-    metrics: {
-      duration: 2.6,
-      accuracy: 0.94,
-      iterations: 1000,
-      fidelity: 93.8,
-      errorRate: 0.012,
-      throughput: 384.6
-    },
-    parameters: {
-      depth: 5,
-      qubits: 8,
-      shots: 1024,
-    },
-    inputHash: "a1b2c3d4e5f6",
-    outputHash: "x9y8z7w6v5u4",
-    blockchainHash: "0x0e6f4a1b9c2d8e3f7a5b0c1d6e9f2a4b",
-    reproducibilityScore: 91.3,
-    driftDetected: true,
-    anomalies: ["Coherence time drift"],
-    notes: "Morning run with minor environmental variations"
-  }
 ];
 
 export default function ReproducibilityDashboard() {
@@ -191,30 +113,6 @@ export default function ReproducibilityDashboard() {
   const [selectedRecord, setSelectedRecord] = useState<ExecutionRecord | null>(
     mockExecutionRecords[0]
   );
-  const [selectedHardware, setSelectedHardware] = useState("all");
-  const [selectedFramework, setSelectedFramework] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [timeRange, setTimeRange] = useState("24h");
-  const [verificationMode, setVerificationMode] = useState(false);
-
-  const filteredRecords = useMemo(() => {
-    return mockExecutionRecords.filter(record => {
-      const hardwareMatch = selectedHardware === "all" || record.environment.hardware === selectedHardware;
-      const frameworkMatch = selectedFramework === "all" || record.environment.framework === selectedFramework;
-      const statusMatch = selectedStatus === "all" || record.status === selectedStatus;
-      return hardwareMatch && frameworkMatch && statusMatch;
-    });
-  }, [selectedHardware, selectedFramework, selectedStatus]);
-
-  const averageReproducibility = useMemo(() => {
-    const successful = filteredRecords.filter(r => r.status === "success");
-    if (successful.length === 0) return 0;
-    return successful.reduce((sum, r) => sum + r.reproducibilityScore, 0) / successful.length;
-  }, [filteredRecords]);
-
-  const anomalyCount = useMemo(() => {
-    return filteredRecords.reduce((sum, r) => sum + r.anomalies.length, 0);
-  }, [filteredRecords]);
 
   const handleCopyHash = (hash: string, type: string) => {
     navigator.clipboard.writeText(hash);
