@@ -215,10 +215,12 @@ export default function InsightsPage() {
     }
   };
 
-  const getTrendIcon = (trend: "improving" | "stable" | "declining") => {
+  const getTrendIcon = (trend: "improving" | "stable" | "declining" | "increasing" | "decreasing") => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="h-4 w-4 text-green-400" />;
-      case 'declining': return <TrendingUp className="h-4 w-4 text-red-400 rotate-180" />;
+      case 'improving':
+      case 'increasing': return <TrendingUp className="h-4 w-4 text-green-400" />;
+      case 'declining':
+      case 'decreasing': return <TrendingUp className="h-4 w-4 text-red-400 rotate-180" />;
       default: return <Activity className="h-4 w-4 text-yellow-400" />;
     }
   };
