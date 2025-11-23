@@ -209,19 +209,54 @@ export default function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-primary/20 bg-background/95 backdrop-blur-xl"
+            className="md:hidden border-t border-primary/20 bg-gradient-to-b from-background/95 to-background/90 backdrop-blur-xl"
           >
-            <nav className="container px-4 py-4 space-y-2">
-              {navItems.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
-                  <Button 
-                    variant={pathname === item.href ? "secondary" : "ghost"} 
-                    className={`w-full justify-start transition-all duration-300 text-foreground ${pathname === item.href ? 'bg-primary/10 text-primary border border-primary/20' : ''}`}
+            <nav className="container px-4 py-6 space-y-3">
+              <div className="text-center mb-4">
+                <span className="text-lg font-semibold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                  Navigate QuantumChain
+                </span>
+              </div>
+              {navItems.map((item, idx) => (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
                   >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.label}
-                  </Button>
-                </Link>
+                    <Button
+                      variant="ghost"
+                      className={`w-full justify-start transition-all duration-300 backdrop-blur-sm border hover:scale-105 ${
+                        pathname === item.href
+                          ? 'bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary border-primary/40 shadow-lg'
+                          : 'bg-background/40 border-white/10 hover:bg-background/60 hover:border-white/20'
+                      }`}
+                    >
+                      <item.icon className={`mr-4 h-5 w-5 transition-all duration-300 ${
+                        pathname === item.href ? 'text-primary' : 'text-foreground/70 group-hover:text-primary'
+                      }`} />
+                      <span className={`transition-colors duration-300 ${
+                        pathname === item.href
+                          ? 'text-primary font-semibold'
+                          : 'text-foreground/90'
+                      }`}>
+                        {item.label}
+                      </span>
+
+                      {/* Mobile active indicator */}
+                      {pathname === item.href && (
+                        <div className="ml-auto">
+                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                        </div>
+                      )}
+                    </Button>
+                  </Link>
+                </motion.div>
               ))}
             </nav>
           </motion.div>
