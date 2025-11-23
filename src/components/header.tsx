@@ -129,48 +129,70 @@ export default function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-3">
-          <WalletConnectButton />
-          <ThemeToggle />
-          
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          {/* Enhanced Wallet Connect */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <WalletConnectButton />
+          </div>
 
-          {/* User menu */}
+          {/* Enhanced Theme Toggle */}
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-orange-500/20 to-purple-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <ThemeToggle />
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden backdrop-blur-sm bg-background/40 border border-white/10 hover:bg-background/60 transition-all duration-300"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+
+          {/* Enhanced User menu */}
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="overflow-hidden rounded-full border border-primary/20 bg-background/50 backdrop-blur-sm"
+                  className="relative overflow-hidden rounded-full border border-primary/30 bg-background/40 backdrop-blur-sm hover:bg-background/60 transition-all duration-300 group"
                 >
-                  <UserCircle className="h-6 w-6" />
+                  {/* User avatar glow */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  <div className="relative bg-gradient-to-br from-primary to-purple-500 p-1">
+                    <UserCircle className="h-5 w-5 text-white" />
+                  </div>
+
+                  {/* Online status indicator */}
+                  <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-400 rounded-full border-2 border-background" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-sm border-primary/20">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none text-foreground">
+              <DropdownMenuContent align="end" className="w-64 bg-background/95 backdrop-blur-xl border-primary/20 shadow-2xl">
+                <DropdownMenuLabel className="font-normal bg-gradient-to-r from-primary/10 to-purple-500/10 p-3 rounded-t-lg">
+                  <div className="flex flex-col space-y-2">
+                    <p className="text-sm font-semibold leading-none text-foreground">
                       {user?.name || "User"}
                     </p>
-                    <p className="text-xs leading-none text-muted-foreground">
+                    <p className="text-xs leading-none text-foreground/70">
                       {user?.email || ""}
                     </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className={`w-2 h-2 rounded-full ${user?.role === 'admin' ? 'bg-yellow-500' : 'bg-green-500'}`} />
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex h-3 w-3">
+                        <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                      </div>
                       <span className="text-xs font-medium capitalize text-foreground">{user?.role || 'user'}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-400 hover:text-red-300">
+                <DropdownMenuSeparator className="border-primary/10" />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-300">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign Out</span>
                 </DropdownMenuItem>
