@@ -143,6 +143,11 @@ const optimizationTips: OptimizationTip[] = [
 export default function OptimizePage() {
   const [circuitCode, setCircuitCode] = useState(sampleQASM);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState("google-willow");
+  const [optimizationLevel, setOptimizationLevel] = useState("aggressive");
+  const [expandedTip, setExpandedTip] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   const [analysis, setAnalysis] = useState<{
     depth: number;
     gates: number;
@@ -151,8 +156,62 @@ export default function OptimizePage() {
     time: number;
     cost: number;
     valid: boolean;
+    hardwareMetrics: {
+      temperature: number;
+      coherenceTime: number;
+      gateFidelity: number;
+      connectivity: number;
+      errorRate: number;
+    };
+    optimizations: {
+      depthOptimized: number;
+      timeOptimized: number;
+      costOptimized: number;
+      fidelityOptimized: number;
+    };
+    predictions: {
+      nextRunFidelity: number;
+      successProbability: number;
+      optimalShots: number;
+    };
   } | null>(null);
-  const [expandedTip, setExpandedTip] = useState<string | null>(null);
+
+  const hardwareProviders = [
+    { id: "google-willow", name: "Google Willow", qubits: 105, connectivity: "square", nativeGates: ["fsim", "cz", "rx", "rz"] },
+    { id: "ibm-condor", name: "IBM Condor", qubits: 1121, connectivity: "heavy-hex", nativeGates: ["cx", "sx", "rz", "u3"] },
+    { id: "amazon-braket", name: "Amazon Braket", qubits: 256, connectivity: "linear", nativeGates: ["cx", "rz", "ry", "rx"] }
+  ];
+
+  const filteredTips = useMemo(() => {
+    if (selectedCategory === "all") return optimizationTips;
+    return optimizationTips.filter(tip => tip.category === selectedCategory);
+  }, [selectedCategory]);
+
+  const getImpactColor = (impact: string) => {
+    switch (impact) {
+      case "critical":
+        return "text-red-400 border-red-500/50 bg-red-500/10";
+      case "high":
+        return "text-orange-400 border-orange-500/50 bg-orange-500/10";
+      case "medium":
+        return "text-yellow-400 border-yellow-500/50 bg-yellow-500/10";
+      case "low":
+        return "text-green-400 border-green-500/50 bg-green-500/10";
+      default:
+        return "text-gray-400";
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "layout": return "text-blue-400";
+      case "gate": return "text-purple-400";
+      case "timing": return "text-green-400";
+      case "hardware": return "text-orange-400";
+      case "error": return "text-red-400";
+      default: return "text-gray-400";
+    }
+  };
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
