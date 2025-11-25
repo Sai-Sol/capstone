@@ -26,12 +26,30 @@ import {
 } from "lucide-react";
 import AIResultAnalyzer from "./ai-result-analyzer";
 
+interface QuantumError {
+  type: 'device' | 'circuit' | 'network' | 'timeout' | 'calibration' | 'decoherence';
+  message: string;
+  suggestion: string;
+  context?: {
+    deviceId?: string;
+    errorRate?: number;
+    lastCalibration?: string;
+    temperature?: number;
+    queuePosition?: number;
+  };
+  retryAvailable: boolean;
+  supportContact: boolean;
+}
+
 interface QuantumResult {
   jobId: string;
   status: "running" | "completed" | "failed";
   progress: number;
   submittedAt: number;
   completedAt?: number;
+  queuePosition?: number;
+  estimatedWaitTime?: number;
+  deviceStatus?: string;
   results?: {
     measurements: Record<string, number>;
     fidelity: string;
@@ -40,8 +58,14 @@ interface QuantumResult {
     shots: number;
     algorithm: string;
     provider: string;
+    noiseModel?: {
+      t1Time: number;
+      t2Time: number;
+      gateErrors: Record<string, number>;
+      readoutError: number;
+    };
   };
-  error?: string;
+  error?: QuantumError;
 }
 
 interface QuantumResultsDisplayProps {
@@ -415,24 +439,265 @@ export default function QuantumResultsDisplay({ jobId, onClose }: QuantumResults
                     </div>
                   )}
 
-                  {/* Error Display */}
+                  {/* Enhanced Error Display */}
                   {result.status === "failed" && result.error && (
-                    <Alert className="border-red-500/30 bg-red-500/10">
-                      <AlertTriangle className="h-5 w-5" />
-                      <AlertDescription className="text-red-200">
-                        <div className="font-semibold text-red-400 mb-2">Quantum Execution Failed</div>
-                        <div className="text-red-200/80">{result.error}</div>
-                        <div className="mt-3 text-sm">
-                          <strong>What to try:</strong>
-                          <ul className="list-disc list-inside mt-1 space-y-1">
-                            <li>Check your algorithm syntax</li>
-                            <li>Try a different quantum provider</li>
-                            <li>Reduce circuit complexity</li>
-                            <li>Contact support if the issue persists</li>
-                          </ul>
+                    <Card className="border-red-500/30 bg-red-500/5">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-red-400">
+                          <AlertTriangle className="h-6 w-6" />
+                          Quantum Execution Failed
+                        </CardTitle>
+                        <CardDescription className="text-red-200/80">
+                          {result.error.type.charAt(0).toUpperCase() + result.error.type.slice(1)} Error: {result.error.message}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        {/* Error Type Badge */}
+                        <div className="flex items-center gap-2">
+                          <Badge variant="destructive" className="capitalize">
+                            {result.error.type} Error
+                          </Badge>
+                          {result.error.retryAvailable && (
+                            <Badge variant="outline" className="text-orange-400 border-orange-400/50">
+                              Retry Available
+                            </Badge>
+                          )}
+                          {result.error.supportContact && (
+                            <Badge variant="outline" className="text-yellow-400 border-yellow-400/50">
+                              Support Contact Recommended
+                            </Badge>
+                          )}
                         </div>
-                      </AlertDescription>
-                    </Alert>
+
+                        {/* Suggested Fix */}
+                        <div className="p-4 rounded-lg bg-orange-400/10 border border-orange-400/20">
+                          <div className="flex items-center gap-2 mb-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-400" />
+                            <span className="font-semibold text-orange-200">Suggested Fix</span>
+                          </div>
+                          <p className="text-sm text-orange-200/80">{result.error.suggestion}</p>
+                        </div>
+
+                        {/* Error Context */}
+                        {result.error.context && (
+                          <div className="p-4 rounded-lg bg-muted/10 border border-border">
+                            <h4 className="font-semibold text-foreground mb-3">Error Context</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              {result.error.context.deviceId && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Device ID:</span>
+                                  <span className="font-mono">{result.error.context.deviceId}</span>
+                                </div>
+                              )}
+                              {result.error.context.errorRate && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Error Rate:</span>
+                                  <span className="text-red-400">{(result.error.context.errorRate * 100).toFixed(2)}%</span>
+                                </div>
+                              )}
+                              {result.error.context.temperature && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Temperature:</span>
+                                  <span className="text-yellow-400">{result.error.context.temperature} mK</span>
+                                </div>
+                              )}
+                              {result.error.context.lastCalibration && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Last Calibration:</span>
+                                  <span>{result.error.context.lastCalibration}</span>
+                                </div>
+                              )}
+                              {result.error.context.queuePosition && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Queue Position:</span>
+                                  <span>#{result.error.context.queuePosition}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-3">
+                          {result.error.retryAvailable && (
+                            <Button
+                              onClick={() => {
+                                // Retry logic would go here
+                                console.log('Retrying job:', result.jobId);
+                              }}
+                              className="flex-1 min-w-[150px]"
+                            >
+                              <RefreshCw className="mr-2 h-4 w-4" />
+                              Retry Job
+                            </Button>
+                          )}
+
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              // Modify circuit logic would go here
+                              console.log('Opening circuit editor for:', result.jobId);
+                            }}
+                            className="flex-1 min-w-[150px]"
+                          >
+                            <Atom className="mr-2 h-4 w-4" />
+                            Modify Circuit
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              // Switch provider logic would go here
+                              console.log('Switching provider for:', result.jobId);
+                            }}
+                            className="flex-1 min-w-[150px]"
+                          >
+                            <Server className="mr-2 h-4 w-4" />
+                            Switch Provider
+                          </Button>
+
+                          {result.error.supportContact && (
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                // Contact support logic would go here
+                                window.open('mailto:support@quantum-platform.com', '_blank');
+                              }}
+                              className="flex-1 min-w-[150px]"
+                            >
+                              <AlertTriangle className="mr-2 h-4 w-4" />
+                              Contact Support
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Detailed Troubleshooting */}
+                        <details className="group">
+                          <summary className="cursor-pointer text-sm font-medium text-foreground hover:text-primary transition-colors">
+                            <span className="flex items-center gap-2">
+                              <div className="w-4 h-4 group-open:rotate-90 transition-transform">
+                                ▶
+                              </div>
+                              Advanced Troubleshooting Steps
+                            </span>
+                          </summary>
+                          <div className="mt-4 space-y-3 pl-6">
+                            {result.error.type === 'device' && (
+                              <>
+                                <div className="text-sm space-y-2">
+                                  <p className="font-medium text-blue-400">Device Error Resolution:</p>
+                                  <ul className="space-y-1 text-muted-foreground">
+                                    <li>• Wait 5-10 minutes for device recovery</li>
+                                    <li>• Check device status page for maintenance alerts</li>
+                                    <li>• Consider switching to a backup device</li>
+                                    <li>• Reduce circuit complexity if error rates are high</li>
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+
+                            {result.error.type === 'circuit' && (
+                              <>
+                                <div className="text-sm space-y-2">
+                                  <p className="font-medium text-purple-400">Circuit Error Resolution:</p>
+                                  <ul className="space-y-1 text-muted-foreground">
+                                    <li>• Validate OpenQASM syntax using circuit validator</li>
+                                    <li>• Check gate compatibility with target device</li>
+                                    <li>• Reduce circuit depth (target &lt; 50 layers)</li>
+                                    <li>• Ensure all qubits are initialized before use</li>
+                                    <li>• Add error mitigation strategies (e.g., dynamical decoupling)</li>
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+
+                            {result.error.type === 'network' && (
+                              <>
+                                <div className="text-sm space-y-2">
+                                  <p className="font-medium text-green-400">Network Error Resolution:</p>
+                                  <ul className="space-y-1 text-muted-foreground">
+                                    <li>• Check internet connection stability</li>
+                                    <li>• Try resubmitting after 30 seconds</li>
+                                    <li>• Clear browser cache and cookies</li>
+                                    <li>• Use a different network or VPN if available</li>
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+
+                            {result.error.type === 'timeout' && (
+                              <>
+                                <div className="text-sm space-y-2">
+                                  <p className="font-medium text-orange-400">Timeout Error Resolution:</p>
+                                  <ul className="space-y-1 text-muted-foreground">
+                                    <li>• Increase timeout settings if possible</li>
+                                    <li>• Reduce number of shots (try 1000 instead of 10000)</li>
+                                    <li>• Optimize circuit for fewer operations</li>
+                                    <li>• Submit job during off-peak hours</li>
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+
+                            {result.error.type === 'calibration' && (
+                              <>
+                                <div className="text-sm space-y-2">
+                                  <p className="font-medium text-yellow-400">Calibration Error Resolution:</p>
+                                  <ul className="space-y-1 text-muted-foreground">
+                                    <li>• Wait for automatic device recalibration</li>
+                                    <li>• Monitor calibration progress on device dashboard</li>
+                                    <li>• Switch to recently calibrated device</li>
+                                    <li>• Use noise-aware compilation for better results</li>
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+
+                            {result.error.type === 'decoherence' && (
+                              <>
+                                <div className="text-sm space-y-2">
+                                  <p className="font-medium text-pink-400">Decoherence Error Resolution:</p>
+                                  <ul className="space-y-1 text-muted-foreground">
+                                    <li>• Reduce circuit execution time</li>
+                                    <li>• Use error mitigation techniques</li>
+                                    <li>• Optimize gate sequence for minimal depth</li>
+                                    <li>• Consider using quantum error correction codes</li>
+                                  </ul>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </details>
+
+                        {/* Documentation Links */}
+                        <div className="p-4 rounded-lg bg-blue-400/10 border border-blue-400/20">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Database className="h-4 w-4 text-blue-400" />
+                            <span className="font-semibold text-blue-200">Helpful Resources</span>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <a
+                              href="/docs/error-handling"
+                              className="block text-blue-300 hover:text-blue-200 transition-colors"
+                            >
+                              → Quantum Error Handling Guide
+                            </a>
+                            <a
+                              href="/docs/circuit-optimization"
+                              className="block text-blue-300 hover:text-blue-200 transition-colors"
+                            >
+                              → Circuit Optimization Techniques
+                            </a>
+                            <a
+                              href="/support/troubleshooting"
+                              className="block text-blue-300 hover:text-blue-200 transition-colors"
+                            >
+                              → Troubleshooting Common Issues
+                            </a>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
               )}
