@@ -23,6 +23,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useExecutions } from "@/hooks/use-executions";
 import { useToast } from "@/hooks/use-toast";
+import { ReproducibilityComparison } from "@/components/reproducibility-comparison";
 
 const mockExecutionRecords = [
   {
@@ -74,6 +75,56 @@ const mockExecutionRecords = [
     inputHash: "a1b2c3d4e5f6",
     outputHash: "x9y8z7w6v5u4",
     notes: "GPU acceleration test",
+  },
+  {
+    id: "exec-003",
+    jobId: "job-1026",
+    timestamp: "2024-11-21T14:45:00Z",
+    status: "success" as const,
+    environment: {
+      seed: 42,
+      hardware: "TPU",
+      framework: "Cirq",
+      version: "1.0.0",
+    },
+    metrics: {
+      duration: 1.2,
+      accuracy: 0.95,
+      iterations: 1000,
+    },
+    parameters: {
+      depth: 5,
+      qubits: 8,
+      shots: 1024,
+    },
+    inputHash: "a1b2c3d4e5f6",
+    outputHash: "x9y8z7w6v5u4",
+    notes: "TPU execution - optimal performance",
+  },
+  {
+    id: "exec-004",
+    jobId: "job-1027",
+    timestamp: "2024-11-20T11:20:00Z",
+    status: "success" as const,
+    environment: {
+      seed: 42,
+      hardware: "CPU",
+      framework: "Qiskit",
+      version: "0.43.0",
+    },
+    metrics: {
+      duration: 2.4,
+      accuracy: 0.95,
+      iterations: 1000,
+    },
+    parameters: {
+      depth: 5,
+      qubits: 8,
+      shots: 1024,
+    },
+    inputHash: "a1b2c3d4e5f6",
+    outputHash: "x9y8z7w6v5u4",
+    notes: "Verification run - reproducibility check",
   },
 ];
 
@@ -195,9 +246,10 @@ export default function ReproducibilityDashboard() {
       </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsList className="grid w-full max-w-2xl grid-cols-4">
           <TabsTrigger value="executions">Executions</TabsTrigger>
           <TabsTrigger value="comparison">Comparison</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="verification">Verification</TabsTrigger>
         </TabsList>
 
@@ -532,6 +584,107 @@ export default function ReproducibilityDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6 mt-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <ReproducibilityComparison
+              data={[
+                { execution: "exec-001", hardware: "CPU", duration: 2.4, accuracy: 0.95, match: true },
+                { execution: "exec-002", hardware: "GPU", duration: 1.8, accuracy: 0.95, match: true },
+                { execution: "exec-003", hardware: "TPU", duration: 1.2, accuracy: 0.95, match: true },
+                { execution: "exec-004", hardware: "CPU", duration: 2.4, accuracy: 0.95, match: true },
+              ]}
+              reproducibilityScore={92}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Card className="quantum-card">
+              <CardHeader>
+                <CardTitle>Reproducibility Report</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30">
+                    <p className="text-sm text-muted-foreground mb-2">Successful Reruns</p>
+                    <p className="text-3xl font-bold text-green-400">4/4</p>
+                    <p className="text-xs text-muted-foreground mt-2">100% reproducibility</p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30">
+                    <p className="text-sm text-muted-foreground mb-2">Output Hash Match</p>
+                    <p className="text-3xl font-bold text-cyan-400">4/4</p>
+                    <p className="text-xs text-muted-foreground mt-2">Identical results</p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30">
+                    <p className="text-sm text-muted-foreground mb-2">Avg Execution Variance</p>
+                    <p className="text-3xl font-bold text-purple-400">±0.3%</p>
+                    <p className="text-xs text-muted-foreground mt-2">Consistent performance</p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/30">
+                    <p className="text-sm text-muted-foreground mb-2">Seed Control Status</p>
+                    <p className="text-2xl font-bold text-orange-400">Fixed</p>
+                    <p className="text-xs text-muted-foreground mt-2">Seed=42 across all runs</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Card className="quantum-card">
+              <CardHeader>
+                <CardTitle>Best Practices Implemented</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 rounded-lg border border-green-500/30 bg-green-500/10">
+                    <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-green-300">Fixed Random Seed</p>
+                      <p className="text-xs text-muted-foreground mt-1">All executions use seed 42 for deterministic results</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg border border-green-500/30 bg-green-500/10">
+                    <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-green-300">Environment Tracking</p>
+                      <p className="text-xs text-muted-foreground mt-1">All hardware and software versions recorded consistently</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg border border-green-500/30 bg-green-500/10">
+                    <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-green-300">Input/Output Hashing</p>
+                      <p className="text-xs text-muted-foreground mt-1">SHA256 hashes ensure data integrity verification</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg border border-green-500/30 bg-green-500/10">
+                    <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-green-300">Parameter Consistency</p>
+                      <p className="text-xs text-muted-foreground mt-1">All circuit parameters identical across runs</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="verification" className="space-y-4 mt-6">
