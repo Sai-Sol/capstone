@@ -21,9 +21,22 @@ import {
   Download,
   History,
   Save,
+  Settings,
+  Play,
+  RotateCcw,
+  BarChart3,
+  Cpu,
+  Target,
+  ChevronDown,
+  ChevronRight,
+  Sparkles,
+  Shield,
+  Timer,
 } from "lucide-react";
 import { useOptimizations } from "@/hooks/use-optimizations";
 import { OptimizationTrends } from "@/components/optimization-trends";
+import { QuantumCircuitOptimizer, QuantumCircuit, OptimizationResult } from "@/lib/quantum-optimizer";
+import { QuantumNoiseModeler, FidelityEstimate, ErrorMitigationStrategy } from "@/lib/quantum-noise-modeler";
 
 const sampleQASM = `OPENQASM 2.0;
 include "qelib1.inc";
@@ -125,6 +138,17 @@ export default function OptimizePage() {
   const [activeTab, setActiveTab] = useState("analyze");
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [localOptimizations, setLocalOptimizations] = useState(demoOptimizations);
+
+  // Advanced optimization state
+  const [optimizer] = useState(() => new QuantumCircuitOptimizer());
+  const [noiseModeler] = useState(() => new QuantumNoiseModeler());
+  const [parsedCircuit, setParsedCircuit] = useState<QuantumCircuit | null>(null);
+  const [optimizationResults, setOptimizationResults] = useState<OptimizationResult[]>([]);
+  const [fidelityEstimate, setFidelityEstimate] = useState<FidelityEstimate | null>(null);
+  const [errorMitigationStrategies, setErrorMitigationStrategies] = useState<ErrorMitigationStrategy[]>([]);
+  const [selectedOptimizations, setSelectedOptimizations] = useState<Set<string>>(new Set());
+  const [previewMode, setPreviewMode] = useState(false);
+  const [optimizationAggressiveness, setOptimizationAggressiveness] = useState<'conservative' | 'moderate' | 'aggressive'>('moderate');
 
   const { saveOptimization, fetchHistory, optimizations, loading, error } =
     useOptimizations();
@@ -487,6 +511,318 @@ export default function OptimizePage() {
                         </div>
                         <Progress value={analysis.score} className="h-2" />
                       </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {/* Advanced Optimization Controls */}
+              {parsedCircuit && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                  <Card className="quantum-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Settings className="h-5 w-5 text-primary" />
+                        Advanced Optimization Controls
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Optimization Aggressiveness</label>
+                          <select
+                            value={optimizationAggressiveness}
+                            onChange={(e) => setOptimizationAggressiveness(e.target.value as 'conservative' | 'moderate' | 'aggressive')}
+                            className="w-full text-sm px-3 py-2 rounded border border-border bg-background"
+                          >
+                            <option value="conservative">Conservative (Safe)</option>
+                            <option value="moderate">Moderate (Balanced)</option>
+                            <option value="aggressive">Aggressive (Maximum)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Preview Mode</label>
+                          <Button
+                            variant={previewMode ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setPreviewMode(!previewMode)}
+                            className="w-full"
+                          >
+                            {previewMode ? (
+                              <>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Preview On
+                              </>
+                            ) : (
+                              <>
+                                <Cpu className="mr-2 h-4 w-4" />
+                                Preview Off
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Actions</label>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => {
+                                setSelectedOptimizations(new Set(optimizationResults.map(r => r.algorithm)));
+                                if (previewMode) {
+                                  setSaveMessage("All optimizations selected for preview");
+                                  setTimeout(() => setSaveMessage(null), 2000);
+                                }
+                              }}
+                              size="sm"
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              <Play className="mr-2 h-4 w-4" />
+                              Apply All
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setSelectedOptimizations(new Set());
+                                setPreviewMode(false);
+                                if (previewMode) {
+                                  setSaveMessage("Optimization selection cleared");
+                                  setTimeout(() => setSaveMessage(null), 2000);
+                                }
+                              }}
+                              size="sm"
+                              variant="outline"
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {fidelityEstimate && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30">
+                          <div>
+                            <p className="text-xs text-blue-300 mb-1">Overall Fidelity</p>
+                            <p className="text-lg font-bold text-blue-400">
+                              {(fidelityEstimate.overallFidelity * 100).toFixed(2)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-cyan-300 mb-1">Decoherence Error</p>
+                            <p className="text-lg font-bold text-cyan-400">
+                              {(fidelityEstimate.decoherenceError * 100).toFixed(2)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-purple-300 mb-1">Crosstalk Error</p>
+                            <p className="text-lg font-bold text-purple-400">
+                              {(fidelityEstimate.crosstalkError * 100).toFixed(2)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-green-300 mb-1">Readout Error</p>
+                            <p className="text-lg font-bold text-green-400">
+                              {(fidelityEstimate.readoutError * 100).toFixed(2)}%
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {/* Optimization Results */}
+              {optimizationResults.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <Card className="quantum-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        Optimization Results
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {optimizationResults.map((result, idx) => {
+                        const isSelected = selectedOptimizations.has(result.algorithm);
+
+                        return (
+                          <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                              isSelected
+                                ? 'border-primary/50 bg-primary/10'
+                                : 'border-border hover:border-primary/30'
+                            }`}
+                            onClick={() => {
+                              const newSelection = new Set(selectedOptimizations);
+                              if (isSelected) {
+                                newSelection.delete(result.algorithm);
+                              } else {
+                                newSelection.add(result.algorithm);
+                              }
+                              setSelectedOptimizations(newSelection);
+                            }}
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h4 className="font-semibold capitalize">
+                                    {result.algorithm.replace('_', ' ')}
+                                  </h4>
+                                  <Badge
+                                    variant={isSelected ? "default" : "outline"}
+                                    className="text-xs"
+                                  >
+                                    {isSelected ? "Selected" : "Available"}
+                                  </Badge>
+                                  {previewMode && isSelected && (
+                                    <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/50">
+                                      Preview
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                                  <div>
+                                    <p className="text-muted-foreground">Gate Reduction</p>
+                                    <p className="font-medium text-green-400">
+                                      {result.impact.gateReduction.toFixed(1)}%
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Depth Reduction</p>
+                                    <p className="font-medium text-blue-400">
+                                      {result.impact.depthReduction.toFixed(1)}%
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Fidelity Improvement</p>
+                                    <p className="font-medium text-purple-400">
+                                      {result.impact.fidelityImprovement.toFixed(1)}%
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Cost Savings</p>
+                                    <p className="font-medium text-yellow-400">
+                                      ${result.impact.costSavings.toFixed(4)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <ChevronRight
+                                className={`h-4 w-4 transition-transform ${
+                                  isSelected ? 'rotate-90 text-primary' : 'text-muted-foreground'
+                                }`}
+                              />
+                            </div>
+
+                            {isSelected && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="mt-3 pt-3 border-t border-border/50"
+                              >
+                                <div className="space-y-2">
+                                  <p className="text-sm font-medium text-primary">Implementation Steps:</p>
+                                  {result.implementation.steps.map((step, stepIdx) => (
+                                    <div key={stepIdx} className="flex items-start gap-2 text-sm">
+                                      <span className="text-primary/50">{stepIdx + 1}.</span>
+                                      <span className="text-muted-foreground">{step}</span>
+                                    </div>
+                                  ))}
+
+                                  {result.implementation.codeChanges.length > 0 && (
+                                    <div className="mt-3 space-y-2">
+                                      <p className="text-sm font-medium text-primary">Code Changes:</p>
+                                      {result.implementation.codeChanges.slice(0, 3).map((change, changeIdx) => (
+                                        <div key={changeIdx} className="p-2 rounded bg-background/50 text-xs font-mono">
+                                          <div className="text-red-400 mb-1">- {change.original}</div>
+                                          <div className="text-green-400">+ {change.optimized}</div>
+                                          <div className="text-blue-300 mt-1">{change.explanation}</div>
+                                        </div>
+                                      ))}
+                                      {result.implementation.codeChanges.length > 3 && (
+                                        <p className="text-xs text-muted-foreground">
+                                          +{result.implementation.codeChanges.length - 3} more changes...
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {/* Error Mitigation Strategies */}
+              {errorMitigationStrategies.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  <Card className="quantum-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-primary" />
+                        Error Mitigation Strategies
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {errorMitigationStrategies.map((strategy, idx) => (
+                        <div
+                          key={idx}
+                          className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <h4 className="font-semibold capitalize text-sm mb-1">
+                                {strategy.technique.replace('_', ' ')}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mb-2">
+                                Complexity: {strategy.implementationComplexity} •
+                                Overhead: {strategy.impact.overheadMultiplier}x
+                              </p>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className={`${
+                                strategy.impact.fidelityImprovement > 0.05
+                                  ? 'text-green-400 border-green-500/50 bg-green-500/10'
+                                  : 'text-yellow-400 border-yellow-500/50 bg-yellow-500/10'
+                              }`}
+                            >
+                              +{(strategy.impact.fidelityImprovement * 100).toFixed(1)}% fidelity
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground mb-2">
+                            <p>Impact: Improves fidelity by {strategy.impact.fidelityImprovement.toFixed(3)}</p>
+                            <p>Overhead: Adds {strategy.impact.additionalGates} gates, {strategy.impact.overheadMultiplier}x runtime</p>
+                          </div>
+                          <div className="text-xs text-blue-300">
+                            <p>Applicable when:</p>
+                            <ul className="ml-4 mt-1">
+                              {strategy.applicableConditions.map((condition, condIdx) => (
+                                <li key={condIdx}>• {condition}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
                 </motion.div>

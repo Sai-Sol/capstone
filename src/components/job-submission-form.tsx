@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion, AnimatePresence } from "framer-motion";
+import { AdvancedQuantumAlgorithms, AlgorithmTemplate } from "@/lib/advanced-quantum-algorithms";
+import { QuantumCircuitOptimizer } from "@/lib/quantum-optimizer";
+import { QuantumNoiseModeler } from "@/lib/quantum-noise-modeler";
 
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +69,18 @@ const priorityConfig = {
   medium: { color: "text-yellow-400 border-yellow-400/50", label: "Priority", desc: "Faster execution" },
   high: { color: "text-red-400 border-red-400/50", label: "Express", desc: "Immediate processing" },
 };
+
+// Algorithm templates integration
+const algorithmTemplates = new AdvancedQuantumAlgorithms();
+
+// Enhanced preset algorithms with template integration
+const enhancedPresetAlgorithms = presetAlgorithms.map(preset => {
+  ...preset,
+  templateId: algorithmTemplates.getAllTemplates().find(template =>
+    template.name.toLowerCase().includes(preset.name.toLowerCase()) ||
+    preset.name.toLowerCase().includes(template.category)
+  )?.id
+});
 
 // Pre-existing quantum algorithms for testing
 const presetAlgorithms = [
@@ -229,6 +244,7 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
   const [isLoading, setIsLoading] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const { isConnected, signer, provider, error, clearError } = useWallet();
   const { toast } = useToast();
 
@@ -286,8 +302,34 @@ export default function JobSubmissionForm({ onJobLogged }: JobSubmissionFormProp
     const preset = presetAlgorithms.find(p => p.id === presetId);
     if (preset) {
       setSelectedPreset(presetId);
+      setSelectedTemplate(null);
       form.setValue("description", preset.qasm);
       form.setValue("submissionType", "qasm");
+    }
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    const template = algorithmTemplates.getTemplate(templateId);
+    if (template) {
+      setSelectedTemplate(templateId);
+      setSelectedPreset(null);
+
+      // Get default parameters for template
+      const defaultParams: Record<string, any> = {};
+      template.parameters.forEach(param => {
+        if (param.default !== undefined) {
+          defaultParams[param.name] = param.default;
+        }
+      });
+
+      // Generate circuit from template
+      const circuit = algorithmTemplates.generateCircuit(templateId, defaultParams);
+      if (circuit) {
+        const qasmCode = QuantumCircuitOptimizer.circuitToQASM(circuit);
+        form.setValue("description", qasmCode);
+        form.setValue("submissionType", "qasm");
+        form.setValue("jobType", template.name);
+      }
     }
   };
 
