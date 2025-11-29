@@ -41,7 +41,8 @@ import {
   Loader2,
   Terminal,
   AlertTriangle,
-  Rocket
+  Rocket,
+  Package
 } from "lucide-react";
 import QuantumResultsDisplay from "@/components/quantum-results-display";
 import { blockchainIntegration } from "@/lib/blockchain-integration";
