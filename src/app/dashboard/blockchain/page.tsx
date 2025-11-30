@@ -33,6 +33,8 @@ import {
 } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
+import { BlockScoutTransactions } from "@/components/blockscout-transactions";
+import { RecentJobsExplorer } from "@/components/recent-jobs-explorer";
 
 interface NetworkMetrics {
   blockNumber: number;
@@ -509,7 +511,11 @@ export default function BlockchainPage() {
         </TabsContent>
 
 
-        <TabsContent value="contracts" className="mt-6">
+        <TabsContent value="contracts" className="mt-6 space-y-6">
+          <BlockScoutTransactions address={address || "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2"} />
+
+          <RecentJobsExplorer address={address || "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2"} limit={10} />
+
           <Card className="quantum-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-foreground">
