@@ -24,6 +24,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useWallet } from "@/hooks/use-wallet";
 import { formatDistanceToNow } from "date-fns";
+import { ResultsAnalytics } from "@/components/results-analytics";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface QuantumJobResult {
   id: string;
@@ -234,143 +236,193 @@ export default function ResultsPage() {
         </Card>
       </motion.div>
 
-      {/* Results Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="quantum-card">
-                <CardContent className="p-6">
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-4 bg-muted/50 rounded w-3/4"></div>
-                    <div className="h-8 bg-muted/50 rounded"></div>
-                    <div className="h-4 bg-muted/50 rounded w-1/2"></div>
-                  </div>
+      {/* Tabs Section */}
+      <Tabs defaultValue="analytics" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-muted/30 h-12">
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Analytics
+          </TabsTrigger>
+          <TabsTrigger value="results" className="flex items-center gap-2">
+            <Atom className="h-4 w-4" />
+            Results
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="analytics" className="mt-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {isLoading ? (
+              <div className="space-y-6">
+                {[...Array(4)].map((_, i) => (
+                  <Card key={i} className="quantum-card">
+                    <CardContent className="p-6">
+                      <div className="animate-pulse space-y-4">
+                        <div className="h-4 bg-muted/50 rounded w-3/4"></div>
+                        <div className="h-64 bg-muted/50 rounded"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : results.length === 0 ? (
+              <Card className="quantum-card">
+                <CardContent className="p-12 text-center">
+                  <BarChart3 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Data Available</h3>
+                  <p className="text-muted-foreground">
+                    Submit quantum jobs to see analytics and performance metrics.
+                  </p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        ) : filteredResults.length === 0 ? (
-          <Card className="quantum-card">
-            <CardContent className="p-12 text-center">
-              <BarChart3 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Results Found</h3>
-              <p className="text-muted-foreground">
-                {searchTerm || filterProvider !== "all" || filterStatus !== "all" 
-                  ? "Try adjusting your search or filters."
-                  : "Submit your first quantum job to see results here."
-                }
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredResults.map((result, index) => (
-              <motion.div
-                key={result.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="quantum-card hover:scale-105 transition-all duration-300 h-full">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Atom className="h-5 w-5 text-primary" />
-                        {result.algorithm}
-                      </CardTitle>
-                      <Badge variant="outline" className={
-                        result.status === 'completed' ? "text-green-400 border-green-400/50" :
-                        result.status === 'failed' ? "text-red-400 border-red-400/50" :
-                        "text-yellow-400 border-yellow-400/50"
-                      }>
-                        {result.status === 'completed' && <CheckCircle className="mr-1 h-3 w-3" />}
-                        {result.status === 'failed' && <AlertTriangle className="mr-1 h-3 w-3" />}
-                        {result.status === 'running' && <RefreshCw className="mr-1 h-3 w-3 animate-spin" />}
-                        {result.status}
-                      </Badge>
-                    </div>
-                    <CardDescription>
-                      Job ID: {result.id} • {result.provider}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {result.results && (
-                      <>
-                        {/* Quick Metrics */}
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Target className="h-4 w-4 text-purple-400" />
-                            <span className="text-muted-foreground">Fidelity:</span>
-                            <span className="font-semibold text-purple-400">{result.results.fidelity}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-green-400" />
-                            <span className="text-muted-foreground">Time:</span>
-                            <span className="font-semibold text-green-400">{result.results.executionTime}</span>
-                          </div>
-                        </div>
+            ) : (
+              <ResultsAnalytics results={results} />
+            )}
+          </motion.div>
+        </TabsContent>
 
-                        {/* Top Measurement States */}
-                        <div className="space-y-2">
-                          <div className="text-sm font-medium text-foreground">Top Measurement States:</div>
-                          {Object.entries(result.results.measurements)
-                            .sort(([,a], [,b]) => b - a)
-                            .slice(0, 3)
-                            .map(([state, count]) => {
-                              const percentage = (count / result.results!.shots * 100);
-                              return (
-                                <div key={state} className="flex items-center justify-between text-xs">
-                                  <span className="font-mono">|{state}⟩</span>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-16 h-1 bg-muted/20 rounded-full overflow-hidden">
-                                      <div 
-                                        className="h-full bg-primary rounded-full"
-                                        style={{ width: `${percentage}%` }}
-                                      />
+        <TabsContent value="results" className="mt-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {isLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="quantum-card">
+                    <CardContent className="p-6">
+                      <div className="animate-pulse space-y-4">
+                        <div className="h-4 bg-muted/50 rounded w-3/4"></div>
+                        <div className="h-8 bg-muted/50 rounded"></div>
+                        <div className="h-4 bg-muted/50 rounded w-1/2"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredResults.length === 0 ? (
+              <Card className="quantum-card">
+                <CardContent className="p-12 text-center">
+                  <BarChart3 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-muted-foreground mb-2">No Results Found</h3>
+                  <p className="text-muted-foreground">
+                    {searchTerm || filterProvider !== "all" || filterStatus !== "all"
+                      ? "Try adjusting your search or filters."
+                      : "Submit your first quantum job to see results here."
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filteredResults.map((result, index) => (
+                  <motion.div
+                    key={result.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="quantum-card hover:scale-105 transition-all duration-300 h-full">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <Atom className="h-5 w-5 text-primary" />
+                            {result.algorithm}
+                          </CardTitle>
+                          <Badge variant="outline" className={
+                            result.status === 'completed' ? "text-green-400 border-green-400/50" :
+                            result.status === 'failed' ? "text-red-400 border-red-400/50" :
+                            "text-yellow-400 border-yellow-400/50"
+                          }>
+                            {result.status === 'completed' && <CheckCircle className="mr-1 h-3 w-3" />}
+                            {result.status === 'failed' && <AlertTriangle className="mr-1 h-3 w-3" />}
+                            {result.status === 'running' && <RefreshCw className="mr-1 h-3 w-3 animate-spin" />}
+                            {result.status}
+                          </Badge>
+                        </div>
+                        <CardDescription>
+                          Job ID: {result.id} • {result.provider}
+                        </CardDescription>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+                        {result.results && (
+                          <>
+                            {/* Quick Metrics */}
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div className="flex items-center gap-2">
+                                <Target className="h-4 w-4 text-purple-400" />
+                                <span className="text-muted-foreground">Fidelity:</span>
+                                <span className="font-semibold text-purple-400">{result.results.fidelity}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-green-400" />
+                                <span className="text-muted-foreground">Time:</span>
+                                <span className="font-semibold text-green-400">{result.results.executionTime}</span>
+                              </div>
+                            </div>
+
+                            {/* Top Measurement States */}
+                            <div className="space-y-2">
+                              <div className="text-sm font-medium text-foreground">Top Measurement States:</div>
+                              {Object.entries(result.results.measurements)
+                                .sort(([,a], [,b]) => b - a)
+                                .slice(0, 3)
+                                .map(([state, count]) => {
+                                  const percentage = (count / result.results!.shots * 100);
+                                  return (
+                                    <div key={state} className="flex items-center justify-between text-xs">
+                                      <span className="font-mono">|{state}⟩</span>
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-16 h-1 bg-muted/20 rounded-full overflow-hidden">
+                                          <div
+                                            className="h-full bg-primary rounded-full"
+                                            style={{ width: `${percentage}%` }}
+                                          />
+                                        </div>
+                                        <span className="font-semibold w-12 text-right">{percentage.toFixed(1)}%</span>
+                                      </div>
                                     </div>
-                                    <span className="font-semibold w-12 text-right">{percentage.toFixed(1)}%</span>
-                                  </div>
-                                </div>
-                              );
-                            })}
+                                  );
+                                })}
+                            </div>
+                          </>
+                        )}
+
+                        {/* Timestamp */}
+                        <div className="text-xs text-muted-foreground">
+                          {result.completedAt
+                            ? `Completed ${formatDistanceToNow(new Date(result.completedAt), { addSuffix: true })}`
+                            : `Submitted ${formatDistanceToNow(new Date(result.submittedAt), { addSuffix: true })}`
+                          }
                         </div>
-                      </>
-                    )}
 
-                    {/* Timestamp */}
-                    <div className="text-xs text-muted-foreground">
-                      {result.completedAt 
-                        ? `Completed ${formatDistanceToNow(new Date(result.completedAt), { addSuffix: true })}`
-                        : `Submitted ${formatDistanceToNow(new Date(result.submittedAt), { addSuffix: true })}`
-                      }
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2">
-                      <Button variant="outline" size="sm" onClick={() => downloadResult(result)}>
-                        <Download className="h-3 w-3 mr-1" />
-                        Download
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={`https://www.megaexplorer.xyz/tx/${result.txHash}`} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Verify
-                        </a>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </motion.div>
+                        {/* Actions */}
+                        <div className="flex gap-2 pt-2">
+                          <Button variant="outline" size="sm" onClick={() => downloadResult(result)}>
+                            <Download className="h-3 w-3 mr-1" />
+                            Download
+                          </Button>
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={`https://www.megaexplorer.xyz/tx/${result.txHash}`} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              Verify
+                            </a>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
