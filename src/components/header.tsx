@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, UserCircle, Atom, Home, Plus, History, Globe, Menu, X, BarChart3, TrendingUp, Users, Zap } from "lucide-react";
+import { LogOut, UserCircle, Atom, Home, Plus, History, Globe, Menu, X, BarChart3, TrendingUp, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import WalletConnectButton from "./wallet-connect-button";
@@ -39,7 +39,6 @@ export default function Header() {
     { href: "/dashboard/optimize", label: "Optimize", icon: Zap },
     { href: "/dashboard/circuits", label: "Circuits", icon: Atom },
     { href: "/dashboard/reproducibility", label: "Reproducibility", icon: TrendingUp },
-    { href: "/dashboard/collaborate", label: "Collaborate", icon: Users },
     { href: "/dashboard/results", label: "Results", icon: BarChart3 },
     { href: "/dashboard/blockchain", label: "Blockchain", icon: Globe },
     { href: "/dashboard/history", label: "History", icon: History },
