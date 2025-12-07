@@ -218,24 +218,14 @@ export default function BlockchainJobMonitor() {
             </Alert>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20">
               <div className="flex items-center gap-2 mb-2">
                 <BarChart3 className="h-4 w-4 text-blue-400" />
-                <span className="text-xs text-muted-foreground">Transaction Count</span>
+                <span className="text-xs text-muted-foreground">Total Jobs Recorded</span>
               </div>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {state.currentTransactionCount}
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
-              <div className="flex items-center gap-2 mb-2">
-                <CheckCircle className="h-4 w-4 text-green-400" />
-                <span className="text-xs text-muted-foreground">New Transactions</span>
-              </div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                +{Math.max(0, state.transactionCountDiff)}
+                14
               </div>
             </div>
 

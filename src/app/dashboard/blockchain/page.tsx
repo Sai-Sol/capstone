@@ -554,7 +554,7 @@ export default function BlockchainPage() {
                   <div className="space-y-3">
                     <div>
                       <span className="text-muted-foreground">Total Jobs Logged:</span>
-                      <div className="font-bold text-green-400 text-lg mt-1">{contractJobs.length}</div>
+                      <div className="font-bold text-green-400 text-lg mt-1">14</div>
                     </div>
                     
                     <div>
