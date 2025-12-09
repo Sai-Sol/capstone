@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
-import { 
+import {
   Form,
   FormControl,
   FormField,
@@ -42,10 +42,10 @@ import {
   Terminal,
   AlertTriangle,
   Rocket,
-  Package
+  Package,
+  CheckCircle
 } from "lucide-react";
 import QuantumResultsDisplay from "@/components/quantum-results-display";
-import { blockchainIntegration } from "@/lib/blockchain-integration";
 import { JobTemplatesManager } from "@/components/job-templates-manager";
 import { CircuitOptimizerAnalyzer } from "@/components/circuit-optimizer-analyzer";
 import { BatchScheduler } from "@/components/batch-scheduler";
@@ -59,26 +59,26 @@ const formSchema = z.object({
 });
 
 const quantumProviders = [
-  { 
-    id: "Google Willow", 
-    name: "Google Willow", 
-    qubits: 105, 
+  {
+    id: "Google Willow",
+    name: "Google Willow",
+    qubits: 105,
     description: "Error-corrected quantum processor",
     icon: "🔵",
     latency: "< 50ms"
   },
-  { 
-    id: "IBM Condor", 
-    name: "IBM Condor", 
-    qubits: 1121, 
+  {
+    id: "IBM Condor",
+    name: "IBM Condor",
+    qubits: 1121,
     description: "Large-scale quantum system",
     icon: "🔷",
     latency: "< 100ms"
   },
-  { 
-    id: "Amazon Braket", 
-    name: "Amazon Braket", 
-    qubits: 256, 
+  {
+    id: "Amazon Braket",
+    name: "Amazon Braket",
+    qubits: 256,
     description: "Multi-provider quantum cloud",
     icon: "🟠",
     latency: "< 75ms"
@@ -100,11 +100,11 @@ const presetAlgorithms: PresetAlgorithm[] = [
   {
     id: "bell-state",
     name: "Bell State Creation",
-    description: "Create quantum entanglement between two qubits - the foundation of quantum computing!",
+    description: "Create quantum entanglement between two qubits!",
     difficulty: "Beginner",
     qubits: 2,
     icon: "🔗",
-    explanation: "This creates 'spooky action at a distance' - measuring one qubit instantly affects the other!",
+    explanation: "Bell states are fundamental for quantum information and quantum teleportation.",
     qasm: `OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[2];
@@ -114,89 +114,8 @@ cx q[0],q[1];
 measure q -> c;`
   },
   {
-    id: "grover-search",
-    name: "Grover's Search",
-    description: "Quantum database search algorithm - find items quadratically faster!",
-    difficulty: "Intermediate",
-    qubits: 2,
-    icon: "🔍",
-    explanation: "Search unsorted databases much faster than classical computers using quantum amplification.",
-    qasm: `OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[2];
-creg c[2];
-h q[0];
-h q[1];
-cz q[0],q[1];
-h q[0];
-h q[1];
-measure q -> c;`
-  },
-  {
-    id: "superposition",
-    name: "Quantum Superposition",
-    description: "Put qubits in multiple states simultaneously - quantum parallel computing!",
-    difficulty: "Beginner",
-    qubits: 3,
-    icon: "🌊",
-    explanation: "Each qubit exists in both states at once, creating exponential computing power.",
-    qasm: `OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[3];
-creg c[3];
-h q[0];
-h q[1];
-h q[2];
-measure q -> c;`
-  },
-  {
-    id: "quantum-teleportation",
-    name: "Quantum Teleportation",
-    description: "Transfer quantum information using entanglement - like Star Trek!",
-    difficulty: "Advanced",
-    qubits: 3,
-    icon: "📡",
-    explanation: "Recreate the famous quantum teleportation protocol to transmit quantum states.",
-    qasm: `OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[3];
-creg c[3];
-x q[0];
-h q[1];
-cx q[1],q[2];
-cx q[0],q[1];
-h q[0];
-measure q[0] -> c[0];
-measure q[1] -> c[1];
-if(c[1]==1) x q[2];
-if(c[0]==1) z q[2];
-measure q[2] -> c[2];`
-  },
-  {
-    id: "quantum-fourier",
-    name: "Quantum Fourier Transform",
-    description: "Quantum signal processing - essential for Shor's algorithm!",
-    difficulty: "Advanced",
-    qubits: 3,
-    icon: "🎵",
-    explanation: "The quantum equivalent of signal processing used in factoring and pattern detection.",
-    qasm: `OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[3];
-creg c[3];
-x q[0];
-h q[2];
-cu1(pi/2) q[1],q[2];
-cu1(pi/4) q[0],q[2];
-h q[1];
-cu1(pi/2) q[0],q[1];
-h q[0];
-swap q[0],q[2];
-measure q -> c;`
-  },
-  {
-    id: "random-number",
-    name: "Quantum Random Generator",
+    id: "quantum-random",
+    name: "Quantum Random Number",
     description: "Generate truly random numbers using quantum mechanics!",
     difficulty: "Beginner",
     qubits: 4,
@@ -269,9 +188,10 @@ measure q[2] -> c[2];`
 export default function CreatePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [savedTemplates, setSavedTemplates] = useState<any[]>([]);
-  const { isConnected, signer, provider, error, clearError } = useWallet();
+  const { isConnected, address } = useWallet();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -326,7 +246,7 @@ export default function CreatePage() {
   };
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!signer) {
+    if (!isConnected) {
       toast({
         variant: "destructive",
         title: "Wallet Required",
@@ -336,44 +256,38 @@ export default function CreatePage() {
     }
 
     setIsLoading(true);
-    clearError();
-    
+    setSubmissionSuccess(false);
+
     try {
-      toast({
-        title: "Submitting Job 🚀",
-        description: "Please confirm the blockchain transaction in your wallet.",
-      });
+      const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      const { txHash, jobId } = await blockchainIntegration.logQuantumJob(
-        provider,
-        signer,
-        values.jobType,
-        values.description
-      );
-
-      // Submit job for execution
-      const jobResponse = await fetch('/api/submit-job', {
+      const response = await fetch('/api/submit-job', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          jobId,
           jobType: values.jobType,
           description: values.description,
           provider: values.jobType,
           priority: values.priority,
           submissionType: values.submissionType,
-          txHash,
-          userId: await signer.getAddress()
+          userId: address || "unknown",
+          timestamp: Date.now(),
         })
       });
 
-      const jobData = await jobResponse.json();
-      if (jobData.jobId) {
-        setCurrentJobId(jobData.jobId);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
       }
+
+      const jobData = await response.json();
+
+      setCurrentJobId(jobData.jobId || jobId);
+      setSubmissionSuccess(true);
 
       toast({
         title: "Success! 🎉",
-        description: "Your quantum job has been submitted and logged on the blockchain.",
+        description: "Your quantum job has been submitted successfully.",
       });
 
       form.reset({
@@ -383,22 +297,17 @@ export default function CreatePage() {
         priority: "medium",
       });
       setSelectedPreset(null);
-      
+
+      setTimeout(() => setSubmissionSuccess(false), 5000);
+
     } catch (error: any) {
-      console.error(error);
-      
-      let errorMessage = "Job submission failed.";
-      
-      if (error.code === 4001) {
-        errorMessage = "Transaction cancelled by user.";
-      } else if (error.code === -32603) {
-        errorMessage = "Insufficient funds for gas fees.";
-      } else if (error.reason) {
-        errorMessage = error.reason;
-      } else if (error.message) {
+      console.error('Job submission error:', error);
+
+      let errorMessage = "Job submission failed. Please try again.";
+      if (error.message) {
         errorMessage = error.message;
       }
-      
+
       toast({
         variant: "destructive",
         title: "Submission Error",
@@ -422,7 +331,7 @@ export default function CreatePage() {
           Quantum Computing Studio
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Create and execute quantum algorithms on real quantum computers with blockchain verification
+          Create and execute quantum algorithms on real quantum computers
         </p>
       </motion.div>
 
@@ -439,404 +348,216 @@ export default function CreatePage() {
               Create Quantum Job
             </CardTitle>
             <CardDescription>
-              Choose your quantum provider and algorithm to execute on real quantum hardware
+              Choose your quantum provider and algorithm to execute
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="p-8">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-                
-                {/* Provider Selection */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Cpu className="h-5 w-5 text-primary" />
-                    Select Quantum Provider
-                  </h3>
-                  <FormField
-                    control={form.control}
-                    name="jobType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="grid gap-4 md:grid-cols-3">
-                            {quantumProviders.map((provider) => (
-                              <motion.div
-                                key={provider.id}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <Card 
-                                  className={`cursor-pointer transition-all duration-300 ${
-                                    field.value === provider.id 
-                                      ? 'border-primary bg-primary/10' 
-                                      : 'border-border hover:border-primary/50'
-                                  }`}
-                                  onClick={() => field.onChange(provider.id)}
-                                >
-                                  <CardContent className="p-4 text-center">
-                                    <div className="text-3xl mb-2">{provider.icon}</div>
-                                    <h4 className="font-semibold text-foreground">{provider.name}</h4>
-                                    <p className="text-xs text-muted-foreground mb-2">{provider.description}</p>
-                                    <div className="space-y-1">
-                                      <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                                        {provider.qubits} qubits
-                                      </Badge>
-                                      <div className="text-xs text-green-400">{provider.latency}</div>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            {submissionSuccess && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30"
+              >
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-400" />
+                  <div>
+                    <p className="font-semibold text-green-300">Job Submitted Successfully!</p>
+                    <p className="text-sm text-green-200">Job ID: {currentJobId}</p>
+                  </div>
                 </div>
+              </motion.div>
+            )}
 
-                {/* Algorithm Input */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Code className="h-5 w-5 text-primary" />
-                    Define Your Algorithm
-                  </h3>
-                  
-                  <Tabs 
-                    defaultValue="preset" 
-                    onValueChange={(value) => {
-                      form.setValue('submissionType', value as "prompt" | "qasm" | "preset");
-                      if (value !== "preset") {
-                        setSelectedPreset(null);
-                      }
-                    }}
-                  >
-                    <TabsList className="grid w-full grid-cols-3 bg-muted/30 h-12">
-                      <TabsTrigger value="preset" className="flex items-center gap-2">
-                        <Lightbulb className="h-4 w-4" />
-                        Quick Start
-                      </TabsTrigger>
-                      <TabsTrigger value="prompt" className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4" />
-                        Describe
-                      </TabsTrigger>
-                      <TabsTrigger value="qasm" className="flex items-center gap-2">
-                        <Code className="h-4 w-4" />
-                        Code
-                      </TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="preset" className="mt-6">
-                      <div className="space-y-6">
-                        <div className="text-center">
-                          <p className="text-base text-muted-foreground mb-2">
-                            Choose from ready-to-use quantum algorithms
-                          </p>
-                          <p className="text-sm text-primary/70">
-                            Perfect for learning quantum computing or testing quantum hardware
-                          </p>
-                        </div>
-                        
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                          {presetAlgorithms.map((preset) => (
-                            <motion.div
-                              key={preset.id}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                            >
-                              <Card
-                                className={`cursor-pointer transition-all duration-300 h-full ${
-                                  selectedPreset === preset.id
-                                    ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
-                                    : 'border-border hover:border-primary/50'
-                                }`}
-                                onClick={() => handlePresetSelect(preset.id)}
-                              >
-                                <CardContent className="p-5 text-center h-full flex flex-col">
-                                  <div className="text-4xl mb-3">{preset.icon}</div>
-                                  <h4 className="font-semibold text-foreground mb-2 text-base">{preset.name}</h4>
-                                  <p className="text-xs text-muted-foreground mb-4 flex-grow">{preset.description}</p>
-                                  <div className="space-y-2">
-                                    <div className="flex justify-center gap-2">
-                                      <Badge variant="outline" className={
-                                        preset.difficulty === 'Beginner' ? 'text-green-400 border-green-400/50' :
-                                        preset.difficulty === 'Intermediate' ? 'text-yellow-400 border-yellow-400/50' :
-                                        'text-red-400 border-red-400/50'
-                                      }>
-                                        {preset.difficulty}
-                                      </Badge>
-                                      <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                                        {preset.qubits} qubits
-                                      </Badge>
-                                    </div>
-                                    {preset.explanation && (
-                                      <p className="text-xs text-muted-foreground/80 italic">
-                                        {preset.explanation}
-                                      </p>
-                                    )}
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </motion.div>
-                          ))}
-                        </div>
-                        
-                        {selectedPreset && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <FormField
-                              control={form.control}
-                              name="description"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-base font-semibold text-foreground">Generated Quantum Circuit</FormLabel>
-                                  <FormControl>
-                                    <Textarea
-                                      className="quantum-input min-h-[150px] font-mono text-sm bg-muted/20 resize-none"
-                                      readOnly
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <div className="text-xs text-green-400 mt-2">
-                                    Ready to execute on {selectedJobType}!
-                                  </div>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </motion.div>
-                        )}
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="prompt" className="mt-6 space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold text-foreground">Describe Your Quantum Algorithm</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement"
-                                className="quantum-input min-h-[150px] resize-none"
-                                value={field.value}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                              />
-                            </FormControl>
-                            <div className="text-xs text-muted-foreground">
-                              Describe what you want your quantum algorithm to do in plain English (minimum 10 characters)
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </TabsContent>
+            <Tabs defaultValue="form" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="form">Create</TabsTrigger>
+                <TabsTrigger value="templates">Templates</TabsTrigger>
+                <TabsTrigger value="presets">Presets</TabsTrigger>
+              </TabsList>
 
-                    <TabsContent value="qasm" className="mt-6 space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base font-semibold text-foreground">QASM Circuit Code</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={`OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[2];
-creg c[2];
-h q[0];
-cx q[0],q[1];
-measure q -> c;`}
-                                className="quantum-input min-h-[150px] font-mono text-sm resize-none"
-                                value={field.value}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                              />
-                            </FormControl>
-                            <div className="text-xs text-muted-foreground">
-                              Write your quantum circuit in OpenQASM format (minimum 10 characters)
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </TabsContent>
-                  </Tabs>
-                </div>
-
-
-                {/* Priority Selection */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-primary" />
-                    Execution Priority
-                  </h3>
-                  <FormField
-                    control={form.control}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="grid gap-4 md:grid-cols-3">
-                            {[
-                              { value: "low", label: "Standard", desc: "Normal queue processing", color: "green" },
-                              { value: "medium", label: "Priority", desc: "Faster execution", color: "yellow" },
-                              { value: "high", label: "Express", desc: "Immediate processing", color: "red" }
-                            ].map((option) => (
-                              <Card 
-                                key={option.value}
-                                className={`cursor-pointer transition-all duration-300 ${
-                                  field.value === option.value 
-                                    ? 'border-primary bg-primary/10' 
-                                    : 'border-border hover:border-primary/50'
-                                }`}
-                                onClick={() => field.onChange(option.value)}
-                              >
-                                <CardContent className="p-4 text-center">
-                                  <Badge variant="outline" className={`text-${option.color}-400 border-${option.color}-400/50 mb-2`}>
-                                    {option.label}
-                                  </Badge>
-                                  <p className="text-sm text-muted-foreground">{option.desc}</p>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Execution Estimates */}
-                {selectedJobType && descriptionValue && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-purple-500/5 border border-primary/20"
-                  >
-                    <h4 className="font-semibold text-primary mb-4 flex items-center gap-2">
-                      <Zap className="h-5 w-5" />
-                      Execution Estimates
-                    </h4>
+              {/* Create Tab */}
+              <TabsContent value="form" className="space-y-6">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                    {/* Provider Selection */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <Clock className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                        <div className="text-sm text-muted-foreground">Estimated Time</div>
-                        <div className="text-lg font-bold text-blue-400">5-15 seconds</div>
-                      </div>
-                      <div className="text-center">
-                        <DollarSign className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                        <div className="text-sm text-muted-foreground">Compute Cost</div>
-                        <div className="text-lg font-bold text-green-400">0.001 ETH</div>
-                      </div>
-                      <div className="text-center">
-                        <Atom className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                        <div className="text-sm text-muted-foreground">Qubits Used</div>
-                        <div className="text-lg font-bold text-purple-400">2-5</div>
-                      </div>
+                      {quantumProviders.map((provider) => (
+                        <motion.div
+                          key={provider.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div
+                            onClick={() => form.setValue("jobType", provider.id)}
+                            className={`p-4 rounded-lg cursor-pointer transition-all border-2 ${
+                              selectedJobType === provider.id
+                                ? "border-primary bg-primary/5"
+                                : "border-muted bg-muted/30 hover:border-primary/50"
+                            }`}
+                          >
+                            <div className="text-3xl mb-2">{provider.icon}</div>
+                            <h3 className="font-semibold text-foreground">{provider.name}</h3>
+                            <p className="text-xs text-muted-foreground mb-2">{provider.description}</p>
+                            <div className="flex gap-2 text-xs">
+                              <Badge variant="outline">{provider.qubits} Qubits</Badge>
+                              <Badge variant="outline">{provider.latency}</Badge>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
-                  </motion.div>
-                )}
 
-                {/* Submit Options */}
-                <div className="space-y-3">
-                  <div className="grid gap-3 md:grid-cols-2">
+                    {/* Priority */}
+                    <FormField
+                      control={form.control}
+                      name="priority"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-foreground">Priority Level</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="low">Low - Standard queue</SelectItem>
+                              <SelectItem value="medium">Medium - Recommended</SelectItem>
+                              <SelectItem value="high">High - Priority execution</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Algorithm Description */}
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-foreground flex items-center gap-2">
+                            <Code className="h-4 w-4" />
+                            Quantum Algorithm (QASM)
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter your QASM code or paste a quantum circuit..."
+                              className="font-mono text-sm min-h-48"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Submit Button */}
                     <Button
                       type="submit"
-                      disabled={isLoading || !isConnected || !selectedJobType || !descriptionValue}
-                      className="h-12 quantum-button font-semibold"
+                      disabled={isLoading || !selectedJobType}
+                      className="w-full h-12 text-base"
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                           Submitting...
                         </>
                       ) : (
                         <>
-                          <Terminal className="mr-3 h-5 w-5" />
-                          Execute Algorithm
+                          <Rocket className="mr-2 h-5 w-5" />
+                          Submit Quantum Job
                         </>
                       )}
                     </Button>
+                  </form>
+                </Form>
+              </TabsContent>
 
-                    {selectedJobType && descriptionValue && (
-                      <BatchScheduler
-                        currentFormData={{
-                          jobType: selectedJobType,
-                          description: descriptionValue,
-                          priority,
-                        }}
-                        onSubmitBatch={handleBatchSubmit}
-                      />
-                    )}
-                  </div>
+              {/* Templates Tab */}
+              <TabsContent value="templates">
+                <JobTemplatesManager
+                  savedTemplates={savedTemplates}
+                  onSelectTemplate={handleTemplateSelect}
+                  onSaveTemplate={handleSaveTemplate}
+                />
+              </TabsContent>
+
+              {/* Presets Tab */}
+              <TabsContent value="presets" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {presetAlgorithms.map((preset) => (
+                    <motion.div
+                      key={preset.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ y: -5 }}
+                    >
+                      <Card className="quantum-card h-full cursor-pointer hover:border-primary/50 transition-all"
+                        onClick={() => handlePresetSelect(preset.id)}>
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div className="text-3xl">{preset.icon}</div>
+                            <Badge variant={
+                              preset.difficulty === "Beginner" ? "outline" :
+                              preset.difficulty === "Intermediate" ? "secondary" :
+                              "default"
+                            }>
+                              {preset.difficulty}
+                            </Badge>
+                          </div>
+                          <CardTitle className="mt-3">{preset.name}</CardTitle>
+                          <CardDescription>{preset.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <p className="text-sm text-muted-foreground">{preset.explanation}</p>
+                          <Badge variant="outline">{preset.qubits} Qubits Required</Badge>
+                          <Button className="w-full" onClick={() => handlePresetSelect(preset.id)}>
+                            <Zap className="mr-2 h-4 w-4" />
+                            Use This Preset
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
                 </div>
-
-                {/* Submit Button Original */}
-                <div className="space-y-4 hidden">
-
-                  {!isConnected && (
-                    <Alert className="border-yellow-500/30 bg-yellow-500/10">
-                      <Zap className="h-4 w-4 text-yellow-500" />
-                      <AlertDescription className="text-foreground">
-                        <div className="font-semibold text-yellow-400 mb-1">Wallet Connection Required</div>
-                        Connect your wallet to submit quantum jobs and record results on the MegaETH blockchain.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  {error && isConnected && (
-                    <Alert className="border-red-500/30 bg-red-500/10">
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
-                      <AlertDescription className="text-foreground">
-                        <div className="font-semibold text-red-400 mb-1">Connection Issue</div>
-                        {error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-
-                {/* Alerts Section */}
-                <div className="space-y-3">
-                  {!isConnected && (
-                    <Alert className="border-yellow-500/30 bg-yellow-500/10">
-                      <Zap className="h-4 w-4 text-yellow-500" />
-                      <AlertDescription className="text-foreground">
-                        <div className="font-semibold text-yellow-400 mb-1">Wallet Connection Required</div>
-                        Connect your wallet to submit quantum jobs and record results on the MegaETH blockchain.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
-                  {error && isConnected && (
-                    <Alert className="border-red-500/30 bg-red-500/10">
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
-                      <AlertDescription className="text-foreground">
-                        <div className="font-semibold text-red-400 mb-1">Connection Issue</div>
-                        {error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              </form>
-            </Form>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </motion.div>
-      
-      {/* Quantum Results Display */}
-      <QuantumResultsDisplay
-        jobId={currentJobId}
-        onClose={() => setCurrentJobId(null)}
-      />
+
+      {/* Additional Features */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <CircuitOptimizerAnalyzer />
+        <BatchScheduler onBatchSubmit={handleBatchSubmit} />
+      </motion.div>
+
+      {currentJobId && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Card className="quantum-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-green-400" />
+                Job Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <QuantumResultsDisplay jobId={currentJobId} />
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }
