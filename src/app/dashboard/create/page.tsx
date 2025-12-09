@@ -613,51 +613,55 @@ export default function CreatePage() {
                       </div>
                     </TabsContent>
                     
-                    <TabsContent value="prompt" className="mt-6">
+                    <TabsContent value="prompt" className="mt-6 space-y-4">
                       <FormField
                         control={form.control}
                         name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Describe Your Quantum Algorithm</FormLabel>
+                            <FormLabel className="text-base font-semibold text-foreground">Describe Your Quantum Algorithm</FormLabel>
                             <FormControl>
-                              <Textarea 
-                                placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement" 
-                                className="quantum-input min-h-[120px]" 
-                                {...field} 
+                              <Textarea
+                                placeholder="Example: Create a Bell state circuit with Hadamard and CNOT gates to demonstrate quantum entanglement"
+                                className="quantum-input min-h-[150px] resize-none"
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
                               />
                             </FormControl>
                             <div className="text-xs text-muted-foreground">
-                              Describe what you want your quantum algorithm to do in plain English
+                              Describe what you want your quantum algorithm to do in plain English (minimum 10 characters)
                             </div>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </TabsContent>
-                    
-                    <TabsContent value="qasm" className="mt-6">
+
+                    <TabsContent value="qasm" className="mt-6 space-y-4">
                       <FormField
                         control={form.control}
                         name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>QASM Circuit Code</FormLabel>
+                            <FormLabel className="text-base font-semibold text-foreground">QASM Circuit Code</FormLabel>
                             <FormControl>
-                              <Textarea 
+                              <Textarea
                                 placeholder={`OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[2];
 creg c[2];
 h q[0];
 cx q[0],q[1];
-measure q -> c;`} 
-                                className="quantum-input min-h-[120px] font-mono text-sm" 
-                                {...field} 
+measure q -> c;`}
+                                className="quantum-input min-h-[150px] font-mono text-sm resize-none"
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
                               />
                             </FormControl>
                             <div className="text-xs text-muted-foreground">
-                              Write your quantum circuit in OpenQASM format
+                              Write your quantum circuit in OpenQASM format (minimum 10 characters)
                             </div>
                             <FormMessage />
                           </FormItem>
