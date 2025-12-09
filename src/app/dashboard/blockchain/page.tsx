@@ -408,14 +408,10 @@ export default function BlockchainPage() {
 
       {/* Enhanced Tabs Section */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-muted/30 h-12">
+        <TabsList className="grid w-full grid-cols-3 bg-muted/30 h-12">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
             Overview
-          </TabsTrigger>
-          <TabsTrigger value="contracts" className="flex items-center gap-2">
-            <Code className="h-4 w-4" />
-            Contracts
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -507,142 +503,6 @@ export default function BlockchainPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-
-        <TabsContent value="contracts" className="mt-6 space-y-6">
-          <RecentJobsExplorer address={address || "0xd1471126F18d76be253625CcA75e16a0F1C5B3e2"} limit={10} />
-
-          <Card className="quantum-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-foreground">
-                <Code className="h-5 w-5 text-primary" />
-                Smart Contract Hub
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">Interact with quantum computing smart contracts</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="p-6 rounded-xl bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-semibold text-primary text-lg">QuantumJobLogger Contract</h4>
-                  <Badge variant="outline" className="text-green-400 border-green-400/50">
-                    <CheckCircle className="mr-1 h-3 w-3" />
-                    Verified
-                  </Badge>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-muted-foreground">Contract Address:</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        <code className="font-mono text-primary bg-primary/10 px-2 py-1 rounded flex-1">
-                          {CONTRACT_ADDRESS.slice(0, 20)}...{CONTRACT_ADDRESS.slice(-10)}
-                        </code>
-                        <Button variant="ghost" size="sm" onClick={() => copyToClipboard(CONTRACT_ADDRESS, "Contract Address")}>
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <span className="text-muted-foreground">Network:</span>
-                      <div className="font-medium text-blue-400 mt-1">MegaETH Testnet</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-muted-foreground">Total Jobs Logged:</span>
-                      <div className="font-bold text-green-400 text-lg mt-1">14</div>
-                    </div>
-                    
-                    <div>
-                      <span className="text-muted-foreground">Contract Status:</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                        <span className="font-medium text-green-400">Active</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex gap-3 mt-6">
-                  <Button variant="outline" asChild>
-                    <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      View on Explorer
-                    </a>
-                  </Button>
-                  <Button variant="outline" onClick={fetchContractJobs}>
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Refresh Jobs
-                  </Button>
-                </div>
-              </div>
-
-              {/* Recent Contract Jobs */}
-              <div>
-                <h4 className="font-semibold text-primary mb-4 flex items-center gap-2">
-                  <Cpu className="h-5 w-5" />
-                  Recent Quantum Jobs
-                </h4>
-                <div className="space-y-3">
-                  {contractJobs.length > 0 ? contractJobs.map((job, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-4 rounded-lg bg-muted/20 border border-primary/10 hover:bg-muted/30 transition-all duration-300"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <Badge variant="outline" className="text-blue-400 border-blue-400/50">
-                              {job.jobType}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {job.timeSubmitted.toLocaleString()}
-                            </span>
-                            <Badge variant="outline" className="text-purple-400 border-purple-400/50">
-                              Block #{job.blockNumber?.toLocaleString() || 'N/A'}
-                            </Badge>
-                          </div>
-                          <div className="text-sm">
-                            <span className="text-muted-foreground">User: </span>
-                            <code className="font-mono text-primary">{job.user.slice(0, 8)}...{job.user.slice(-6)}</code>
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            Job ID: {job.txHash.slice(0, 10)}...{job.txHash.slice(-8)}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(job.txHash, "Transaction Hash")}>
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={`https://www.megaexplorer.xyz/tx/${job.txHash}`} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )) : (
-                    <div className="text-center py-12">
-                      <Code className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Quantum Jobs Found</h3>
-                      <p className="text-muted-foreground">Submit your first quantum job to see it logged here</p>
-                      <Button className="mt-4" asChild>
-                        <a href="/dashboard/create">Submit Quantum Job</a>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         <TabsContent value="analytics" className="mt-6">
