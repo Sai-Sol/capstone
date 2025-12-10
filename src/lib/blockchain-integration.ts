@@ -15,6 +15,43 @@ export interface QuantumJob {
 
 export class BlockchainIntegration {
   private jobs: Map<string, QuantumJob> = new Map();
+  private readonly MAX_RETRIES = 5;
+  private readonly INITIAL_RETRY_DELAY = 1000;
+  private readonly MAX_RETRY_DELAY = 30000;
+
+  private async sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private isRateLimitError(error: any): boolean {
+    if (error.code === -32603 || error.code === 'UNKNOWN_ERROR') {
+      const message = error.message || '';
+      return message.includes('rate limited') || message.includes('rate limit');
+    }
+    return false;
+  }
+
+  private async logJobWithRetry(
+    contract: Contract,
+    jobType: string,
+    jobDescription: string,
+    attempt: number = 1
+  ): Promise<any> {
+    try {
+      return await contract.logJob(jobType, jobDescription);
+    } catch (error: any) {
+      if (this.isRateLimitError(error) && attempt < this.MAX_RETRIES) {
+        const delayMs = Math.min(
+          this.INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1),
+          this.MAX_RETRY_DELAY
+        );
+        console.log(`Rate limited. Retrying in ${delayMs}ms (attempt ${attempt}/${this.MAX_RETRIES})`);
+        await this.sleep(delayMs);
+        return this.logJobWithRetry(contract, jobType, jobDescription, attempt + 1);
+      }
+      throw error;
+    }
+  }
 
   async logQuantumJob(
     provider: any,
@@ -24,7 +61,7 @@ export class BlockchainIntegration {
   ): Promise<{ txHash: string; jobId: string }> {
     try {
       const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, signer);
-      
+
       const jobMetadata = {
         type: jobType,
         description,
@@ -32,11 +69,11 @@ export class BlockchainIntegration {
       };
 
       const jobDescription = JSON.stringify(jobMetadata);
-      const tx = await contract.logJob(jobType, jobDescription);
-      
+      const tx = await this.logJobWithRetry(contract, jobType, jobDescription);
+
       const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const userAddress = await signer.getAddress();
-      
+
       const job: QuantumJob = {
         id: jobId,
         user: userAddress,
@@ -49,9 +86,20 @@ export class BlockchainIntegration {
 
       this.jobs.set(jobId, job);
 
-      // Wait for confirmation
-      await tx.wait();
-      job.status = 'confirmed';
+      // Wait for confirmation with timeout
+      const confirmationPromise = tx.wait();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Transaction confirmation timeout')), 60000)
+      );
+
+      try {
+        await Promise.race([confirmationPromise, timeoutPromise]);
+        job.status = 'confirmed';
+      } catch (error) {
+        console.warn('Transaction confirmation timed out, marking as pending');
+        job.status = 'pending';
+      }
+
       this.jobs.set(jobId, job);
 
       return { txHash: tx.hash, jobId };
