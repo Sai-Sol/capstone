@@ -1,4 +1,5 @@
-"use client";
+Done!
+lient";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -33,7 +34,6 @@ import {
 } from "lucide-react";
 import { CONTRACT_ADDRESS } from "@/lib/constants";
 import { quantumJobLoggerABI } from "@/lib/contracts";
-import { RecentJobsExplorer } from "@/components/recent-jobs-explorer";
 
 interface NetworkMetrics {
   blockNumber: number;
@@ -46,17 +46,6 @@ interface NetworkMetrics {
   validators: number;
 }
 
-interface TransactionData {
-  hash: string;
-  from: string;
-  to: string;
-  value: string;
-  gasUsed: string;
-  timestamp: number;
-  status: string;
-  type: string;
-  blockNumber: number;
-}
 
 export default function BlockchainPage() {
   const { isConnected, address, balance, provider, error, clearError } = useWallet();
@@ -73,7 +62,6 @@ export default function BlockchainPage() {
     validators: 0
   });
   
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [contractJobs, setContractJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(0);
@@ -129,49 +117,6 @@ export default function BlockchainPage() {
     }
   }, [provider, clearError, toast]);
 
-  const fetchRecentTransactions = useCallback(async () => {
-    try {
-      const mockTxs: TransactionData[] = [
-        {
-          hash: "0x1a2b3c4d5e6f7890abcdef1234567890abcdef12",
-          from: "0xabcdefghijklmnopqrstuvwxyz1234567890abcdef",
-          to: CONTRACT_ADDRESS,
-          value: "0.0",
-          gasUsed: "65000",
-          timestamp: Date.now() - 300000,
-          status: "success",
-          type: "Quantum Job",
-          blockNumber: networkMetrics.blockNumber - 150
-        },
-        {
-          hash: "0x2b3c4d5e6f7890abcdef1234567890abcdef1234",
-          from: "0xbcdefghijklmnopqrstuvwxyz1234567890bcdefg",
-          to: CONTRACT_ADDRESS,
-          value: "0.0",
-          gasUsed: "58000",
-          timestamp: Date.now() - 600000,
-          status: "success",
-          type: "Quantum Job",
-          blockNumber: networkMetrics.blockNumber - 300
-        },
-        {
-          hash: "0x3c4d5e6f7890abcdef1234567890abcdef123456",
-          from: address || "0xccdefghijklmnopqrstuvwxyz1234567890cdefgh",
-          to: "0xdddefghijklmnopqrstuvwxyz1234567890ddefgh",
-          value: "0.5",
-          gasUsed: "21000",
-          timestamp: Date.now() - 900000,
-          status: "success",
-          type: "Transfer",
-          blockNumber: networkMetrics.blockNumber - 450
-        }
-      ];
-      
-      setTransactions(mockTxs);
-    } catch (error: any) {
-      console.error("Failed to fetch transactions:", error);
-    }
-  }, [networkMetrics.blockNumber, address]);
 
   const fetchContractJobs = useCallback(async () => {
     if (!provider) return;
@@ -202,17 +147,15 @@ export default function BlockchainPage() {
   useEffect(() => {
     if (provider && isConnected) {
       fetchNetworkStats();
-      fetchRecentTransactions();
       fetchContractJobs();
       
       const interval = setInterval(() => {
         fetchNetworkStats();
-        fetchRecentTransactions();
       }, 30000);
       
       return () => clearInterval(interval);
     }
-  }, [provider, isConnected, fetchNetworkStats, fetchRecentTransactions, fetchContractJobs]);
+  }, [provider, isConnected, fetchNetworkStats, fetchContractJobs]);
 
   const copyToClipboard = (text: string, label: string = "Text") => {
     navigator.clipboard.writeText(text);
@@ -535,52 +478,6 @@ export default function BlockchainPage() {
                 </div>
               </CardContent>
             </Card>
-
-            <Card className="quantum-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-foreground">
-                  <BarChart3 className="h-5 w-5 text-primary" />
-                  Transaction Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Activity className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-foreground">Total Transactions</span>
-                      </div>
-                      <div className="text-2xl font-bold text-primary">{transactions.length}</div>
-                      <div className="text-xs text-muted-foreground">Last 24 hours</div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle className="h-4 w-4 text-green-400" />
-                        <span className="text-sm font-medium text-foreground">Success Rate</span>
-                      </div>
-                      <div className="text-2xl font-bold text-green-400">100%</div>
-                      <div className="text-xs text-green-300">All transactions successful</div>
-                    </div>
-                    
-                    <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Zap className="h-4 w-4 text-blue-400" />
-                        <span className="text-sm font-medium text-foreground">Avg Gas Used</span>
-                      </div>
-                      <div className="text-2xl font-bold text-blue-400">
-                        {transactions.length > 0 
-                          ? Math.round(transactions.reduce((sum, tx) => sum + parseInt(tx.gasUsed), 0) / transactions.length).toLocaleString()
-                          : '0'
-                        }
-                      </div>
-                      <div className="text-xs text-blue-300">Per transaction</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
@@ -621,32 +518,6 @@ export default function BlockchainPage() {
                     </div>
                   </div>
                 </div>
-
-                <div className="p-6 rounded-xl bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
-                  <h4 className="font-semibold text-green-200 mb-4 flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Quick Actions
-                  </h4>
-                  <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start" asChild>
-                      <a href="https://www.megaexplorer.xyz" target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Open Full Explorer
-                      </a>
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start" asChild>
-                      <a href={`https://www.megaexplorer.xyz/address/${address}`} target="_blank" rel="noopener noreferrer">
-                        <Activity className="mr-2 h-4 w-4" />
-                        View My Address
-                      </a>
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start" asChild>
-                      <a href={`https://www.megaexplorer.xyz/address/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer">
-                        <Code className="mr-2 h-4 w-4" />
-                        View Contract
-                      </a>
-                    </Button>
-                  </div>
                 </div>
               </div>
 
