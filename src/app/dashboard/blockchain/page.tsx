@@ -10,29 +10,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
-import { Contract, formatEther } from "ethers";
+import { formatEther } from "ethers";
 import {
   Globe,
   Activity,
-  ExternalLink,
   Copy,
   RefreshCw,
   Zap,
   BarChart3,
   Network,
-  Code,
   CheckCircle,
-  AlertTriangle,
   Wifi,
-  WifiOff,
   TrendingUp,
-  Clock,
-  Shield,
-  Database,
-  Cpu
+  Shield
 } from "lucide-react";
-import { CONTRACT_ADDRESS } from "@/lib/constants";
-import { quantumJobLoggerABI } from "@/lib/contracts";
 
 interface NetworkMetrics {
   blockNumber: number;
@@ -61,7 +52,6 @@ export default function BlockchainPage() {
     validators: 0
   });
 
-  const [contractJobs, setContractJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(0);
   const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
@@ -117,36 +107,9 @@ export default function BlockchainPage() {
   }, [provider, clearError, toast]);
 
 
-  const fetchContractJobs = useCallback(async () => {
-    if (!provider) return;
-
-    try {
-      const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, provider);
-      const filter = contract.filters.JobLogged();
-      const currentBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, currentBlock - 1000);
-
-      const logs = await contract.queryFilter(filter, fromBlock, 'latest');
-
-      const jobs = logs.map((log: any) => ({
-        user: log.args.user,
-        jobType: log.args.jobType,
-        ipfsHash: log.args.ipfsHash,
-        timeSubmitted: new Date(Number(log.args.timeSubmitted) * 1000),
-        txHash: log.transactionHash,
-        blockNumber: log.blockNumber
-      })).reverse().slice(0, 10);
-
-      setContractJobs(jobs);
-    } catch (error: any) {
-      console.error("Failed to fetch contract jobs:", error);
-    }
-  }, [provider]);
-
   useEffect(() => {
     if (provider && isConnected) {
       fetchNetworkStats();
-      fetchContractJobs();
 
       const interval = setInterval(() => {
         fetchNetworkStats();
@@ -154,7 +117,7 @@ export default function BlockchainPage() {
 
       return () => clearInterval(interval);
     }
-  }, [provider, isConnected, fetchNetworkStats, fetchContractJobs]);
+  }, [provider, isConnected, fetchNetworkStats]);
 
   const copyToClipboard = (text: string, label: string = "Text") => {
     navigator.clipboard.writeText(text);
