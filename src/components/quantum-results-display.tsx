@@ -20,8 +20,7 @@ import {
   RefreshCw,
   Target,
   Cpu,
-  Database,
-  Sparkles
+  Database
 } from "lucide-react";
 
 interface QuantumResult {

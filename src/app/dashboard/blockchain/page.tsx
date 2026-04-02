@@ -1,5 +1,4 @@
-Done!
-lient";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -12,8 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
 import { Contract, formatEther } from "ethers";
-import { 
-  Globe, 
+import {
+  Globe,
   Activity,
   ExternalLink,
   Copy,
@@ -50,7 +49,7 @@ interface NetworkMetrics {
 export default function BlockchainPage() {
   const { isConnected, address, balance, provider, error, clearError } = useWallet();
   const { toast } = useToast();
-  
+
   const [networkMetrics, setNetworkMetrics] = useState<NetworkMetrics>({
     blockNumber: 0,
     gasPrice: "0",
@@ -61,7 +60,7 @@ export default function BlockchainPage() {
     tps: 0,
     validators: 0
   });
-  
+
   const [contractJobs, setContractJobs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(0);
@@ -69,26 +68,26 @@ export default function BlockchainPage() {
 
   const fetchNetworkStats = useCallback(async () => {
     if (!provider) return;
-    
+
     setIsLoading(true);
     setRefreshProgress(0);
-    
+
     try {
       clearError();
-      
+
       const progressInterval = setInterval(() => {
         setRefreshProgress(prev => Math.min(prev + 20, 90));
       }, 200);
-      
+
       const [blockNumber, feeData, block] = await Promise.all([
         provider.getBlockNumber(),
         provider.getFeeData(),
         provider.getBlock('latest')
       ]);
-      
+
       clearInterval(progressInterval);
       setRefreshProgress(100);
-      
+
       const metrics: NetworkMetrics = {
         blockNumber,
         gasPrice: formatEther(feeData.gasPrice || 0n),
@@ -99,12 +98,12 @@ export default function BlockchainPage() {
         tps: Math.floor(Math.random() * 1000) + 500,
         validators: Math.floor(Math.random() * 50) + 100
       };
-      
+
       setNetworkMetrics(metrics);
       setLastRefresh(Date.now());
-      
+
       setTimeout(() => setRefreshProgress(0), 1000);
-      
+
     } catch (error: any) {
       console.error("Failed to fetch network stats:", error);
       toast({
@@ -120,7 +119,7 @@ export default function BlockchainPage() {
 
   const fetchContractJobs = useCallback(async () => {
     if (!provider) return;
-    
+
     try {
       const contract = new Contract(CONTRACT_ADDRESS, quantumJobLoggerABI, provider);
       const filter = contract.filters.JobLogged();
@@ -128,7 +127,7 @@ export default function BlockchainPage() {
       const fromBlock = Math.max(0, currentBlock - 1000);
 
       const logs = await contract.queryFilter(filter, fromBlock, 'latest');
-      
+
       const jobs = logs.map((log: any) => ({
         user: log.args.user,
         jobType: log.args.jobType,
@@ -148,11 +147,11 @@ export default function BlockchainPage() {
     if (provider && isConnected) {
       fetchNetworkStats();
       fetchContractJobs();
-      
+
       const interval = setInterval(() => {
         fetchNetworkStats();
       }, 30000);
-      
+
       return () => clearInterval(interval);
     }
   }, [provider, isConnected, fetchNetworkStats, fetchContractJobs]);
@@ -197,7 +196,7 @@ export default function BlockchainPage() {
                     Your wallet connection is secured with enterprise-grade encryption and blockchain verification.
                   </p>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="text-center">
                     <div className="font-bold text-primary">Ethereum</div>
@@ -231,7 +230,7 @@ export default function BlockchainPage() {
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Monitor network activity, send transactions, and interact with quantum computing smart contracts
         </p>
-        
+
         <div className="flex items-center justify-center gap-4 mt-6">
           <div className="flex items-center gap-2">
             <Wifi className="h-5 w-5 text-green-400" />
@@ -398,7 +397,7 @@ export default function BlockchainPage() {
                           </Button>
                         </div>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-muted-foreground">Balance</p>
                         <div className="flex items-center gap-3 mt-1">
@@ -427,12 +426,12 @@ export default function BlockchainPage() {
                           <div className={`w-2 h-2 rounded-full ${networkMetrics.latency < 50 ? 'bg-green-400' : networkMetrics.latency < 100 ? 'bg-yellow-400' : 'bg-red-400'} animate-pulse`} />
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Gas Price</span>
                         <span className="font-bold text-blue-400">{parseFloat(networkMetrics.gasPrice).toFixed(6)} ETH</span>
                       </div>
-                      
+
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-muted-foreground">Network Load</span>
@@ -517,7 +516,6 @@ export default function BlockchainPage() {
                       <span className="font-mono text-purple-400">~2 seconds</span>
                     </div>
                   </div>
-                </div>
                 </div>
               </div>
 
